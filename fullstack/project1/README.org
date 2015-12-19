@@ -1,0 +1,50 @@
+* journalistic
+** reading documentation and finding completion easily
+** TODO ouch. company and jedi and and
+spent way too much time yesterday getting this all straightened out.
+
+Now, I am using two instances of emacs; one with a full-blown org and
+workgroups setup and another with just a basic python and
+sensible-defaults config.
+** using webbrowser
+** basic babel functionality
+#+BEGIN_SRC python :session *Python* :results output
+print "fuck off"
+#+END_SRC
+
+#+RESULTS:
+: fuck off
+** webbrowser open only working with http prefix?
+#+BEGIN_SRC python :session *Python* :results output
+import webbrowser
+
+webbrowser.open('http://google.com')
+#+END_SRC
+
+#+RESULTS:
+: 
+: True
+* comments, observations and planning
+** working through the three lessons of Programming Foundations with Python
+- lesson 0
+- lesson 1
+- lesson 2
+  - a
+  - b
+  - c
+- lesson 3
+  - a
+  - b
+- final project
+- 
+** 
+*** lesson 0
+*** lesson 1
+*** lesson 2
+**** a
+**** b
+**** c
+*** lesson 3
+**** a
+**** b
+*** final project

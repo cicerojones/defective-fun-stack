@@ -1,0 +1,1176 @@
+* 01 - Course Map.srt
+So we just finished lesson zero, which
+
+was an introduction. In this lesson, lesson one,
+
+we will build two main projects while
+
+using functions. Now, towards the end of this
+
+lesson we will present a scenario where
+
+functions won't quite present a very eloquent solution.
+
+That will pave the way for us to learn new stuff in lesson two and three.
+
+>> Now if you feel extremely
+
+comfortable with functions and understand their limitations
+
+completely you should consider moving on to the next lesson, however
+
+if you feel like you want to learn more about functions
+
+in the Python programming language, continue to take this lesson, watch
+
+the next video, we will use it to write our first program.
+* 02 - Take a Break Story.srt
+Can you think of a friend who works really long
+
+hours on a computer, programming, writing, researching for hours. By
+
+the way, that person could be you. This seems to
+
+be a problem, especially as the number of hours we spend
+
+on a computer keeps going up. If you could only
+
+remember to walk away from the computer for a little bit.
+
+Let's write a program that schedules breaks throughout the day
+
+reminding that friend who works really long hours on the computer,
+
+to listen to music, get up and dance to their favorite song,
+
+or just walk away from the computer every once in a while.
+* 03 - Take a Break Output.srt
+Okay. So, I wrote a program called Take A Break that for now is
+
+hidden behind this graphic. But, let me just focus on running it. When I do
+
+that, the program starts to keep track of time and after every two hours
+
+of work on the computer it opens a browser to play your friend's favorite song.
+
+[MUSIC]
+
+After another two hours of work, it prompts you
+
+to take another break and so on. Let's build this.
+* 04 - How Would You Do This.srt
+Now before we write that program, let me ask you. If
+
+you are writing the Take A Break program, what steps would
+
+you take to get to the output. Don't worry about writing
+
+code right now, in plain English, simply identify the steps you would
+
+need to take to make this program work. Step one do
+
+this, step two do that. You can submit your answers on the
+
+discussion forum. And while you are there you can read the
+
+ideas others submitted on the forum as well. The next video will
+
+give you a quick tour of how to use the forum.
+* 05 - Planning the Break.srt
+
+So the way to submit this answer on the forum,
+
+is to look under the Discussions section of the web
+
+page. For now, there is just the one link here.
+
+Although, you may see multiple links under Discussions. Click on the
+
+link that is in bold, and has a star in
+
+front of it. Now, the star means that I created
+
+this thread for you to submit your responses. After I
+
+click on it, a new tab opens with a Discussion forum.
+
+Here, you can simply scroll down, to submit your responses. So here I am,
+
+back to the original question, which is, if you were writing the take a break
+
+program, what steps would you take to get to the output? Make sure you submit
+
+your responses on the Discussion forum, and,
+
+check this box after you've submitted your answer.
+* 06 - One Way of Doing This.srt
+
+Thank you for sharing your responses. I
+
+will be providing feedback on the forums periodically.
+
+Now there are several ways in which to solve this problem. One way is for us
+
+to write a program that somehow keeps track
+
+of time, say two hours, and it essentially
+
+does nothing during that time. So the first thing we want the program to do is
+
+Wait for two hours.
+
+And after we've waited for that amount of time, we
+
+want the program to open up a web browser, which
+
+plays let's say a YouTube video which is your friends
+
+favorite song. So the second thing is to open a browser.
+
+[BLANK_AUDIO]
+
+Now because we want these two steps to happen multiple times
+
+during the day. Because we want to take multiple breaks during the
+
+day. We want to put these two steps inside some sort of
+
+loop. So let's say we want to repeat these steps three times.
+
+[BLANK_AUDIO]
+
+Let's build this. I encourage you to follow along.
+* 07 - Launching Python.srt
+
+So, the first thing I will do on
+
+my Windows machine, is open Python and IDLE. Here's
+
+how to do it. I can go to the
+
+Start Menu, hit All Programs, find Python 2.7, which
+
+is what we just installed and launch IDLE. On
+
+a Mac, this is what you'll need to do.
+
+I will go to Spotlight and then type Idle. You can think of IDLE as a notepad or
+
+a place where we write Python programs. I can click on File and then New
+
+File and boom, I will get a fresh new place where I can write my code.
+
+By the way, the other window is where
+
+we'll see the outboard of our program. Okay,
+
+let me rearrange both of these windows so we can see them at the same time.
+* 08 - What Is the Error.srt
+
+Okay, so here is our program design. I'm going
+
+to start by opening a browser and playing a
+
+song. So previously, I Googled to find out how
+
+one would open a web browser in python. And I
+
+discovered that there is this function called webbrowser.open. This
+
+function takes in the link I want to open.
+
+I just placed a Youtube address in there. In
+
+fact, this could have been any link you want. Alright.
+
+Let's save the program and run it. I'm going
+
+to call it Breaktime dot Py. Py stands for
+
+Python. To run it, I will click on run,
+
+and then click on run module. Now my hypothesis is
+
+that when we run this program it will open
+
+the Youtube link. Let's see. Oh. It seems like
+
+we have an error. Okay, it says there's an
+
+error in your program, EOL, whatever that means, while scanning
+
+the string literal. Okay? Oh, look Python is
+
+pointing out the error. It seems like I missed
+
+the closing quote, so I'm going to add that.
+
+Let me save the program one more time and
+
+run it. Now I believe it will work.
+
+Hm, another error. You know, when I first learned
+
+how to program, I felt so intimidated by these
+
+errors. Look at them. They are red and in
+
+your face, but to make the program work, we have
+
+to somehow get past them. So, would you mind reading
+
+the error and telling us what you think is the
+
+problem with this code? Enter your responses in this box.
+* 09 - Squashing the Bug.srt
+
+So Python is having difficulty, understanding what webbrowser is. We can
+
+fix this, by saying import webbrowser at the top. This is
+
+our way of tellin Python, hey, we want to use webbrowser
+
+and all of its functionality in our program. Let's Save and Run.
+
+[MUSIC]
+
+Alright. This time the program worked, and we can
+
+check off one of the things we have to do.
+* 10 - Making the Program Wait.srt
+
+So next, I will attempt to make my program wait for a certain period of time.
+
+To find about this, I went back to
+
+Google, and then typed python make my program wait.
+
+One of the first links there was this
+
+website called stackoverflow.com. Now this will soon become
+
+one of your favorite websites as a programmer.
+
+it suggested to use something called time.sleep which suspends
+
+the program for a given number of seconds. Okay, back to the program. Now since
+
+I'm still in testing phase I will try to suspend the program only for about ten
+
+seconds; we can change this number later. I also know that I have to import the
+
+time module. Okay, let's save this and run. Alright.
+
+It seems like the program is waiting for a few seconds before it
+
+opens the web browser.
+
+[MUSIC]
+
+[MUSIC]
+
+Another item bites the dust.
+* 11 - Adding a Loop.srt
+
+Now the next thing we have to do, is to put these two steps within a loop, so
+
+our program can prompt the user to take a
+
+break multiple times during the day. So your challenge
+
+is to add a loop to this code, so it prompts the user to take 3 breaks. Now
+
+if you are confused about this task, there are
+
+some helpful links on loops in the instructor notes.
+* 12 - Adding a Loop Solution.srt
+
+Here's one way of doing that. Say, I want to take three
+
+breaks throughout the day. I will use the break count variable to
+
+keep count of the number of breaks I've taken. And then
+
+add a while loop, to make sure that this code runs three
+
+times. By the way, if you want to see some information on
+
+how while loops work, there is a helpful link in the instructor
+
+notes. Now, if I run this program. The program will wait
+
+for ten seconds and play the song and do that three times.
+
+Another handy addition to our program can be a print
+
+statement that tells us when our program began. Now, how
+
+do I find the current time? When I have to
+
+do some testing like this, I start to use this
+
+output window, so I can import time here. Which, as
+
+you may guess, is a way to access time. And
+
+I know there is a function called ctime, or current
+
+time. That seems like the current time on my computer. Great.
+
+Back to the main program where I'll add this. Let me save and run this program.
+
+Now, as soon as I run the program, I get a prompt, suggesting when I started the
+
+program. Ten seconds after that, a video
+
+is played which asks me to take a break
+
+[MUSIC].
+
+So far so good. Another ten seconds pass
+
+by and another suggestion to take a break.
+
+[MUSIC]
+
+Now, if I want to stop this program
+
+midway, I can either restart IDLE or use Ctrl+C
+
+in the shell window, which will stop the execution
+
+of the program when it comes back from sleep.
+* 13 - Making the Program Wait Longer.srt
+
+Okay, so our program is lacking just one more
+
+thing. Let's say that we want to take a break
+
+after every two hours of work on the computer.
+
+I can increase the duration of delay from ten seconds
+
+to two hours. Now remember, the sleep function takes
+
+in seconds, so this number to the computer is two
+
+seconds and not two hours. To fix this, I
+
+can find out the number of seconds in two hours.
+
+And use that instead. Since I'm still testing my program,
+
+I will keep the wait time to a manageable ten seconds.
+
+Okay, so now that we have written our first program,
+
+let's understand where functions like
+
+webbrowser.open and time.sleep are coming from.
+* 14 - Where Does Webbrowser Come From.srt
+
+Now imagine that this yellow sheet of
+
+paper is the Python Standard Library. Imagine that
+
+this is what we got when we downloaded Python. Inside Python is a file named
+
+webbrowser. And inside webbrowser is a function
+
+called open. Now this is the function that
+
+allowed us to play the YouTube video.
+
+Much like webbrowser, there is another file or
+
+module inside the Python Standard Library. It's
+
+called time, and time has several functions
+
+defined inside of it. Two of them are, ctime which gives you the current time,
+
+and sleep, which suspends program animation for
+
+a little bit. Now here's a thought, how
+
+does function sleep actually suspends or pauses
+
+program flow for a given number of seconds?
+
+We don't really know how it does that behind
+
+the scenes. In much the same way, how does
+
+function open, opens up a webbrowser to play a
+
+YouTube video for us? We don't quite know how it
+
+does that behind the scenes also. That detail is
+
+hidden from us, and this hiding of detail in programming
+
+is called abstraction. Now this idea of abstraction is
+
+a really powerful one in programming, because it allows us
+
+to focus on the program that we actually want to write which
+
+is the take a break program, and it empowers us to use
+
+these functions simply by reading their
+
+documentation. So lets read some documentation
+
+now and see if these functions actually exist in the Python Standard Library.
+* 15 - Reading Webbrowser Documentation.srt
+
+Okay, so I will search for Python Standard
+
+Library, and I got to this documentation page.
+
+By the way, the link to this page is also
+
+available in the instructor notes. I will check to make
+
+sure that I am reading documentation for the version of
+
+Python I downloaded, which is version 2.7. In here, I
+
+can scroll down to web browser. You will notice that
+
+it says here, that the web browser module provides a
+
+high level interface to allow displaying web based documents to
+
+users, which is really a fancy way of saying, it will
+
+show you websites. And if I scroll down,
+
+I can find the function, webbrowser.open, which takes in
+
+a URL and displays that URL using the default browser. If I go back, I can also
+
+find the module named time. Here it is, and if I click on it, I can read
+
+its documentation. It says, this module provides various time
+
+related functions, and we use two of those functions.
+
+If you scroll down, you'll find time.ctime,
+
+which gives the current time of the computer,
+
+and time.sleep, which suspends execution for a given number of seconds.
+* 16 - Enhancing the Take a Break Project.srt
+
+Okay, so here's your chance to demonstrate what you've learned
+
+thus far. You know, my computer science professor in college
+
+used to say, if you truly want to learn something,
+
+teach it to someone else. And that's what we are doing
+
+to do in this exercise. We want you to find
+
+a friend or a colleague that does not know much
+
+about computer programming at all. And then we want you
+
+to teach this program that we've written together to that individual.
+
+Now, while you're doing that, we want you to use
+
+your phone or a video camera to record a video of
+
+your conversation with that friend. Capture their reactions and then
+
+you can share that video with us on our discussion forum.
+
+Now, if you don't have access to a video camera,
+
+you can also share with us photos or some text describing
+
+your friend's reaction while you were teaching them this piece of
+
+code. The next video we'll showcase how to share videos and
+
+photos on our discussion forum.
+* 17 - Take a Break Mini-Project.srt
+
+Okay, so to share videos and photos, I
+
+will click on the Discussion thread with a star.
+
+Now, the star means that I created this thread
+
+for you to submit your responses. Once the discussion
+
+forum has opened, you can simply scroll down
+
+and add a YouTube link right here to the
+
+discussions. You will notice that there is a YouTube
+
+video that is embedded right within the discussion forum.
+
+There. Now let's talk about how to upload a
+
+photo. To do that, I will click on this
+
+tiny photo icon, and then simply upload a photo
+
+from my computer. That's the one I want to upload.
+
+And you will notice that much like the YouTube
+
+video, the photo is also uploaded right here within the
+
+discussion forums. Let me hit Submit, and done. So
+
+here I am, back to the mini project, which is
+
+for you to teach the program that we have
+
+written together, to a friend or a colleague. We also
+
+want you to use your smartphone to record a video
+
+of your conversation. And then share that YouTube video with
+
+us on the discussion forum. Oh, by the way, if you are
+
+an unable to record a video, we would love to see some
+
+photos or some text describing your conversation with your friend. After you've
+
+submitted your responses on the forum, make sure you check this box.
+* 18 - Course Map.srt
+
+So, we've just seen one example of how functions can help us design the Take
+
+a Break program. Let's see another example
+
+of how functions can help make things easier.
+* 19 - Secret Message Story.srt
+
+My friends and I, we play a lot of pranks
+
+on each other. Today, however, I was on the receiving end
+
+of one. This morning, I could not find my house keys.
+
+Just then, I got a text message from a friend. We
+
+have hidden your house keys, said the text message. To find
+
+them, you have to solve a puzzle. On your computer there
+
+is a folder with several photos. If you rename all the
+
+files by removing the numbers from the photo name, the photos
+
+will reveal a secret message and lead you to
+
+the house key. This renaming of 50 files will
+
+take a long time. I can't wait to solve
+
+this puzzle so I can get my friends back.
+* 20 - Secret Message Output.srt
+
+So, here I have a folder on my computer
+
+with a bunch of photos. Now, you'll notice that
+
+the message in these photos is all jumbled up,
+
+we can't quite read it just yet. Now, if I
+
+zoom into these photos, you'll notice that the names
+
+of the photos, they have numbers in them. And it's
+
+our task to remove those numbers. And I wrote
+
+a program that does just that. Let me run it.
+
+The output window shows all of the files that were renamed and if I look at the
+
+folders again, you'll notice that the photos have
+
+been renamed. Their names don't have any numbers in
+
+them anymore. Also, if I zoom out just
+
+a little bit. You'll notice that the photos are
+
+now revealing a message. Which in this case
+
+is just, SOME SECRET MESSAGE. Let's build this program.
+* 21 - Planning a Secret Message.srt
+
+Now before I start coding, I want to ask
+
+you, what steps would you take to rename a bunch
+
+of files on your computer? Don't worry about writing
+
+any code right now. In simple English, just identify the
+
+steps you would need to make to create this
+
+program. Step one, do this. Step two, do that. You
+
+can submit your answer on the discussion forum, and while
+
+still there, you can read the ideas others have submitted.
+* 22 - One Way of Doing This.srt
+
+Thank you for sharing your responses. I will
+
+be providing feedback on the discussion forums periodically. Now,
+
+here's one way in which we can solve
+
+this problem. We have to write a program that
+
+somehow looks at the right folder and gets
+
+for us all of the filenames from that folder.
+
+So let me write this down. As the first step we have to get all the file names.
+
+[BLANK_AUDIO]
+
+Once we have all of the file names, for each of the file name, what we want the
+
+program to do is rename those files. So as a second
+
+step, for each file, we want to rename it.
+
+And by rename I mean remove all of the numbers from
+
+the file name. Let's build this. I encourage you to follow along.
+* 23 - Opening a File.srt
+
+Now you can do this with existing files on your
+
+computer, but if you want to follow along this example,
+
+feel free to download the zip file in the instructor
+
+notes. When you unzip that file, you'll have a folder
+
+much like this one, with about 50 photos. Okay, so
+
+what I've done thus far is just created a new
+
+file in Idle, and I called it rename_files.py. And inside
+
+that, I've created an empty function by the same name.
+
+Then I added comments of the two main things I have to do in my program. By the
+
+way, notice that the function right now is pretty
+
+empty, and if I saved and ran the program, it
+
+would essentially do nothing. The first thing I have
+
+to do, is get the file names from a given
+
+folder. So Google can help with that. Let me
+
+just type in Find file names in a folder in
+
+Python. Now I read through the results, and
+
+I got to this stack overflow.com page. And here
+
+I read that there is this thing called os.listdir,
+
+which will get you everything that's in a given
+
+directory. Now it turns out that there is a
+
+module in Python called os, short for operating system.
+
+And that has a function inside it called listdir.
+
+Which, as its name suggests, lists everything that's in
+
+a given directory. So let's add this to the
+
+code and see what it does. Now this function listdir
+
+takes in a path of the folder that contains our
+
+photos. So I'll go back to my folder. Copy its
+
+address, and paste it. Now for those of you who
+
+are on a Mac, you can use a document in
+
+the instructor notes, that will help you get the path
+
+of your folder. On a Windows machine however, right before
+
+where the path begins, I will add this
+
+letter r, and r stands for rawpack, and it
+
+tells Python hey, take this string as it
+
+is, and don't interpret it any other way. So
+
+here let me just save this in a variable, and print that out. Let me save, and
+
+then run, and oh wow, we get a list of all of the file names inside that folder.
+
+It's an ugly looking list, but a list
+
+nonetheless. Alright, step one of the program is done.
+* 24 - Changing-Filenames.srt
+
+Okay, let's do step two now, which is to
+
+rename files. Now, I provided the link to the
+
+documentation for the module OS in the instructor notes.
+
+I want you to scan that documentation and find
+
+out which function we can use to rename files.
+
+By the way, this sort of a search is
+
+done quite commonly by Software Engineers. Once you've found
+
+that function Enter the name of that function in
+
+the box provided.
+* 25 - Checking Os Documentation.srt
+
+So, here I am in the Python documentation for OS and let me just search
+
+for something that can help us rename a file. Lo and behold, there is a rename
+
+function we could use. It takes the source or the current name of the file and
+
+changes it to the destination or the new
+
+name of the file. Let's use this function.
+* 26 - Renaming Files.srt
+
+So, I know I want to rename all of my files. And I remember there were about
+
+
+to rename 50 photos, I think I'll have to
+
+use some sort of a loop. So, I'll
+
+just write one down now by saying, for file_name,
+
+in file_list. Now, bear in mind, file_list is something
+
+we've seen before. In fact, we printed it out.
+
+This was a list of all of the photos inside
+
+the folder. And what this for loop is going to
+
+allow us to do is work with each photo file
+
+one at a time. So, for each photo, I want to change
+
+its name. And the old name is in file_name. And
+
+the new name, well, I know the new name is devoid
+
+of any numbers. But how to do that, I still
+
+don't know. And this means I'll have to do some experimentation.
+
+And to run those experiments I generally use the
+
+Python Shell window, where I can just start typing
+
+and seeing the result really quickly. Let me make
+
+more room for this window so you can see
+
+it properly. So, say, my file name was the
+
+following string; 48athens.jpg. Let me print that out, okay,
+
+good. Now, previously I Googled to find out that
+
+there is a string function called translate that takes
+
+up to two arguments. The first argument is a
+
+table. Which translates one set of characters to another set
+
+of characters and since we don't have that, I can
+
+use the keyword none. And the second is a list
+
+of all characters that we want to remove from
+
+the string. And those I know are numbers, so that
+
+will be zero, one, two, three, four, five, six, seven,
+
+eight, nine. All of those numbers. Let me try that.
+
+Oh hey, look, the file name now has
+
+no numbers in it. So, because that experiment
+
+worked, I will go back to the code
+
+and add this file_ name.translate function into my code.
+* 27 - What Is the Error.srt
+
+Okay. So we are back to the code and all
+
+I have done is added the translate function to our program.
+
+So what this code is doing now, is saying, for
+
+each file or for each photo, inside our folder, rename it.
+
+Here is the old file name and here is the
+
+new file name devoid of any numbers. Now my hypothesis is
+
+that if I save and run this program, all of the
+
+photo files will be renamed and we'll see the secret message.
+
+So let me go ahead and save it and run the program.
+
+Oh wow. That clearly did not work. Would you
+
+mind reading through this editor and telling us what
+
+you think is the problem? Once you have a
+
+hypothesis, feel free to enter it into the box provided.
+* 28 - Squashing the Bug.srt
+
+So the error suggests that the system or the
+
+program, it can not find the file specified. You
+
+know, that's really interesting because at one point we
+
+were able to find all of the files. In fact
+
+we printed out all of the file names. Okay,
+
+let's continue to read the error. It says that the
+
+error is in line 9, and it's happening around
+
+os.rename. This makes me wonder if the program is actually
+
+looking at the right folder when it's trying to rename the files. So going back
+
+to our program, I know there is this function called os.getcwd.
+
+CWD stands for Current Working Directory. Let me see if that inner variable
+
+and print it. And I will comment everything else out for the time being.
+
+Let me Save, and Run.
+
+It seems that the programs Current Working Directory is
+
+this folder called OOP, which resides in the C drive.
+
+And if I go back to my program, I know
+
+that my files or my photos are inside this folder
+
+called prank, which is inside OOP which resides in the
+
+C drive. No wonder the program can't find any of
+
+the files. It's looking inside OOP. Meanwhile, all of the
+
+files are inside prank. To fix this, I can use
+
+the change directory function. And with this function I can
+
+ask the program to look at the folder where my
+
+files actually reside, which is this folder right here. So
+
+I'm going to copy that, and I'm going to paste it here.
+
+And then let me uncomment some of the lines
+
+I'd commented out before. Towards the end of the function,
+
+I will change the path back to how I found
+
+it. Let me Save, and Run the program one more
+
+time. Hm, the program didn't quite throw an adder
+
+this time. But now I want to check to see if
+
+the files have actually been renamed. So here we are
+
+back at our folder, and you'll notice that the names
+
+of the files don't have any numbers any more.
+
+They've been renamed. And if I zoom out a
+
+little bit, you'll notice that the photos will reveal
+
+a secret message, which is that the keys are
+
+in the closet behind the shoebox. All right, it
+
+seemed like our program worked. Now, before we finish
+
+this project, my final recommendation in terms of improving
+
+it, is to add a print statement each time
+
+we change the name of a file. So here I am printing
+
+the old name of the file, and here is its new name.
+* 29 - Rename Troubles.srt
+
+Now that our code has worked, I want you
+
+to think about the following two scenarios. What would
+
+happen if we try to rename a file that does not exist in our folder? Or, if we
+
+try to rename a file to a name that
+
+already exists in our folder? You can submit your
+
+answers on the discussion forum. After you've done that,
+
+make sure to check this box before you continue.
+* 30 - Exceptions.srt
+
+Thank you for sharing your thoughts. Now, if any one
+
+of these two scenarios occurs, the program that we wrote will
+
+throw an error. We call this error and exception. I
+
+want you to put a pin in this thought as we
+
+will return to this idea in the later lessons of
+
+this course. Okay, so we are back at our code again.
+
+And now I'm curious to see where the different functions of
+
+OS like listdir and rename are coming from. Let's find out.
+* 31 - Where Does Os Come From.srt
+
+So, much like web browser and time, Python has another module inside it called
+
+OS, which is short for operating system. Inside OS are several functions, two of
+
+them are listdir, this lists out all the files in a given directory and
+
+rename, which renames a given file. Don't take my word for it, let's look for
+
+them in the documentation.
+* 32 - Reading Os Documentation.srt
+
+Okay, so here is the Python documentation, and if I scroll
+
+down, I can find the os module. Let me click on it.
+
+And in here, we can find all o the OS related functions that we used. So here
+
+is os.change directory, and here is os.getcwd, or
+
+get current working directory. Let me scroll down some
+
+more. And if I do that I find os.listdir, which lists all of the files within a
+
+given directory and on scrolling down even further, I
+
+find os.rename. By the way, I want to make a
+
+quick note here that even though we don't know how
+
+functions like rename really work behind the scenes. We can
+
+read their documentation and use them just fine. This hiding
+
+of detail behind documentation, in computer science, is called abstraction.
+* 33 - Secret Message Mini-Project.srt
+
+So here is your mini project. We want you to
+
+create your very own secret message, for a friend, or a
+
+loved one. Now, the secret message could be anything from
+
+you wishing them a great day to you telling them how
+
+happy you are to have them in your life. You
+
+can start by showing them the jumbled up version of your
+
+message. Now, we have provided some images of the alphabet
+
+in the instructor notes. You can use them if you'd like.
+
+Then run the program and reveal your secret message
+
+to your friend. Your assignment is to share videos or
+
+photos of your friend's reaction with us on the discussion
+
+forum. Once you're done, check this box before you continue.
+* 34 - Edge Case.srt
+
+So thus far, what we've been doing is writing a lot of functions. We generally
+
+start by creating an empty Python file.
+
+Let's call it some_module.py, in this case. And
+
+then we add functions to it. Functions
+
+like do.this. And another function, let's call it
+
+do.that, for instance. And, essentially what we're doing
+
+is writing code, one line at a time.
+
+Almost like a recipe and frankly that technique's
+
+been working for us thus far. So, let's
+
+continue to use this technique while solving the
+
+next programming challenge which is building a movie website.
+* 35 - When Functions Do Not Suffice.srt
+
+So let's assume we want to make a movies website.
+
+Much like this one. Now, if you were to make
+
+this based on what we have been doing this far.
+
+What we would do is start with an empty programming file,
+
+and we would like it something like movies.py. Now, since
+
+a movie has a lot of data associated with it,
+
+like the movies title, its storyline, we would add that
+
+to our program. Also, we would want to do things with
+
+our movies, like show the movies trailer or
+
+show or print all of the movies information. So
+
+we would add those function to our code as
+
+well. So far, so good. So, further imagine that
+
+we want to run this program. And we want
+
+to play a movie's trailer. Well, which movie's trailer?
+
+To make that work, we would have to provide
+
+the show_trailer function some information or arguments, like this.
+
+In this case we are saying hey,
+
+play Toy Story's, youtube_url. That seems manageable
+
+enough. Now let's try to print out
+
+a movies information. Well, which movies information?
+
+Again we would have to supply some sort of information or arguments, to the
+
+show_info function. Arguments like the movie's title,
+
+its storyline, the release_date, rating, youtube_url, director,
+
+box_office, et cetera. Now, I don't know about you,
+
+but this function show_info is already getting too convoluted
+
+for me. Imagine what happens if we have to
+
+supply more information to it. Like the movie's cast
+
+or the movie's reviews. What we really want to do
+
+is define a template for our movie and record
+
+all of the data that needs to go into
+
+that template. Data like the move's title, it's storyline and
+
+functions like show_trailer and show information and then simply say,
+
+hey, Toy Story is a movie and so is Avatar.
+
+And then have the ability to say, show me Toy
+
+Stories trailer or show me Avatar's information. No arguments necessary.
+
+Now, one way of doing this, just by using functions, is to take the template
+
+we have defined and make multiple copies of it. So, we could make a copy
+
+of this template and call it toy_story.py, and make another copy of this
+
+template, and call it avatar.py. Now we will be able to say things like
+
+toy_story.show_trailer and avatar.show_info. Now,
+
+this doesn't seem like a very smart solution to me.
+
+Imagine what happens, if we have to add more pieces of
+
+data to our template. Or if you have to rename one
+
+of our functions. Say, from, show_trailer to play_trailer. If that happens,
+
+we will have to make those changes in each and
+
+every copy that we make. This doesn't seem like a very
+
+smart thing to do. So what we really need is a
+
+way of making copies of a template, without having multiple files.
+
+We need the ability to define a template for
+
+something, like we did for movies, and then be
+
+able to say, hey, Toy Story is a type
+
+of that template, and so is Avatar. Avatar is also
+
+a type of that template. We need something new,
+
+and that new thing in programming is called a
+
+class. So what are classes and how do you
+
+use them? Let's find out in the next few lessons.

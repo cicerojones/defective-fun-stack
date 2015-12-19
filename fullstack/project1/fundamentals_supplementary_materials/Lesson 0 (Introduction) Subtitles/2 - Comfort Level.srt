@@ -1,0 +1,63 @@
+1
+00:00:00,410 --> 00:00:02,490
+Now before we make some of these projects, I
+
+2
+00:00:02,490 --> 00:00:04,390
+want to share with you of how I learned to
+
+3
+00:00:04,390 --> 00:00:07,800
+program. I remember in many of my introductory computer
+
+4
+00:00:07,800 --> 00:00:11,050
+science classes. The instructor would start out slow and my
+
+5
+00:00:11,050 --> 00:00:13,440
+friends and I, we would understand everything, but then
+
+6
+00:00:13,440 --> 00:00:17,930
+boom, the difficulty level would skyrocket. This would make a
+
+7
+00:00:17,930 --> 00:00:20,760
+lot of other students inside the class feel extremely
+
+8
+00:00:20,760 --> 00:00:24,450
+frustrated and intimidated by code and ultimately they would quit.
+
+9
+00:00:25,460 --> 00:00:27,540
+We will avoid that in this class. In
+
+10
+00:00:27,540 --> 00:00:30,080
+this class we will make challenging projects, but at
+
+11
+00:00:30,080 --> 00:00:33,360
+the same time we will ensure that you're comfortable
+
+12
+00:00:33,360 --> 00:00:35,940
+with the learning curve. So it is in that
+
+13
+00:00:35,940 --> 00:00:38,880
+spirit I want to ask you, how confident
+
+14
+00:00:38,880 --> 00:00:40,660
+do you feel in your ability to write computer
+
+15
+00:00:40,660 --> 00:00:43,260
+programs? Programs like the ones we are going to
+
+16
+00:00:43,260 --> 00:00:45,810
+build in this class. Here are some answer choices.

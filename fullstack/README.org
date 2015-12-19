@@ -1,0 +1,15 @@
+* DATES
+** Project 1: Movie Trailer Website
+   DEADLINE: <2016-01-04 Mon>
+
+** Project 2: Tournament Results
+   DEADLINE: <2016-02-29 Mon>
+** Project 3: Item Catalog
+   DEADLINE: <2016-05-29 Sun>
+
+** Project 4: Conference Organization App
+   DEADLINE: <2016-06-13 Mon>
+
+** Project 5: Linux Server Certification 
+   DEADLINE: <2016-07-08 Fri>
+

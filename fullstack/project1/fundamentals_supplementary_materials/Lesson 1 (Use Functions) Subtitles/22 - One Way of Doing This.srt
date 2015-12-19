@@ -1,0 +1,51 @@
+1
+00:00:00,570 --> 00:00:02,510
+Thank you for sharing your responses. I will
+
+2
+00:00:02,510 --> 00:00:06,600
+be providing feedback on the discussion forums periodically. Now,
+
+3
+00:00:06,600 --> 00:00:08,310
+here's one way in which we can solve
+
+4
+00:00:08,310 --> 00:00:10,850
+this problem. We have to write a program that
+
+5
+00:00:10,850 --> 00:00:14,040
+somehow looks at the right folder and gets
+
+6
+00:00:14,040 --> 00:00:16,790
+for us all of the filenames from that folder.
+
+7
+00:00:16,790 --> 00:00:22,470
+So let me write this down. As the first step we have to get all the file names.
+
+8
+00:00:22,470 --> 00:00:22,970
+[BLANK_AUDIO]
+
+9
+00:00:29,880 --> 00:00:33,450
+Once we have all of the file names, for each of the file name, what we want the
+
+10
+00:00:33,450 --> 00:00:39,100
+program to do is rename those files. So as a second
+
+11
+00:00:39,100 --> 00:00:45,770
+step, for each file, we want to rename it.
+
+12
+00:00:47,890 --> 00:00:50,100
+And by rename I mean remove all of the numbers from
+
+13
+00:00:50,100 --> 00:00:53,420
+the file name. Let's build this. I encourage you to follow along.

@@ -1,0 +1,1170 @@
+* setup
+#+BEGIN_SRC python :session *Python* :results output
+print "Fuck you charlie"
+
+#+END_SRC
+
+#+RESULTS:
+: Fuck you charlie
+* issues with Emacs as my python IDE
+Why. Is. Documentation. So. Squirrely.
+
+Company-mode is cool. But how do you become an expert at getting to
+work just how you want without losing all your time on setup and never
+really getting around to progamming?
+
+Why does company-quickhelp-mode sometimes just not have any
+documentation? Or maybe better to ask why company-mode "Can't find any
+documentation" ?
+
+This suggests that there is a problem instead with my
+elpy/jedi/whatever backend.
+
+The reality of course is that there appears to be a discrepancy
+between what happens in the iptyhon interpreter and what happens when
+you are working in a .py file.
+
+For example, C-h on the same thing in a python file and in ipython do
+different things. But quickhelp doesn't appear to be doing anything.
+Is that because I set it to only bring up documentation with a certain
+keybinding? What was that keybinding.
+* company-quickhelp-mode M-h showtool tip
+M-h
+
+There is something to be said about the Lisp/SLIME model, where code
+can just be written in this more direct informal manner, without
+having to grapple with setting up directory structures, files and all
+the various containers (with all the design decisions that entails),
+especially when there are such squirrely differences between files,
+intrepreters and say, even babel-blocks.
+* figuring out differences using minor mode
+** Enabled minor modes for a .py file
+Enabled minor modes: 
+|   | Async-Bytecomp-Package      |
+|   | Auto-Composition            |
+|   | Auto-Compression            |
+|   | Auto-Encryption             |
+|   | Blink-Cursor                |
+|   | Company                     |
+|   | Company-Quickhelp           |
+|   | Diff-Auto-Refine            |
+|   | Eldoc                       |
+|   | Electric-Indent             |
+|   | Elpy                        |
+|   | File-Name-Shadow            |
+|   | Flymake                     |
+|   | Font-Lock                   |
+|   | Global-Font-Lock            |
+|   | Global-Git-Commit           |
+|   | Global-Hl-Line              |
+|   | Highlight-Indentation       |
+|   | Ido-Everywhere              |
+|   | Ido-Vertical                |
+|   | Line-Number                 |
+|   | Menu-Bar                    |
+|   | Mouse-Wheel                 |
+|   | Persistent-Scratch-Autosave |
+|   | Pyvenv                      |
+|   | Recentf                     |
+|   | Savehist                    |
+|   | Shell-Dirtrack              |
+|   | Show-Paren                  |
+|   | Tex-Pdf                     |
+|   | Tooltip                     |
+|   | Transient-Mark              |
+|   | Workgroups                  |
+|   | Yas                         |
+
+(Information about these minor modes follows the major mode info.)
+
+Python mode defined in `python.el':
+Major mode for editing Python files.
+
+key             binding
+---             -------
+
+C-c		Prefix Command
+ESC		Prefix Command
+DEL		python-indent-dedent-line-backspace
+<backtab>	python-indent-dedent-line
+<remap>		Prefix Command
+
+C-M-i		completion-at-point
+  (that binding is currently shadowed by another mode)
+C-M-x		python-shell-send-defun
+
+C-c C-c		python-shell-send-buffer
+  (that binding is currently shadowed by another mode)
+C-c C-f		python-eldoc-at-point
+  (that binding is currently shadowed by another mode)
+C-c C-j		imenu
+C-c C-l		python-shell-send-file
+C-c C-p		run-python
+  (that binding is currently shadowed by another mode)
+C-c C-r		python-shell-send-region
+  (that binding is currently shadowed by another mode)
+C-c C-s		python-shell-send-string
+  (that binding is currently shadowed by another mode)
+C-c C-t		Prefix Command
+  (that binding is currently shadowed by another mode)
+C-c C-v		python-check
+  (that binding is currently shadowed by another mode)
+C-c C-z		python-shell-switch-to-shell
+  (that binding is currently shadowed by another mode)
+C-c <		python-indent-shift-left
+C-c >		python-indent-shift-right
+
+<remap> <backward-sentence>	python-nav-backward-block
+<remap> <backward-up-list>	python-nav-backward-up-list
+<remap> <forward-sentence>	python-nav-forward-block
+
+C-M-q		prog-indent-sexp
+
+
+
+In addition to any hooks its parent mode `prog-mode' might have run,
+this mode runs the hook `python-mode-hook', as the final step
+during initialization.
+
+(fn)
+
+Async-Bytecomp-Package minor mode (no indicator):
+Byte compile asynchronously packages installed with package.el.
+Async compilation of packages can be controlled by
+`async-bytecomp-allowed-packages'.
+
+Auto-Composition minor mode (no indicator):
+Toggle Auto Composition mode.
+With a prefix argument ARG, enable Auto Composition mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+When Auto Composition mode is enabled, text characters are
+automatically composed by functions registered in
+`composition-function-table'.
+
+You can use `global-auto-composition-mode' to turn on
+Auto Composition mode in all buffers (this is the default).
+
+Auto-Compression minor mode (no indicator):
+Toggle Auto Compression mode.
+With a prefix argument ARG, enable Auto Compression mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Auto Compression mode is a global minor mode.  When enabled,
+compressed files are automatically uncompressed for reading, and
+compressed when writing.
+
+Auto-Encryption minor mode (no indicator):
+Toggle automatic file encryption/decryption (Auto Encryption mode).
+With a prefix argument ARG, enable Auto Encryption mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+(fn &optional ARG)
+
+Blink-Cursor minor mode (no indicator):
+Toggle cursor blinking (Blink Cursor mode).
+With a prefix argument ARG, enable Blink Cursor mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+If the value of `blink-cursor-blinks' is positive (10 by default),
+the cursor stops blinking after that number of blinks, if Emacs
+gets no input during that time.
+
+See also `blink-cursor-interval' and `blink-cursor-delay'.
+
+This command is effective only on graphical frames.  On text-only
+terminals, cursor blinking is controlled by the terminal.
+
+Company minor mode (no indicator):
+"complete anything"; is an in-buffer completion framework.
+Completion starts automatically, depending on the values
+`company-idle-delay' and `company-minimum-prefix-length'.
+
+Completion can be controlled with the commands:
+`company-complete-common', `company-complete-selection', `company-complete',
+`company-select-next', `company-select-previous'.  If these commands are
+called before `company-idle-delay', completion will also start.
+
+Completions can be searched with `company-search-candidates' or
+`company-filter-candidates'.  These can be used while completion is
+inactive, as well.
+
+The completion data is retrieved using `company-backends' and displayed
+using `company-frontends'.  If you want to start a specific backend, call
+it interactively or use `company-begin-backend'.
+
+By default, the completions list is sorted alphabetically, unless the
+backend chooses otherwise, or `company-transformers' changes it later.
+
+regular keymap (`company-mode-map'):
+
+key             binding
+---             -------
+
+
+keymap during active completions (`company-active-map'):
+
+key             binding
+---             -------
+
+C-d		company-show-doc-buffer
+C-g		company-abort
+C-h		company-show-doc-buffer
+TAB		company-complete-common
+RET		company-complete-selection
+C-s		company-search-candidates
+C-w		company-show-location
+ESC		Prefix Command
+<down>		company-select-next-or-abort
+<down-mouse-1>	ignore
+<down-mouse-3>	ignore
+<f1>		company-show-doc-buffer
+<mouse-1>	company-complete-mouse
+<mouse-3>	company-select-mouse
+<remap>		Prefix Command
+<return>	company-complete-selection
+<tab>		company-complete-common
+<up>		company-select-previous-or-abort
+<up-mouse-1>	ignore
+<up-mouse-3>	ignore
+
+<remap> <scroll-down-command>	company-previous-page
+<remap> <scroll-up-command>	company-next-page
+
+C-M-s		company-filter-candidates
+ESC ESC		Prefix Command
+M-0 .. M-9	company-complete-number
+M-n		company-select-next
+M-p		company-select-previous
+
+M-ESC ESC	company-abort
+
+
+
+(fn &optional ARG)
+
+Company-Quickhelp minor mode (no indicator):
+Provides documentation popups for `company-mode' using `pos-tip'.
+
+Diff-Auto-Refine minor mode (no indicator):
+Toggle automatic diff hunk highlighting (Diff Auto Refine mode).
+With a prefix argument ARG, enable Diff Auto Refine mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Diff Auto Refine mode is a buffer-local minor mode used with
+`diff-mode'.  When enabled, Emacs automatically highlights
+changes in detail as the user visits hunks.  When transitioning
+from disabled to enabled, it tries to refine the current hunk, as
+well.
+
+(fn &optional ARG)
+
+Eldoc minor mode (no indicator):
+Toggle echo area display of Lisp objects at point (ElDoc mode).
+With a prefix argument ARG, enable ElDoc mode if ARG is positive,
+and disable it otherwise.  If called from Lisp, enable ElDoc mode
+if ARG is omitted or nil.
+
+ElDoc mode is a buffer-local minor mode.  When enabled, the echo
+area displays information about a function or variable in the
+text where point is.  If point is on a documented variable, it
+displays the first line of that variable's doc string.  Otherwise
+it displays the argument list of the function called in the
+expression point is on.
+
+(fn &optional ARG)
+
+Electric-Indent minor mode (no indicator):
+Toggle on-the-fly reindentation (Electric Indent mode).
+With a prefix argument ARG, enable Electric Indent mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When enabled, this reindents whenever the hook `electric-indent-functions'
+returns non-nil, or if you insert a character from `electric-indent-chars'.
+
+This is a global minor mode.  To toggle the mode in a single buffer,
+use `electric-indent-local-mode'.
+
+Elpy minor mode (indicator Elpy):
+Minor mode in Python buffers for the Emacs Lisp Python Environment.
+
+This mode fully supports virtualenvs. Once you switch a
+virtualenv using M-x pyvenv-workon, you can use
+M-x elpy-rpc-restart to make the elpy Python process use your
+virtualenv.
+
+key             binding
+---             -------
+
+C-c		Prefix Command
+ESC		Prefix Command
+<C-S-return>	elpy-open-and-indent-line-above
+<C-down>	elpy-nav-forward-block
+<C-left>	elpy-nav-backward-indent
+<C-return>	elpy-shell-send-current-statement
+<C-right>	elpy-nav-forward-indent
+<C-up>		elpy-nav-backward-block
+<M-down>	elpy-nav-move-line-or-region-down
+<M-left>	elpy-nav-indent-shift-left
+<M-right>	elpy-nav-indent-shift-right
+<M-up>		elpy-nav-move-line-or-region-up
+<S-return>	elpy-open-and-indent-line-below
+
+C-M-i		elpy-company-backend
+M-.		elpy-goto-definition
+
+C-c C-b		elpy-nav-expand-to-indentation
+C-c C-c		elpy-shell-send-region-or-buffer
+C-c C-d		elpy-doc
+C-c C-e		elpy-multiedit-python-symbol-at-point
+C-c C-f		elpy-find-file
+C-c RET		elpy-importmagic-add-import
+C-c C-n		elpy-flymake-next-error
+C-c C-o		elpy-occur-definitions
+C-c C-p		elpy-flymake-previous-error
+C-c C-r		Prefix Command
+C-c C-s		elpy-rgrep-symbol
+C-c C-t		elpy-test
+C-c C-v		elpy-check
+C-c C-z		elpy-shell-switch-to-shell
+
+C-c C-r i	elpy-importmagic-fixup
+C-c C-r p	elpy-autopep8-fix-code
+C-c C-r r	elpy-refactor
+
+
+
+(fn &optional ARG)
+
+File-Name-Shadow minor mode (no indicator):
+Toggle file-name shadowing in minibuffers (File-Name Shadow mode).
+With a prefix argument ARG, enable File-Name Shadow mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+File-Name Shadow mode is a global minor mode.  When enabled, any
+part of a filename being read in the minibuffer that would be
+ignored (because the result is passed through
+`substitute-in-file-name') is given the properties in
+`file-name-shadow-properties', which can be used to make that
+portion dim, invisible, or otherwise less visually noticeable.
+
+Flymake minor mode (no indicator):
+Toggle Flymake mode on or off.
+With a prefix argument ARG, enable Flymake mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil, and toggle it if ARG is `toggle'.
+
+Uses keymap `flymake-mode-map', which is not currently defined.
+
+
+(fn &optional ARG)
+
+Font-Lock minor mode (no indicator):
+Toggle syntax highlighting in this buffer (Font Lock mode).
+With a prefix argument ARG, enable Font Lock mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When Font Lock mode is enabled, text is fontified as you type it:
+
+ - Comments are displayed in `font-lock-comment-face';
+ - Strings are displayed in `font-lock-string-face';
+ - Certain other expressions are displayed in other faces according to the
+   value of the variable `font-lock-keywords'.
+
+To customize the faces (colors, fonts, etc.) used by Font Lock for
+fontifying different parts of buffer text, use M-x customize-face.
+
+You can enable Font Lock mode in any major mode automatically by turning on in
+the major mode's hook.  For example, put in your ~/.emacs:
+
+ (add-hook 'c-mode-hook 'turn-on-font-lock)
+
+Alternatively, you can use Global Font Lock mode to automagically turn on Font
+Lock mode in buffers whose major mode supports it and whose major mode is one
+of `font-lock-global-modes'.  For example, put in your ~/.emacs:
+
+ (global-font-lock-mode t)
+
+Where major modes support different levels of fontification, you can use
+the variable `font-lock-maximum-decoration' to specify which level you
+generally prefer.  When you turn Font Lock mode on/off the buffer is
+fontified/defontified, though fontification occurs only if the buffer is
+less than `font-lock-maximum-size'.
+
+To add your own highlighting for some major mode, and modify the highlighting
+selected automatically via the variable `font-lock-maximum-decoration', you can
+use `font-lock-add-keywords'.
+
+To fontify a buffer, without turning on Font Lock mode and regardless of buffer
+size, you can use M-x font-lock-fontify-buffer.
+
+To fontify a block (the function or paragraph containing point, or a number of
+lines around point), perhaps because modification on the current line caused
+syntactic change on other lines, you can use M-o M-o.
+
+You can set your own default settings for some mode, by setting a
+buffer local value for `font-lock-defaults', via its mode hook.
+
+The above is the default behavior of `font-lock-mode'; you may specify
+your own function which is called when `font-lock-mode' is toggled via
+`font-lock-function'. 
+
+Global-Font-Lock minor mode (no indicator):
+Toggle Font-Lock mode in all buffers.
+With prefix ARG, enable Global-Font-Lock mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Font-Lock mode is enabled in all buffers where
+`turn-on-font-lock-if-desired' would do it.
+See `font-lock-mode' for more information on Font-Lock mode.
+
+Global-Git-Commit minor mode (no indicator):
+Edit Git commit messages.
+This global mode arranges for `git-commit-setup' to be called
+when a Git commit message file is opened.  That usually happens
+when Git uses the Emacsclient as $GIT_EDITOR to have the user
+provide such a commit message.
+
+(fn &optional ARG)
+
+Global-Hl-Line minor mode (no indicator):
+Toggle line highlighting in all buffers (Global Hl-Line mode).
+With a prefix argument ARG, enable Global Hl-Line mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+If `global-hl-line-sticky-flag' is non-nil, Global Hl-Line mode
+highlights the line about the current buffer's point in all
+windows.
+
+Global-Hl-Line mode uses the functions `global-hl-line-unhighlight' and
+`global-hl-line-highlight' on `pre-command-hook' and `post-command-hook'.
+
+(fn &optional ARG)
+
+Highlight-Indentation minor mode (indicator ||):
+Highlight indentation minor mode highlights indentation based on spaces
+
+Ido-Everywhere minor mode (no indicator):
+Toggle use of Ido for all buffer/file reading.
+With a prefix argument ARG, enable this feature if ARG is
+positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Ido-Vertical minor mode (no indicator):
+Makes ido-mode display vertically.
+
+Line-Number minor mode (no indicator):
+Toggle line number display in the mode line (Line Number mode).
+With a prefix argument ARG, enable Line Number mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Line numbers do not appear for very large buffers and buffers
+with very long lines; see variables `line-number-display-limit'
+and `line-number-display-limit-width'.
+
+(fn &optional ARG)
+
+Menu-Bar minor mode (no indicator):
+Toggle display of a menu bar on each frame (Menu Bar mode).
+With a prefix argument ARG, enable Menu Bar mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Menu Bar mode if ARG is omitted or nil.
+
+This command applies to all frames that exist and frames to be
+created in the future.
+
+Mouse-Wheel minor mode (no indicator):
+Toggle mouse wheel support (Mouse Wheel mode).
+With a prefix argument ARG, enable Mouse Wheel mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Persistent-Scratch-Autosave minor mode (no indicator):
+Autosave scratch buffer state.
+Every `persistent-scratch-autosave-interval' seconds and when Emacs quits, the
+state of all active scratch buffers is saved.
+This uses `persistent-scratch-save', which see.
+
+Toggle Persistent-Scratch-Autosave mode on or off.
+With a prefix argument ARG, enable Persistent-Scratch-Autosave mode if ARG is
+positive, and disable it otherwise. If called from Lisp, enable the mode if ARG
+is omitted or nil, and toggle it if ARG is `toggle'.
+
+Uses keymap `persistent-scratch-autosave-mode-map', which is not currently defined.
+
+
+(fn &optional ARG)
+
+Pyvenv minor mode (no indicator):
+Global minor mode for pyvenv.
+
+Will show the current virtualenv in the mode line, and respect a
+`pyvenv-workon' setting in files.
+
+(fn &optional ARG)
+
+Recentf minor mode (no indicator):
+Toggle "Open Recent" menu (Recentf mode).
+With a prefix argument ARG, enable Recentf mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Recentf mode if ARG is omitted or nil.
+
+When Recentf mode is enabled, a "Open Recent" submenu is
+displayed in the "File" menu, containing a list of files that
+were operated on recently.
+
+Savehist minor mode (no indicator):
+Toggle saving of minibuffer history (Savehist mode).
+With a prefix argument ARG, enable Savehist mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When Savehist mode is enabled, minibuffer history is saved
+periodically and when exiting Emacs.  When Savehist mode is
+enabled for the first time in an Emacs session, it loads the
+previous minibuffer history from `savehist-file'.
+
+This mode should normally be turned on from your Emacs init file.
+Calling it at any other time replaces your current minibuffer
+histories, which is probably undesirable.
+
+Shell-Dirtrack minor mode (no indicator):
+Toggle directory tracking in this shell buffer (Shell Dirtrack mode).
+With a prefix argument ARG, enable Shell Dirtrack mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+The `dirtrack' package provides an alternative implementation of
+this feature; see the function `dirtrack-mode'.
+
+(fn &optional ARG)
+
+Show-Paren minor mode (no indicator):
+Toggle visualization of matching parens (Show Paren mode).
+With a prefix argument ARG, enable Show Paren mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Show Paren mode is a global minor mode.  When enabled, any
+matching parenthesis is highlighted in `show-paren-style' after
+`show-paren-delay' seconds of Emacs idle time.
+
+Tex-Pdf minor mode (no indicator):
+Minor mode for using PDFTeX.
+
+If enabled, PDFTeX will be used as an executable by default.
+You can customize an initial value, and you can use the
+function `TeX-global-PDF-mode' for toggling this value.
+
+Tooltip minor mode (no indicator):
+Toggle Tooltip mode.
+With a prefix argument ARG, enable Tooltip mode if ARG is positive,
+and disable it otherwise.  If called from Lisp, enable the mode
+if ARG is omitted or nil.
+
+When this global minor mode is enabled, Emacs displays help
+text (e.g. for buttons and menu items that you put the mouse on)
+in a pop-up window.
+
+When Tooltip mode is disabled, Emacs displays help text in the
+echo area, instead of making a pop-up window.
+
+Transient-Mark minor mode (no indicator):
+Toggle Transient Mark mode.
+With a prefix argument ARG, enable Transient Mark mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Transient Mark mode if ARG is omitted or nil.
+
+Transient Mark mode is a global minor mode.  When enabled, the
+region is highlighted with the `region' face whenever the mark
+is active.  The mark is "deactivated" by changing the buffer,
+and after certain other operations that set the mark but whose
+main purpose is something else--for example, incremental search,
+<, and >.
+
+You can also deactivate the mark by typing C-g or
+M-ESC ESC.
+
+Many commands change their behavior when Transient Mark mode is
+in effect and the mark is active, by acting on the region instead
+of their usual default part of the buffer's text.  Examples of
+such commands include M-;, M-x flush-lines, M-x keep-lines,
+M-%, C-M-%, s-:, and C-x u.
+To see the documentation of commands which are sensitive to the
+Transient Mark mode, invoke C-h d and type "transient"
+or "mark.*active" at the prompt.
+
+(fn &optional ARG)
+
+Workgroups minor mode (indicator wg):
+Turn `workgroups-mode' on and off.
+ARG is nil - toggle
+ARG >= 1   - turn on
+ARG == 0   - turn off
+ARG is anything else, turn on `workgroups-mode'.
+
+Yas minor mode (no indicator):
+Toggle YASnippet mode.
+
+When YASnippet mode is enabled, `yas-expand', normally bound to
+the TAB key, expands snippets of code depending on the major
+mode.
+
+With no argument, this command toggles the mode.
+positive prefix argument turns on the mode.
+Negative prefix argument turns off the mode.
+
+Key bindings:
+key             binding
+---             -------
+
+C-c		Prefix Command
+TAB		yas-expand
+<tab>		yas-expand
+
+C-c &		Prefix Command
+
+C-c & C-n	yas-new-snippet
+C-c & C-s	yas-insert-snippet
+C-c & C-v	yas-visit-snippet-file
+
+[back]
+** Enabled minor modes for interpreter
+Enabled minor modes: 
+| Async-Bytecomp-Package      |
+| Auto-Composition            |
+| Auto-Compression            |
+| Auto-Encryption             |
+| Blink-Cursor                |
+| Company                     |
+| Company-Quickhelp           |
+| Compilation-Shell           |
+| Diff-Auto-Refine            |
+| Electric-Indent             |
+| File-Name-Shadow            |
+| Font-Lock                   |
+| Global-Font-Lock            |
+| Global-Git-Commit           |
+| Global-Hl-Line              |
+| Ido-Everywhere              |
+| Ido-Vertical                |
+| Line-Number                 |
+| Menu-Bar                    |
+| Mouse-Wheel                 |
+| Persistent-Scratch-Autosave |
+| Pyvenv                      |
+| Recentf                     |
+| Savehist                    |
+| Shell-Dirtrack              |
+| Show-Paren                  |
+| Tex-Pdf                     |
+| Tooltip                     |
+| Transient-Mark              |
+| Workgroups                  |
+** side-by-side
+
+
+| interpreter                 | .py                         |
+|-----------------------------+-----------------------------|
+| Async-Bytecomp-Package      | Async-Bytecomp-Package      |
+| Auto-Composition            | Auto-Composition            |
+| Auto-Compression            | Auto-Compression            |
+| Auto-Encryption             | Auto-Encryption             |
+| Blink-Cursor                | Blink-Cursor                |
+| Company                     | Company                     |
+| Company-Quickhelp           | Company-Quickhelp           |
+|-----------------------------+-----------------------------|
+| Compilation-Shell           |                             |
+|                             |                             |
+| Diff-Auto-Refine            | Diff-Auto-Refine            |
+|                             | Eldoc                       |
+| Electric-Indent             | Electric-Indent             |
+|                             | Elpy                        |
+| File-Name-Shadow            | File-Name-Shadow            |
+|                             | Flymake                     |
+| Font-Lock                   | Font-Lock                   |
+| Global-Font-Lock            | Global-Font-Lock            |
+| Global-Git-Commit           | Global-Git-Commit           |
+| Global-Hl-Line              | Global-Hl-Line              |
+|                             | Highlight-Indentation       |
+| Ido-Everywhere              | Ido-Everywhere              |
+| Ido-Vertical                | Ido-Vertical                |
+| Line-Number                 | Line-Number                 |
+| Menu-Bar                    | Menu-Bar                    |
+| Mouse-Wheel                 | Mouse-Wheel                 |
+| Persistent-Scratch-Autosave | Persistent-Scratch-Autosave |
+| Pyvenv                      | Pyvenv                      |
+| Recentf                     | Recentf                     |
+| Savehist                    | Savehist                    |
+| Shell-Dirtrack              | Shell-Dirtrack              |
+| Show-Paren                  | Show-Paren                  |
+| Tex-Pdf                     | Tex-Pdf                     |
+| Tooltip                     | Tooltip                     |
+| Transient-Mark              | Transient-Mark              |
+| Workgroups                  | Workgroups                  |
+|                             | Yas                         |
+*** (Information about these minor modes follows the major mode info.)
+
+Inferior Python mode defined in `python.el':
+Major mode for Python inferior process.
+Runs a Python interpreter as a subprocess of Emacs, with Python
+I/O through an Emacs buffer.  Variables `python-shell-interpreter'
+and `python-shell-interpreter-args' control which Python
+interpreter is run.  Variables
+`python-shell-prompt-regexp',
+`python-shell-prompt-output-regexp',
+`python-shell-prompt-block-regexp',
+`python-shell-enable-font-lock',
+`python-shell-completion-setup-code',
+`python-shell-completion-string-code',
+`python-eldoc-setup-code', `python-eldoc-string-code',
+`python-ffap-setup-code' and `python-ffap-string-code' can
+customize this mode for different Python interpreters.
+
+You can also add additional setup code to be run at
+initialization of the interpreter via `python-shell-setup-codes'
+variable.
+
+(Type C-h m in the process buffer for a list of commands.)
+
+In addition to any hooks its parent mode `comint-mode' might have run,
+this mode runs the hook `inferior-python-mode-hook', as the final step
+during initialization.
+
+(fn)
+
+Async-Bytecomp-Package minor mode (no indicator):
+Byte compile asynchronously packages installed with package.el.
+Async compilation of packages can be controlled by
+`async-bytecomp-allowed-packages'.
+
+Auto-Composition minor mode (no indicator):
+Toggle Auto Composition mode.
+With a prefix argument ARG, enable Auto Composition mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+When Auto Composition mode is enabled, text characters are
+automatically composed by functions registered in
+`composition-function-table'.
+
+You can use `global-auto-composition-mode' to turn on
+Auto Composition mode in all buffers (this is the default).
+
+Auto-Compression minor mode (no indicator):
+Toggle Auto Compression mode.
+With a prefix argument ARG, enable Auto Compression mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Auto Compression mode is a global minor mode.  When enabled,
+compressed files are automatically uncompressed for reading, and
+compressed when writing.
+
+Auto-Encryption minor mode (no indicator):
+Toggle automatic file encryption/decryption (Auto Encryption mode).
+With a prefix argument ARG, enable Auto Encryption mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+(fn &optional ARG)
+
+Blink-Cursor minor mode (no indicator):
+Toggle cursor blinking (Blink Cursor mode).
+With a prefix argument ARG, enable Blink Cursor mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+If the value of `blink-cursor-blinks' is positive (10 by default),
+the cursor stops blinking after that number of blinks, if Emacs
+gets no input during that time.
+
+See also `blink-cursor-interval' and `blink-cursor-delay'.
+
+This command is effective only on graphical frames.  On text-only
+terminals, cursor blinking is controlled by the terminal.
+
+Company minor mode (no indicator):
+"complete anything"; is an in-buffer completion framework.
+Completion starts automatically, depending on the values
+`company-idle-delay' and `company-minimum-prefix-length'.
+
+Completion can be controlled with the commands:
+`company-complete-common', `company-complete-selection', `company-complete',
+`company-select-next', `company-select-previous'.  If these commands are
+called before `company-idle-delay', completion will also start.
+
+Completions can be searched with `company-search-candidates' or
+`company-filter-candidates'.  These can be used while completion is
+inactive, as well.
+
+The completion data is retrieved using `company-backends' and displayed
+using `company-frontends'.  If you want to start a specific backend, call
+it interactively or use `company-begin-backend'.
+
+By default, the completions list is sorted alphabetically, unless the
+backend chooses otherwise, or `company-transformers' changes it later.
+
+regular keymap (`company-mode-map'):
+
+key             binding
+---             -------
+
+
+keymap during active completions (`company-active-map'):
+
+key             binding
+---             -------
+
+C-d		company-show-doc-buffer
+C-g		company-abort
+C-h		company-show-doc-buffer
+TAB		company-complete-common
+RET		company-complete-selection
+C-s		company-search-candidates
+C-w		company-show-location
+ESC		Prefix Command
+<down>		company-select-next-or-abort
+<down-mouse-1>	ignore
+<down-mouse-3>	ignore
+<f1>		company-show-doc-buffer
+<mouse-1>	company-complete-mouse
+<mouse-3>	company-select-mouse
+<remap>		Prefix Command
+<return>	company-complete-selection
+<tab>		company-complete-common
+<up>		company-select-previous-or-abort
+<up-mouse-1>	ignore
+<up-mouse-3>	ignore
+
+<remap> <scroll-down-command>	company-previous-page
+<remap> <scroll-up-command>	company-next-page
+
+C-M-s		company-filter-candidates
+ESC ESC		Prefix Command
+M-0 .. M-9	company-complete-number
+M-n		company-select-next
+M-p		company-select-previous
+
+M-ESC ESC	company-abort
+
+
+
+(fn &optional ARG)
+
+Company-Quickhelp minor mode (no indicator):
+Provides documentation popups for `company-mode' using `pos-tip'.
+
+Compilation-Shell minor mode (indicator Shell-Compile):
+Toggle Compilation Shell minor mode.
+With a prefix argument ARG, enable Compilation Shell minor mode
+if ARG is positive, and disable it otherwise.  If called from
+Lisp, enable the mode if ARG is omitted or nil.
+
+When Compilation Shell minor mode is enabled, all the
+error-parsing commands of the Compilation major mode are
+available but bound to keys that don't collide with Shell mode.
+See `compilation-mode'.
+
+Diff-Auto-Refine minor mode (no indicator):
+Toggle automatic diff hunk highlighting (Diff Auto Refine mode).
+With a prefix argument ARG, enable Diff Auto Refine mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Diff Auto Refine mode is a buffer-local minor mode used with
+`diff-mode'.  When enabled, Emacs automatically highlights
+changes in detail as the user visits hunks.  When transitioning
+from disabled to enabled, it tries to refine the current hunk, as
+well.
+
+(fn &optional ARG)
+
+Electric-Indent minor mode (no indicator):
+Toggle on-the-fly reindentation (Electric Indent mode).
+With a prefix argument ARG, enable Electric Indent mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When enabled, this reindents whenever the hook `electric-indent-functions'
+returns non-nil, or if you insert a character from `electric-indent-chars'.
+
+This is a global minor mode.  To toggle the mode in a single buffer,
+use `electric-indent-local-mode'.
+
+File-Name-Shadow minor mode (no indicator):
+Toggle file-name shadowing in minibuffers (File-Name Shadow mode).
+With a prefix argument ARG, enable File-Name Shadow mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+File-Name Shadow mode is a global minor mode.  When enabled, any
+part of a filename being read in the minibuffer that would be
+ignored (because the result is passed through
+`substitute-in-file-name') is given the properties in
+`file-name-shadow-properties', which can be used to make that
+portion dim, invisible, or otherwise less visually noticeable.
+
+Font-Lock minor mode (no indicator):
+Toggle syntax highlighting in this buffer (Font Lock mode).
+With a prefix argument ARG, enable Font Lock mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When Font Lock mode is enabled, text is fontified as you type it:
+
+ - Comments are displayed in `font-lock-comment-face';
+ - Strings are displayed in `font-lock-string-face';
+ - Certain other expressions are displayed in other faces according to the
+   value of the variable `font-lock-keywords'.
+
+To customize the faces (colors, fonts, etc.) used by Font Lock for
+fontifying different parts of buffer text, use M-x customize-face.
+
+You can enable Font Lock mode in any major mode automatically by turning on in
+the major mode's hook.  For example, put in your ~/.emacs:
+
+ (add-hook 'c-mode-hook 'turn-on-font-lock)
+
+Alternatively, you can use Global Font Lock mode to automagically turn on Font
+Lock mode in buffers whose major mode supports it and whose major mode is one
+of `font-lock-global-modes'.  For example, put in your ~/.emacs:
+
+ (global-font-lock-mode t)
+
+Where major modes support different levels of fontification, you can use
+the variable `font-lock-maximum-decoration' to specify which level you
+generally prefer.  When you turn Font Lock mode on/off the buffer is
+fontified/defontified, though fontification occurs only if the buffer is
+less than `font-lock-maximum-size'.
+
+To add your own highlighting for some major mode, and modify the highlighting
+selected automatically via the variable `font-lock-maximum-decoration', you can
+use `font-lock-add-keywords'.
+
+To fontify a buffer, without turning on Font Lock mode and regardless of buffer
+size, you can use M-x font-lock-fontify-buffer.
+
+To fontify a block (the function or paragraph containing point, or a number of
+lines around point), perhaps because modification on the current line caused
+syntactic change on other lines, you can use M-o M-o.
+
+You can set your own default settings for some mode, by setting a
+buffer local value for `font-lock-defaults', via its mode hook.
+
+The above is the default behavior of `font-lock-mode'; you may specify
+your own function which is called when `font-lock-mode' is toggled via
+`font-lock-function'. 
+
+Global-Font-Lock minor mode (no indicator):
+Toggle Font-Lock mode in all buffers.
+With prefix ARG, enable Global-Font-Lock mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Font-Lock mode is enabled in all buffers where
+`turn-on-font-lock-if-desired' would do it.
+See `font-lock-mode' for more information on Font-Lock mode.
+
+Global-Git-Commit minor mode (no indicator):
+Edit Git commit messages.
+This global mode arranges for `git-commit-setup' to be called
+when a Git commit message file is opened.  That usually happens
+when Git uses the Emacsclient as $GIT_EDITOR to have the user
+provide such a commit message.
+
+(fn &optional ARG)
+
+Global-Hl-Line minor mode (no indicator):
+Toggle line highlighting in all buffers (Global Hl-Line mode).
+With a prefix argument ARG, enable Global Hl-Line mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+If `global-hl-line-sticky-flag' is non-nil, Global Hl-Line mode
+highlights the line about the current buffer's point in all
+windows.
+
+Global-Hl-Line mode uses the functions `global-hl-line-unhighlight' and
+`global-hl-line-highlight' on `pre-command-hook' and `post-command-hook'.
+
+(fn &optional ARG)
+
+Ido-Everywhere minor mode (no indicator):
+Toggle use of Ido for all buffer/file reading.
+With a prefix argument ARG, enable this feature if ARG is
+positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+Ido-Vertical minor mode (no indicator):
+Makes ido-mode display vertically.
+
+Line-Number minor mode (no indicator):
+Toggle line number display in the mode line (Line Number mode).
+With a prefix argument ARG, enable Line Number mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Line numbers do not appear for very large buffers and buffers
+with very long lines; see variables `line-number-display-limit'
+and `line-number-display-limit-width'.
+
+(fn &optional ARG)
+
+Menu-Bar minor mode (no indicator):
+Toggle display of a menu bar on each frame (Menu Bar mode).
+With a prefix argument ARG, enable Menu Bar mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Menu Bar mode if ARG is omitted or nil.
+
+This command applies to all frames that exist and frames to be
+created in the future.
+
+Mouse-Wheel minor mode (no indicator):
+Toggle mouse wheel support (Mouse Wheel mode).
+With a prefix argument ARG, enable Mouse Wheel mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Persistent-Scratch-Autosave minor mode (no indicator):
+Autosave scratch buffer state.
+Every `persistent-scratch-autosave-interval' seconds and when Emacs quits, the
+state of all active scratch buffers is saved.
+This uses `persistent-scratch-save', which see.
+
+Toggle Persistent-Scratch-Autosave mode on or off.
+With a prefix argument ARG, enable Persistent-Scratch-Autosave mode if ARG is
+positive, and disable it otherwise. If called from Lisp, enable the mode if ARG
+is omitted or nil, and toggle it if ARG is `toggle'.
+
+Uses keymap `persistent-scratch-autosave-mode-map', which is not currently defined.
+
+
+(fn &optional ARG)
+
+Pyvenv minor mode (no indicator):
+Global minor mode for pyvenv.
+
+Will show the current virtualenv in the mode line, and respect a
+`pyvenv-workon' setting in files.
+
+(fn &optional ARG)
+
+Recentf minor mode (no indicator):
+Toggle "Open Recent" menu (Recentf mode).
+With a prefix argument ARG, enable Recentf mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Recentf mode if ARG is omitted or nil.
+
+When Recentf mode is enabled, a "Open Recent" submenu is
+displayed in the "File" menu, containing a list of files that
+were operated on recently.
+
+Savehist minor mode (no indicator):
+Toggle saving of minibuffer history (Savehist mode).
+With a prefix argument ARG, enable Savehist mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When Savehist mode is enabled, minibuffer history is saved
+periodically and when exiting Emacs.  When Savehist mode is
+enabled for the first time in an Emacs session, it loads the
+previous minibuffer history from `savehist-file'.
+
+This mode should normally be turned on from your Emacs init file.
+Calling it at any other time replaces your current minibuffer
+histories, which is probably undesirable.
+
+Shell-Dirtrack minor mode (no indicator):
+Toggle directory tracking in this shell buffer (Shell Dirtrack mode).
+With a prefix argument ARG, enable Shell Dirtrack mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+The `dirtrack' package provides an alternative implementation of
+this feature; see the function `dirtrack-mode'.
+
+(fn &optional ARG)
+
+Show-Paren minor mode (no indicator):
+Toggle visualization of matching parens (Show Paren mode).
+With a prefix argument ARG, enable Show Paren mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Show Paren mode is a global minor mode.  When enabled, any
+matching parenthesis is highlighted in `show-paren-style' after
+`show-paren-delay' seconds of Emacs idle time.
+
+Tex-Pdf minor mode (no indicator):
+Minor mode for using PDFTeX.
+
+If enabled, PDFTeX will be used as an executable by default.
+You can customize an initial value, and you can use the
+function `TeX-global-PDF-mode' for toggling this value.
+
+Tooltip minor mode (no indicator):
+Toggle Tooltip mode.
+With a prefix argument ARG, enable Tooltip mode if ARG is positive,
+and disable it otherwise.  If called from Lisp, enable the mode
+if ARG is omitted or nil.
+
+When this global minor mode is enabled, Emacs displays help
+text (e.g. for buttons and menu items that you put the mouse on)
+in a pop-up window.
+
+When Tooltip mode is disabled, Emacs displays help text in the
+echo area, instead of making a pop-up window.
+
+Transient-Mark minor mode (no indicator):
+Toggle Transient Mark mode.
+With a prefix argument ARG, enable Transient Mark mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+Transient Mark mode if ARG is omitted or nil.
+
+Transient Mark mode is a global minor mode.  When enabled, the
+region is highlighted with the `region' face whenever the mark
+is active.  The mark is "deactivated" by changing the buffer,
+and after certain other operations that set the mark but whose
+main purpose is something else--for example, incremental search,
+<, and >.
+
+You can also deactivate the mark by typing C-g or
+M-ESC ESC.
+
+Many commands change their behavior when Transient Mark mode is
+in effect and the mark is active, by acting on the region instead
+of their usual default part of the buffer's text.  Examples of
+such commands include M-;, M-x flush-lines, M-x keep-lines,
+M-%, C-M-%, s-:, and C-x u.
+To see the documentation of commands which are sensitive to the
+Transient Mark mode, invoke C-h d and type "transient"
+or "mark.*active" at the prompt.
+
+(fn &optional ARG)
+
+Workgroups minor mode (indicator wg):
+Turn `workgroups-mode' on and off.
+ARG is nil - toggle
+ARG >= 1   - turn on
+ARG == 0   - turn off
+ARG is anything else, turn on `workgroups-mode'.
+
+[back]
+* file input-output in Python
+What a hassle it is to have to start with writing and reading files
+and directories with python.
+
+The os module has its place, but learning how to use it to do things
+you could just do from the command line or with a GUI is a pain.
