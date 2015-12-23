@@ -1,13 +1,13 @@
-* journalistic
-** reading documentation and finding completion easily
-** TODO ouch. company and jedi and and
+* journalistic impressions of doing this work
+** reading documentation and finding completion easily are the grails
+** ouch, Emacs. company and jedi and and
 spent way too much time yesterday getting this all straightened out.
 
 Now, I am using two instances of emacs; one with a full-blown org and
 workgroups setup and another with just a basic python and
 sensible-defaults config.
-** using webbrowser
-** basic babel functionality
+** using webbrowser vs. text editor vs. IDE vs. IDLE.app
+** place of basic babel functionality
 #+BEGIN_SRC python :session *Python* :results output
 print "fuck off"
 #+END_SRC
@@ -25,26 +25,27 @@ webbrowser.open('http://google.com')
 : 
 : True
 * comments, observations and planning
-** working through the three lessons of Programming Foundations with Python
-- lesson 0
-- lesson 1
-- lesson 2
-  - a
-  - b
-  - c
-- lesson 3
-  - a
-  - b
-- final project
-- 
-** 
-*** lesson 0
-*** lesson 1
-*** lesson 2
-**** a
-**** b
-**** c
-*** lesson 3
-**** a
-**** b
-*** final project
+** using the Programming Foundations supporting material for project 1
+*** the three lessons of Programming Foundations with Python
+ - lesson 0
+ - lesson 1
+ - lesson 2
+   - a
+   - b
+   - c
+ - lesson 3
+   - a
+   - b
+ - final project
+ - 
+*** drill-down outline of the three lessons
+**** lesson 0
+**** lesson 1
+**** lesson 2
+***** a
+***** b
+***** c
+**** lesson 3
+***** a
+***** b
+**** final project
