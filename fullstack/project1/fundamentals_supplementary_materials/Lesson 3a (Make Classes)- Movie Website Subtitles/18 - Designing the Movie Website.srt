@@ -1,0 +1,179 @@
+1
+00:00:00,000 --> 00:00:02,760
+So now that we've learned, a bunch of new words
+
+2
+00:00:02,760 --> 00:00:05,796
+related with classes and objects, we will move on to
+
+3
+00:00:05,796 --> 00:00:09,072
+creating a movie website. And here is the final output
+
+4
+00:00:09,072 --> 00:00:11,808
+that we are after. All of our favorite movies, on a
+
+5
+00:00:11,808 --> 00:00:14,595
+web page. And as you have seen previously, if you
+
+6
+00:00:14,595 --> 00:00:17,640
+click on anyone of these movies, we see its trailer.
+
+7
+00:00:17,640 --> 00:00:21,030
+Let's build this. So here I am, back with my
+
+8
+00:00:21,030 --> 00:00:24,970
+code. Now thus far, we've made only two movie objects. Toy
+
+9
+00:00:24,970 --> 00:00:28,610
+Story and Avatar. I'm going to make a few more.
+
+10
+00:00:28,610 --> 00:00:31,600
+In fact, four more movie objects. But before I do
+
+11
+00:00:31,600 --> 00:00:33,940
+that, I want to make this window, a little bit
+
+12
+00:00:33,940 --> 00:00:37,320
+bigger, so we can see all of this code really easily.
+
+13
+00:00:37,320 --> 00:00:39,620
+Okay. So here are the two instances we have created
+
+14
+00:00:39,620 --> 00:00:43,740
+thus far. Toy Story and Avatar. Now before I proceed, I
+
+15
+00:00:43,740 --> 00:00:46,780
+will go ahead and comment ou the previous output statements
+
+16
+00:00:46,780 --> 00:00:50,260
+that I created. This print statement and the show trailer method.
+
+17
+00:00:50,260 --> 00:00:52,087
+So let me just add a comment there,
+
+18
+00:00:52,087 --> 00:00:56,070
+[SOUND] and there. Done. Now, I'm going to add
+
+19
+00:00:56,070 --> 00:00:58,860
+a new movie object, for a movie called, School
+
+20
+00:00:58,860 --> 00:01:02,400
+of Rock. There it is. You will notice, that
+
+21
+00:01:02,400 --> 00:01:04,239
+I have changed the name of the movie,
+
+22
+00:01:04,239 --> 00:01:07,750
+its story-line, its poster image, and its future trailer
+
+23
+00:01:07,750 --> 00:01:11,720
+values appropriately. Next, I will add another movie object.
+
+24
+00:01:11,720 --> 00:01:15,900
+This time, for an animated movie called Ratatouille. Next,
+
+25
+00:01:15,900 --> 00:01:18,420
+I will add a movie object called, Midnight in
+
+26
+00:01:18,420 --> 00:01:20,850
+Paris. Now this, happens to be one of my
+
+27
+00:01:20,850 --> 00:01:24,100
+favorite movies. And the final movie object I will
+
+28
+00:01:24,100 --> 00:01:26,560
+add, is for a movie called, the Hunger Games.
+
+29
+00:01:27,750 --> 00:01:30,650
+Okay, so thus far, we have created six movie
+
+30
+00:01:30,650 --> 00:01:34,020
+objects. So far, so good. Now, to turn this
+
+31
+00:01:34,020 --> 00:01:36,340
+into a movie website. You will need a piece
+
+32
+00:01:36,340 --> 00:01:39,590
+of code that weed out. Now we call this code,
+
+33
+00:01:39,590 --> 00:01:42,970
+fresh_tomatoes.py. By the way, this file is available
+
+34
+00:01:42,970 --> 00:01:45,110
+for you to download in the instructor notes. Now
+
+35
+00:01:45,110 --> 00:01:46,950
+before we use it, let's see what this
+
+36
+00:01:46,950 --> 00:01:51,823
+file actually does. This file, fresh_tomatoes.py, has a function
+
+37
+00:01:51,823 --> 00:01:55,600
+inside it called, open_movies_page. Let's look at this
+
+38
+00:01:55,600 --> 00:01:58,650
+function a bit more closely. Now, what this function
+
+39
+00:01:58,650 --> 00:02:01,360
+does, is that it takes in, a list of
+
+40
+00:02:01,360 --> 00:02:05,190
+movies as input, and as output it creates and
+
+41
+00:02:05,190 --> 00:02:08,300
+opens an HTML page or a website, that shows
+
+42
+00:02:08,300 --> 00:02:11,030
+the movies you gave it in the first place.
+
+43
+00:02:11,030 --> 00:02:13,140
+So what I'm going to do next, is use
+
+44
+00:02:13,140 --> 00:02:15,610
+this file, fresh_tomatoes.py, and it's
+
+45
+00:02:15,610 --> 00:02:18,390
+function, open_movies_page, inside our code.

@@ -1,0 +1,75 @@
+1
+00:00:00,565 --> 00:00:02,570
+Well, I can think of at two reasons why my
+
+2
+00:00:02,570 --> 00:00:06,000
+computer science professor from college may be upset with the quality
+
+3
+00:00:06,000 --> 00:00:08,810
+of this code. The first is that I'm doing something
+
+4
+00:00:08,810 --> 00:00:13,090
+repetitive inside my code. Things like move forward, turn right, move
+
+5
+00:00:13,090 --> 00:00:15,860
+forward, turn right. I do that four times, but I
+
+6
+00:00:15,860 --> 00:00:19,310
+don't use any sort of a loop. Another reason is that
+
+7
+00:00:19,310 --> 00:00:23,570
+the name of my function is draw_square. Which I do.
+
+8
+00:00:23,570 --> 00:00:25,650
+But then I go ahead and draw a circle inside that
+
+9
+00:00:25,650 --> 00:00:28,190
+function also. That doesn't seem quite logical to me.
+
+10
+00:00:29,490 --> 00:00:32,310
+So, based on those two ideas, what changes would you
+
+11
+00:00:32,310 --> 00:00:34,450
+make to the code that we've written thus far
+
+12
+00:00:34,450 --> 00:00:37,300
+to make it more usable? I want you to make
+
+13
+00:00:37,300 --> 00:00:40,420
+those changes and then upload a screenshot of the
+
+14
+00:00:40,420 --> 00:00:44,700
+code to the discussion forum. Here's an extra credit assignment,
+
+15
+00:00:44,700 --> 00:00:47,510
+which is to create a third turtle, and this one
+
+16
+00:00:47,510 --> 00:00:50,640
+will draw a triangle. Once you are done with that,
+
+17
+00:00:50,640 --> 00:00:53,650
+I want you to upload a screenshot of the new output to the discussion
+
+18
+00:00:53,650 --> 00:00:55,940
+forum. Make sure you check this box
+
+19
+00:00:55,940 --> 00:00:57,920
+after you've submitted your responses to the forum.
