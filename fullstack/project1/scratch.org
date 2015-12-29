@@ -6,13 +6,14 @@ print 1 + 1
 
 #+RESULTS:
 : 2
-* steps
+* required steps for project 1
 ** run python
 ** create a data structure
 ** create instances of that data structure
 ** use "freshtomatoes" module to generate HTML files
 ** ensure website renders correctly in a browser
-* class construction
+* working with (and documenting) code
+** class construction
 ** Point class from HTTLACS
 #+BEGIN_SRC python :results output
 class Point(object):
@@ -33,9 +34,9 @@ print Point
 #+BEGIN_SRC python :results output
 
 #+END_SRC
-* incremental refactoring 
-** original
-#+BEGIN_SRC python
+** further development and incremental refactoring 
+*** original
+ #+BEGIN_SRC python
 import webbrowser
 import time
 
@@ -43,10 +44,10 @@ time.sleep(30)
 webbrowser.open('http://google.com')
 # webbrowser.open("www.google.com")
 
-#+END_SRC
-** for loop version
-These do not work well with org-babel
-#+BEGIN_SRC python
+ #+END_SRC
+*** for loop version
+ These do not work well with org-babel
+ #+BEGIN_SRC python
 import webbrowser
 import time
 
@@ -54,180 +55,180 @@ for n in range(0,2):
     time.sleep(30)
     webbrowser.open('http://google.com')
 # webbrowser.open("www.google.com")
-#+END_SRC
+ #+END_SRC
 
-#+BEGIN_SRC python :results output
+ #+BEGIN_SRC python :results output
 for n in range(3):
     print n
 
     
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 0
-: 1
-: 2
+ #+RESULTS:
+ : 0
+ : 1
+ : 2
 
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 for n in range(3):
     time.sleep(2)
     print n
 
     
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ... ... 0
-: 1
-: 2
+ #+RESULTS:
+ : 
+ : ... ... 0
+ : 1
+ : 2
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 n = 0
 while n < 3:
     print n
     n += 1
     time.sleep(5)
 
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ... ... ... ... 0
-: 1
-: 2
+ #+RESULTS:
+ : 
+ : ... ... ... ... 0
+ : 1
+ : 2
 
-** while loop
+*** while loop
 
-#+BEGIN_SRC python :results value :session *Python*
+ #+BEGIN_SRC python :results value :session *Python*
 n = 0
 while n < 3:
     print n
     n += 1
     time.sleep(5)
 
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-** rename files
-*** print out values in a list with a for loop
-#+BEGIN_SRC python :results output :session *Python*
+*** rename files
+**** print out values in a list with a for loop
+ #+BEGIN_SRC python :results output :session *Python*
 for n in ['more-shit.txt', 'other-shit.txt', 'some-whole-other-shit.txt']:
     print n
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ... more-shit.txt
-: other-shit.txt
-: some-whole-other-shit.txt
+ #+RESULTS:
+ : 
+ : ... more-shit.txt
+ : other-shit.txt
+ : some-whole-other-shit.txt
 
-*** list contents of directory we will write to
-#+BEGIN_SRC python :results output :session *Python*
+**** list contents of directory we will write to
+ #+BEGIN_SRC python :results output :session *Python*
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'hide', 'one-last-dir', 'some-shit.txt']
+ #+RESULTS:
+ : ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'hide', 'one-last-dir', 'some-shit.txt']
 
-*** loop over list, creating files by using values as arguments to open()
-#+BEGIN_SRC python :results output :session *Python*
+**** loop over list, creating files by using values as arguments to open()
+ #+BEGIN_SRC python :results output :session *Python*
 for n in ['more-shit.txt', 'other-shit.txt', 'some-whole-other-shit.txt']:
     nf = open(n, 'w')
     nf.close()
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-*** new contents of directory
-#+BEGIN_SRC python :results output :session *Python*
+**** new contents of directory
+ #+BEGIN_SRC python :results output :session *Python*
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'hide', 'more-shit.txt', 'one-last-dir', 'other-shit.txt', 'some-shit.txt', 'some-whole-other-shit.txt']
+ #+RESULTS:
+ : ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'hide', 'more-shit.txt', 'one-last-dir', 'other-shit.txt', 'some-shit.txt', 'some-whole-other-shit.txt']
 
-*** get names of files 
-**** mkdir takes just a string to write as a dir to cwd
-#+BEGIN_SRC python :results output :session *Python*
+**** get names of files 
+***** mkdir takes just a string to write as a dir to cwd
+ #+BEGIN_SRC python :results output :session *Python*
 os.mkdir('some_more_dirs_from_python')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'from_python', 'hide', 'more-shit.txt', 'more_dirs_from_python', 'one-last-dir', 'other-shit.txt', 'some-shit.txt', 'some-whole-other-shit.txt', 'some_more_dirs_from_python']
+ #+RESULTS:
+ : ['.DS_Store', '.git', 'another-dir', 'empty-dir', 'from_python', 'hide', 'more-shit.txt', 'more_dirs_from_python', 'one-last-dir', 'other-shit.txt', 'some-shit.txt', 'some-whole-other-shit.txt', 'some_more_dirs_from_python']
 
-**** change to new directory to write files to
-#+BEGIN_SRC python :results output :session *Python*
+***** change to new directory to write files to
+ #+BEGIN_SRC python :results output :session *Python*
 os.chdir('from_python')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 os.getcwd()
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: '/Users/a/Documents/working-directory/junk/from_python'
-: []
+ #+RESULTS:
+ : '/Users/a/Documents/working-directory/junk/from_python'
+ : []
 
-**** for loops over files and directories
+***** for loops over files and directories
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 for n in ['more-shit.txt', 'other-shit.txt', 'some-whole-other-shit.txt']:
     nf = open(n, 'w')
     nf.close()
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 for n in dir_contents:
     print n
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ... ... more-shit.txt
-: other-shit.txt
-: some-whole-other-shit.txt
+ #+RESULTS:
+ : 
+ : ... ... more-shit.txt
+ : other-shit.txt
+ : some-whole-other-shit.txt
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 for n in dir_contents:
     print n[4:]
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ... ... -shit.txt
-: r-shit.txt
-: -whole-other-shit.txt
+ #+RESULTS:
+ : 
+ : ... ... -shit.txt
+ : r-shit.txt
+ : -whole-other-shit.txt
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 for n in dir_contents:
     new_n = n[2:]
     open(new_n, 'w')
     n.close()
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-**** write new files to dir based on existing file names
+***** write new files to dir based on existing file names
 
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 
 dir_contents = os.listdir('.')
 
@@ -237,39 +238,39 @@ for n in dir_contents:
     nf.close()
 
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
+ #+RESULTS:
+ : ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 print dir_contents
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
+ #+RESULTS:
+ : 
+ : ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
 
-**** use os.rename
+***** use os.rename
 
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 print dir_contents
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
+ #+RESULTS:
+ : 
+ : ['-shit.txt', 'her-shit.txt', 'me-whole-other-shit.txt', 'more-shit.txt', 'other-shit.txt', 're-shit.txt', 'some-whole-other-shit.txt']
 
-#+BEGIN_SRC python :results output :session *Python*
+ #+BEGIN_SRC python :results output :session *Python*
 dir_contents = os.listdir('.')
 
 for n in dir_contents:
@@ -277,18 +278,18 @@ for n in dir_contents:
     os.rename(n, new_n)
 
 os.listdir('.')
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-: 
-: >>> ... ... ... >>> ['e-shit.txt', 'e-whole-other-shit.txt', 'er-shit.txt', 'ome-whole-other-shit.txt', 'ore-shit.txt', 'shit.txt', 'ther-shit.txt']
+ #+RESULTS:
+ : 
+ : >>> ... ... ... >>> ['e-shit.txt', 'e-whole-other-shit.txt', 'er-shit.txt', 'ome-whole-other-shit.txt', 'ore-shit.txt', 'shit.txt', 'ther-shit.txt']
 
-** string.translate function
-S.translate(table [,deletechars]) -> string
+*** string.translate function
+ S.translate(table [,deletechars]) -> string
 
-Return a copy of the string S, where all characters occurring
-in the optional argument deletechars are removed, and the
-remaining characters have been mapped through the given
-translation table, which must be a string of length 256 or None.
-If the table argument is None, no translation is applied and
-the operation simply removes the characters in deletechars.
+ Return a copy of the string S, where all characters occurring
+ in the optional argument deletechars are removed, and the
+ remaining characters have been mapped through the given
+ translation table, which must be a string of length 256 or None.
+ If the table argument is None, no translation is applied and
+ the operation simply removes the characters in deletechars.
