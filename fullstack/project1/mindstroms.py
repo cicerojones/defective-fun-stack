@@ -1,8 +1,8 @@
 import turtle
 
 brad = turtle.Turtle()
-angie = turtle.Turtle()
 window = turtle.Screen()
+
 
 def draw_square():
     cntr = 0
@@ -12,16 +12,13 @@ def draw_square():
         brad.right(90)
         cntr += 1
 
-def draw_triangle():
-    cntr = 0
-    angie.right(30)
-    
-    for x in range(3):
-        angie.forward(100)
-        angie.right(120)
-        cntr += 1
 
-        
+def draw_squares(n):
+    "Draw n squares, changing the angle of each"
 
-draw_triangle()
-draw_square()
+    for x in range(n):
+        draw_square()
+        brad.right(10)
+
+
+draw_squares(10)
