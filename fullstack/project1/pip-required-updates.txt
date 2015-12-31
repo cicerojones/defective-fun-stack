@@ -1,0 +1,183 @@
+beautifulsoup4           - Screen-scraping library
+  INSTALLED: 4.3.2
+  LATEST:    4.4.1
+--
+bpython               - Fancy Interface to the Python Interpreter
+  INSTALLED: 0.13.1
+  LATEST:    0.14.2
+--
+certifi                                - Python package for providing Mozilla's CA Bundle.
+  INSTALLED: 14.5.14
+  LATEST:    2015.11.20.1
+--
+Django                                                         - A high-level Python Web framework that encourages rapid development and clean, pragmatic design.
+  INSTALLED: 1.6.1
+  LATEST:    1.9
+--
+elpy          - Backend for the elpy Emacs mode
+  INSTALLED: 1.8.1
+  LATEST:    1.10.0
+--
+flake8                   - the modular source code checker: pep8, pyflakes and co
+  INSTALLED: 2.2.5
+  LATEST:    2.5.1
+--
+mccabe                   - McCabe checker, plugin for flake8
+  INSTALLED: 0.3
+  LATEST:    0.3.1
+--
+functools32     - Backport of the functools module from Python 3.2.3 for use on 2.7 and PyPy.
+  INSTALLED: 3.2.3.post2
+  LATEST:    3.2.3-2
+--
+hg-git                         - push to and pull from a Git repository using Mercurial
+  INSTALLED: 0.5.0
+  LATEST:    0.8.3
+--
+ipython                        - IPython: Productive Interactive Computing
+  INSTALLED: 3.2.1
+  LATEST:    4.0.1
+--
+jedi                      - An autocompletion tool for Python that can be used for text editors.
+  INSTALLED: 0.8.1-final0
+  LATEST:    0.9.0
+--
+Jinja2                         - A small but fast and easy to use stand-alone template engine written in pure python.
+  INSTALLED: 2.7.3
+  LATEST:    2.8
+--
+Markdown                                  - Python implementation of Markdown.
+  INSTALLED: 2.6.4
+  LATEST:    2.6.5
+--
+matplotlib              - Python plotting package
+  INSTALLED: 1.4.0
+  LATEST:    1.5.0
+--
+mccabe                    - McCabe checker, plugin for flake8
+  INSTALLED: 0.3
+  LATEST:    0.3.1
+--
+hg-git                             - push to and pull from a Git repository using Mercurial
+  INSTALLED: 0.5.0
+  LATEST:    0.8.3
+--
+mock                                             - Rolling backport of unittest.mock for all Pythons
+  INSTALLED: 1.0.1
+  LATEST:    1.3.0
+--
+python-dateutil                                  - Extensions to the standard Python datetime module
+  INSTALLED: 2.2
+  LATEST:    2.4.2
+--
+nltk                       - Natural Language Toolkit
+  INSTALLED: 3.0.0
+  LATEST:    3.1
+--
+nose                                - nose extends unittest to make testing easier
+  INSTALLED: 1.3.4
+  LATEST:    1.3.7
+--
+numpy                            - NumPy: array processing for numbers, strings, records, and objects.
+  INSTALLED: 1.9.1
+  LATEST:    1.10.2
+--
+pbr                    - Python Build Reasonableness
+  INSTALLED: 0.10.0
+  LATEST:    1.8.1
+--
+flake8                       - the modular source code checker: pep8, pyflakes and co
+  INSTALLED: 2.2.5
+  LATEST:    2.5.1
+--
+pep8                         - Python style guide checker
+  INSTALLED: 1.5.7
+  LATEST:    1.6.2
+--
+pyflakes                     - passive checker of Python programs
+  INSTALLED: 0.8.1
+  LATEST:    1.0.0
+--
+flake8                       - the modular source code checker: pep8, pyflakes and co
+  INSTALLED: 2.2.5
+  LATEST:    2.5.1
+--
+Pygments                           - Pygments is a syntax highlighting package written in Python.
+  INSTALLED: 1.6
+  LATEST:    2.0.2
+--
+pyparsing            - Python parsing module
+  INSTALLED: 2.0.2
+  LATEST:    2.0.6
+--
+python-dateutil                                  - Extensions to the standard Python datetime module
+  INSTALLED: 2.2
+  LATEST:    2.4.2
+--
+pytz                          - World timezone definitions, modern and historical
+  INSTALLED: 2014.9
+  LATEST:    2015.7
+--
+PyYAML                    - YAML parser and emitter for Python
+  INSTALLED: 3.10
+  LATEST:    3.11
+--
+pyzmq             - Python bindings for 0MQ
+  INSTALLED: 14.3.1
+  LATEST:    15.1.0
+--
+rope                                  - a python refactoring library...
+  INSTALLED: 0.10.2
+  LATEST:    0.10.3
+--
+six                           - Python 2 and 3 compatibility utilities
+  INSTALLED: 1.8.0
+  LATEST:    1.10.0
+--
+Sphinx                                          - Python documentation generator
+  INSTALLED: 1.2.3
+  LATEST:    1.3.3
+--
+stevedore     - Manage dynamic plugins for Python applications
+  INSTALLED: 1.1.0
+  LATEST:    1.10.0
+--
+tornado                         - Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed.
+  INSTALLED: 4.0.2
+  LATEST:    4.3
+--
+twilio                     - Twilio API client and TwiML generator
+  INSTALLED: 5.2.0
+  LATEST:    6.1.dev0
+--
+Unidecode          - ASCII transliterations of Unicode text
+  INSTALLED: 0.4.18
+  LATEST:    0.04.18
+--
+virtualenv                            - Virtual Python Environment builder
+  INSTALLED: 1.11.6
+  LATEST:    13.1.2
+--
+virtualenvwrapper                     - Enhancements to virtualenv
+  INSTALLED: 4.3.1
+  LATEST:    4.7.1
+--
+virtualenv-clone                      - script to clone virtualenvs.
+  INSTALLED: 0.2.5
+  LATEST:    0.2.6
+--
+virtualenv                    - Virtual Python Environment builder
+  INSTALLED: 1.11.6
+  LATEST:    13.1.2
+--
+virtualenv-clone              - script to clone virtualenvs.
+  INSTALLED: 0.2.5
+  LATEST:    0.2.6
+--
+virtualenvwrapper                     - Enhancements to virtualenv
+  INSTALLED: 4.3.1
+  LATEST:    4.7.1
+--
+wheel                                  - A built-package format for Python.
+  INSTALLED: 0.24.0
+  LATEST:    0.26.0
