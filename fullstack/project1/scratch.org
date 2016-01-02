@@ -294,7 +294,7 @@ os.listdir('.')
  If the table argument is None, no translation is applied and
  the operation simply removes the characters in deletechars.
 
-* 
+* mindstorm file versions
 
 ** mindstorms versions
 #+BEGIN_SRC python
@@ -387,3 +387,21 @@ def draw_triangles(n):
 draw_triangles(30)
 
 #+END_SRC
+
+* designing Movie class
+
+** what should it do
+- class Movie
+  - things to remember
+    - title
+    - storyline
+    - poster_image
+    - youtube_trailer
+  - things to do
+    - show_trailer()
+
+** class constructors (__init__ function is a constructors)
+__init__ is a constructor because it creates/constructs space and
+memory for a new instance (which will have a unique name) of the
+class/template that is defined in the class definition containg the
+__init__ function.

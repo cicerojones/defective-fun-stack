@@ -1,0 +1,39 @@
+toy story
+"https://www.youtube.com/watch?v=KYz2wyBy3kc"
+
+"https://en.wikipedia.org/wiki/Boys_Don%27t_Cry_(film)"
+"https://upload.wikimedia.org/wikipedia/en/3/3b/Boys_Don%27t_Cry_movie.jpg"
+"https://www.youtube.com/watch?v=aOarssJWHhI"
+
+
+"https://en.wikipedia.org/wiki/The_Joy_Luck_Club_(film)"
+"https://upload.wikimedia.org/wikipedia/en/1/19/The_Joy_Luck_Club_%28film%29.jpg"
+"https://www.youtube.com/watch?v=0nYDMp1LdT8"
+
+
+
+"https://en.wikipedia.org/wiki/Joy_(film)"
+"https://www.youtube.com/watch?v=SN4MLMHET7w"
+"https://en.wikipedia.org/wiki/File:Joyfilmposter.jpg"
+
+"https://en.wikipedia.org/wiki/Boys_Town_(film)"
+"https://en.wikipedia.org/wiki/File:Boys_town.jpg"
+"https://www.youtube.com/watch?v=aoofjH022pU"
+
+
+"https://en.wikipedia.org/wiki/Boyz_n_the_Hood"
+"https://upload.wikimedia.org/wikipedia/en/c/c3/Boyz_n_the_hood_poster.jpg"
+#bad "https://www.youtube.com/watch?v=J4sKiGkzKJo"
+"https://www.youtube.com/watch?v=AE4BdijGtu4"
+"https://en.wikipedia.org/wiki/Babes_in_Toyland_(1934_film)"
+"https://upload.wikimedia.org/wikipedia/en/a/a7/L%26H_Babes_in_Toyland_1934.jpg"
+"https://www.youtube.com/watch?v=HcfGmolIi1Q"
+
+
+goy story
+"https://en.wikipedia.org/wiki/Goys_Don%27t_Cry_(film)"
+"https://en.wikipedia.org/wiki/The_Goy_Luck_Club_(film)"
+
+"https://en.wikipedia.org/wiki/Goy_(film)"
+"https://en.wikipedia.org/wiki/Goyz_n_the_Hood"
+"https://en.wikipedia.org/wiki/Babes_in_Goyland_(1934_film)"
