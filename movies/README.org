@@ -1,1 +1,21 @@
 * Udacity FSWDN Course Project 1
+** How To Run
+The main program here, which must be run by python itself, is
+~entertainment_center.py~. When run (say by calling from the command
+line, running from IDLE or calling from the python interpreter), this
+file generates a page of HTML and opens up that page in the user's
+webbrowser. ~entertainment_center.py~ relies on ~fresh_tomatoes.py~
+for all its magic code generation. 
+
+Minor (genetic) modifications have been made to [[https://github.com/adarsh0806/ud036_StarterCode/blob/master/fresh_tomatoes.py][~fresh_tomatoes.py~]] to
+also display a (slighyly stylized) generic movie tagline (that has
+virtually nothing to do with the movies).
+
+** How To Download
+Clone this file using github or click the ~download.zip~ button above
+to download the program source code.
+** All in Good Fun
+This site should not be confused with a helpful, informative movie
+website. It should instead be considered a vaguely
+surrealist/sophmoric take on the required programming specifications.
+
