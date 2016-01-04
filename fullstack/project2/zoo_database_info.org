@@ -1,0 +1,565 @@
+* animals tables in zoo database
+** animals
+
+This table lists individual animals in the zoo. Each animal has only one row. There may be multiple animals with the same name, or even multiple animals with the same name and species.
+
+name — the animal's name (example: 'George')
+species — the animal's species (example: 'gorilla')
+birthdate — the animal's date of birth (example: '1998-05-18')
+
+** diet
+
+This table matches up species with the foods they eat. Every species in the zoo eats at least one sort of food, and many eat more than one. If a species eats more than one food, there will be more than one row for that species.
+
+species — the name of a species (example: 'hyena')
+food — the name of a food that species eats (example: 'meat')
+
+** taxonomy
+
+This table gives the (partial) biological taxonomic names for each species in the zoo. It can be used to find which species are more closely related to each other evolutionarily.
+
+name — the common name of the species (e.g. 'jackal')
+species — the taxonomic species name (e.g. 'aureus')
+genus — the taxonomic genus name (e.g. 'Canis')
+family — the taxonomic family name (e.g. 'Canidae')
+t_order — the taxonomic order name (e.g. 'Carnivora')
+
+If you've never heard of this classification, don't worry about it; the details won't be necessary for this course. But if you're curious, Wikipedia articles Taxonomy and Biological classification may help.
+
+** ordernames
+
+This table gives the common names for each of the taxonomic orders in the taxonomy table.
+
+t_order — the taxonomic order name (e.g. 'Cetacea')
+name — the common name (e.g. 'whales and dolphins')
+* SQL
+** SAMPLE queries
+#+BEGIN_SRC sql
+# QUERY = "select max(name) from animals;"
+
+# QUERY = "select * from animals limit 10;"
+
+# QUERY = "select * from animals where species = 'orangutan' order by birthdate;"
+
+# QUERY = "select name from animals where species = 'orangutan' order by birthdate desc;"
+
+# QUERY = "select name, birthdate from animals order by name limit 10 offset 20;"
+# offset starts that far down the list
+# QUERY = "select species, min(birthdate) from animals group by species;"
+
+# QUERY = '''
+# select name, count(*) as num from animals
+# group by name
+# order by num desc
+# limit 5;
+# '''
+#+END_SRC
+** COMMANDS USED to create zoo tables
+And here are the SQL commands that were used to create those tables.
+We won't cover the create table command until lesson 4, but it may be
+interesting to look at:
+
+#+BEGIN_SRC sql
+create table animals (  
+       name text,
+       species text,
+       birthdate date);
+
+create table diet (
+       species text,
+       food text);  
+
+create table taxonomy (
+       name text,
+       species text,
+       genus text,
+       family text,
+       t_order text); 
+
+create table ordernames (
+       t_order text,
+       name text);
+#+END_SRC
+** aggregate functions with 'group by' phrase
+#+BEGIN_SRC sql
+QUERY = """select species, count(species) from animals 
+                                          group by species 
+                                          order by count(species) desc"""
+#+END_SRC
+
+vs.
+
+#+BEGIN_SRC sql
+# columns
+select count(*) as num, species
+# table(s)
+from animals
+# aggregation
+group by species
+# sorting
+order by num desc
+#+END_SRC
+** INSERTing (add) rows into a table
+#+BEGIN_SRC sql
+SELECT_QUERY = "select name, birthdate from animals where species = 'opossum';"
+
+INSERT_QUERY = "insert into animals values('Dick', 'opossum', '2013-11-11');"
+#+END_SRC
+** JOIN templates
+#+BEGIN_SRC sql
+# rows
+select T.thing, S.stuff
+
+# joined tables
+from T join S
+
+# join condition
+on T.target = S.match
+#+END_SRC
+
+vs. 
+
+#+BEGIN_SRC sql
+select T.thing, S.stuff
+from T, S
+# restriction
+where T.target = S.match
+
+#+END_SRC
+** JOIN instance with zoo example
+#+BEGIN_SRC sql
+QUERY = 
+select animals.name
+from animals, diet
+where animals.species = diet.species 
+and diet.food = 'fish'
+
+#+END_SRC
+also can use 'on'
+#+BEGIN_SRC sql
+on
+#+END_SRC
+** having vs. where
+where is a restriction on sort table
+having is a restriciton on the result, after aggregation
+
+#+BEGIN_SRC sql
+QUERY =
+select diet.food, count(*)
+from animals, diet
+on animals.species = diet.species
+group by diet.food
+having count(diet.food) = 1
+#+END_SRC
+alternate given
+#+BEGIN_SRC sql
+select food, count(animals.name) as num
+       from diet join animals 
+       on diet.species = animals.species
+       group by food
+       having num = 1
+#+END_SRC
+
+#+BEGIN_SRC sql
+select food, count(animals.name) as num
+       from diet, animals 
+       where diet.species = animals.species
+       group by food
+       having num = 1
+#+END_SRC
+* hard join practice quiz successful queries
+** """select animals.species, animals.name from animals, taxonomy where animals.species = taxonomy.name
+#+BEGIN_SRC sql
+QUERY = """
+select animals.species, animals.name 
+from animals, taxonomy 
+where animals.species = taxonomy.name"""
+
++------------+-------------+
+|    species |        name |
++============+=============+
+|     alpaca |      Andrea |
+|     alpaca |       Bruno |
+|     alpaca |     Charlie |
+|     alpaca |       Della |
+|     alpaca |        Emma |
+| brown bear |        Fred |
+| brown bear |      George |
+| brown bear |       Molly |
+|      camel |     Eliezer |
+|      camel |    Giuseppe |
+|      camel |        Taro |
+|      dingo |        Fido |
+|      dingo |        Spot |
+|      dingo |       Rover |
+|    echidna |      Medusa |
+|     ferret | Zarathustra |
+|     ferret |    Zebediah |
+|     ferret |   Zephaniah |
+|     ferret |     Zenobia |
+|     ferret |        Zara |
+|    gorilla |         Max |
+|    gorilla |        Dave |
+|    gorilla |       Becky |
+|    gorilla |         Liz |
+|    gorilla |      George |
+|    gorilla |      George |
+|    gorilla |     Wendell |
+|    gorilla |       Bjorn |
+|    gorilla |     Kristen |
+|      hyena |    Cherries |
+|      hyena |        Biff |
+|      hyena |  Tinkerbell |
+|     iguana |      George |
+|     iguana |      Cheech |
+|     iguana |        Spot |
+|     iguana |      Andrea |
+|     jackal |       Devoe |
+|     jackal |       Duran |
+|     jackal |      Jethro |
+|     jackal |     Tiffany |
+|     jackal |         Sue |
+|      llama |      Alison |
+|      llama |         Ben |
+|      llama |    Cordelia |
+|      llama |         Eli |
+|      llama |        John |
+|      llama |       Glenn |
+|      llama |         Meg |
+|      llama |         Mel |
+|      llama |    Veronica |
+|   mongoose |       Ricky |
+|      moose |     Charlie |
+|      moose |        Lucy |
+|      moose |       Patty |
+|      moose |         Max |
+|    narwhal |     Francis |
+|    narwhal |       Bacon |
+|    opossum |        Tori |
+|    opossum |       Hazel |
+|    opossum |        Neil |
+|  orangutan |        Raja |
+|  orangutan |        Ratu |
+|  orangutan |      Putera |
+|  orangutan |       Gajah |
+|  orangutan |       Singa |
+|  orangutan |     Kambing |
+|   platypus |       Chris |
+|   platypus |       Sandy |
+|   platypus |         Pat |
+|   sea lion |         Mal |
+|   sea lion |         Zoe |
+|   sea lion |       River |
+|   sea lion |       Inara |
+|   sea lion |       Simon |
+|    unicorn |      Morgan |
+|    unicorn |      Laylah |
+|    warthog |    Bertrand |
+|    warthog |     Hypatia |
+|    warthog |        Emmy |
+|        yak |        Jack |
+|        yak |         Mac |
+|        yak |       Slack |
+|        yak |         Pac |
+|        yak |       Track |
+|      zebra |       Owuru |
+|      zebra |     Ekwensu |
+|      zebra |       Imaha |
+|      zebra |      Adiaha |
+|      zebra |     Obi Ike |
++------------+-------------+
+#+END_SRC
+** """select animals.species, count(*) as num from animals, taxonomy where animals.species = taxonomy.name group by animals.species""" 
+#+BEGIN_SRC sql
+QUERY = """
+select animals.species, count(*) as num 
+from animals, taxonomy 
+where animals.species = taxonomy.name 
+group by animals.species"""
++------------+-----+
+|    species | num |
++============+=====+
+|     alpaca |   5 |
+| brown bear |   3 |
+|      camel |   3 |
+|      dingo |   3 |
+|    echidna |   1 |
+|     ferret |   5 |
+|    gorilla |   9 |
+|      hyena |   3 |
+|     iguana |   4 |
+|     jackal |   5 |
+|      llama |   9 |
+|   mongoose |   1 |
+|      moose |   4 |
+|    narwhal |   2 |
+|    opossum |   3 |
+|  orangutan |   6 |
+|   platypus |   3 |
+|   sea lion |   5 |
+|    unicorn |   2 |
+|    warthog |   3 |
+|        yak |   5 |
+|      zebra |   5 |
++------------+-----+
+#+END_SRC
+** """select animals.species, count(*) as num from animals, taxonomy where animals.species = taxonomy.name group by animals.species order by num desc"""
+** QUERY = """select animals.species, count(*) as num, taxonomy.t_order from animals, taxonomy where animals.species = taxonomy.name group by animals.species order by num desc"""
+#+BEGIN_SRC sql
+QUERY = """
+select animals.species, count(*) as num, taxonomy.t_order 
+from animals, taxonomy 
+where animals.species = taxonomy.name 
+group by animals.species 
+order by num desc"""
++------------+-----+----------------+
+|    species | num |        t_order |
++============+=====+================+
+|    gorilla |   9 |       Primates |
+|      llama |   9 |   Artiodactyla |
+|  orangutan |   6 |       Primates |
+|     alpaca |   5 |   Artiodactyla |
+|     ferret |   5 |      Carnivora |
+|     jackal |   5 |      Carnivora |
+|   sea lion |   5 |      Carnivora |
+|        yak |   5 |   Artiodactyla |
+|      zebra |   5 | Perissodactyla |
+|     iguana |   4 |       Squamata |
+|      moose |   4 |   Artiodactyla |
+| brown bear |   3 |      Carnivora |
+|      camel |   3 |   Artiodactyla |
+|      dingo |   3 |      Carnivora |
+|      hyena |   3 |      Carnivora |
+|    opossum |   3 |     Marsupiala |
+|   platypus |   3 |    Monotremata |
+|    warthog |   3 |   Artiodactyla |
+|    narwhal |   2 |        Cetacea |
+|    unicorn |   2 | Perissodactyla |
+|    echidna |   1 |    Monotremata |
+|   mongoose |   1 |      Carnivora |
++------------+-----+----------------+
+
+#+END_SRC
+** testing
+#+BEGIN_SRC sql
+QUERY = """
+select animals.species, count(*) as num, taxonomy.name
+from animals, taxonomy, ordernames
+where animals.species = taxonomy.name and taxonomy.t_order = ordernames.t_order
+group by animals.species 
+order by num desc"""
+#+END_SRC
+** 
+#+BEGIN_SRC sql
+QUERY = """
+select animals.species, count(*) as num, ordernames.name
+from animals, taxonomy, ordernames
+where animals.species = taxonomy.name and taxonomy.t_order = ordernames.t_order
+group by animals.species 
+order by num desc"""
+
++------------+-----+---------------------+
+|    species | num |                name |
++============+=====+=====================+
+|    gorilla |   9 |            primates |
+|      llama |   9 | even-toed ungulates |
+|  orangutan |   6 |            primates |
+|     alpaca |   5 | even-toed ungulates |
+|     ferret |   5 |          carnivores |
+|     jackal |   5 |          carnivores |
+|   sea lion |   5 |          carnivores |
+|        yak |   5 | even-toed ungulates |
+|      zebra |   5 |  odd-toed ungulates |
+|     iguana |   4 |  lizards and snakes |
+|      moose |   4 | even-toed ungulates |
+| brown bear |   3 |          carnivores |
+|      camel |   3 | even-toed ungulates |
+|      dingo |   3 |          carnivores |
+|      hyena |   3 |          carnivores |
+|    opossum |   3 |          marsupials |
+|   platypus |   3 |          monotremes |
+|    warthog |   3 | even-toed ungulates |
+|    narwhal |   2 | whales and dolphins |
+|    unicorn |   2 |  odd-toed ungulates |
+|    echidna |   1 |          monotremes |
+|   mongoose |   1 |          carnivores |
++------------+-----+---------------------+
+
+QUERY = """
+select ordernames.name, count(*) as num
+from animals, taxonomy, ordernames
+where animals.species = taxonomy.name and taxonomy.t_order = ordernames.t_order
+group by animals.species 
+order by num desc"""
+
+#+END_SRC
+** solution
+#+BEGIN_SRC sql
+select ordernames.name, count(*) as num
+  from animals, taxonomy, ordernames
+  where animals.species = taxonomy.name
+    and taxonomy.t_order = ordernames.t_order
+  group by ordernames.name
+  order by num desc
+
++---------------------+-----+
+|                name | num |
++=====================+=====+
+| even-toed ungulates |  29 |
+|          carnivores |  25 |
+|            primates |  15 |
+|  odd-toed ungulates |   7 |
+|          monotremes |   4 |
+|  lizards and snakes |   4 |
+|          marsupials |   3 |
+| whales and dolphins |   2 |
++---------------------+-----+
+#+END_SRC
+
+** "select * from animals";
+#+BEGIN_SRC sql
+QUERY = "select * from animals";
+
++-------------+------------+------------+
+|        name |    species |  birthdate |
++=============+============+============+
+|      Andrea |     alpaca | 2001-01-16 |
+|       Bruno |     alpaca | 2004-09-23 |
+|     Charlie |     alpaca | 2004-09-23 |
+|       Della |     alpaca | 2006-01-09 |
+|        Emma |     alpaca | 2013-03-16 |
+|        Fred | brown bear | 1993-05-02 |
+|      George | brown bear | 1997-06-24 |
+|       Molly | brown bear | 1981-10-17 |
+|     Eliezer |      camel | 1971-03-08 |
+|    Giuseppe |      camel | 1979-12-25 |
+|        Taro |      camel | 1981-08-10 |
+|        Fido |      dingo | 1999-08-04 |
+|        Spot |      dingo | 2007-11-07 |
+|       Rover |      dingo | 2008-08-24 |
+|      Medusa |    echidna | 2003-01-31 |
+| Zarathustra |     ferret | 2006-09-18 |
+|    Zebediah |     ferret | 2006-10-11 |
+|   Zephaniah |     ferret | 2010-02-02 |
+|     Zenobia |     ferret | 2011-09-03 |
+|        Zara |     ferret | 2007-12-17 |
+|         Max |    gorilla | 2001-04-23 |
+|        Dave |    gorilla | 1988-09-29 |
+|       Becky |    gorilla | 1979-07-04 |
+|         Liz |    gorilla | 1998-06-12 |
+|      George |    gorilla | 2011-01-09 |
+|      George |    gorilla | 1998-05-18 |
+|     Wendell |    gorilla | 1982-09-24 |
+|       Bjorn |    gorilla | 2000-03-07 |
+|     Kristen |    gorilla | 1990-04-25 |
+|    Cherries |      hyena | 2007-06-08 |
+|        Biff |      hyena | 2011-06-09 |
+|  Tinkerbell |      hyena | 2009-11-10 |
+|      George |     iguana | 2013-10-18 |
+|      Cheech |     iguana | 2006-12-19 |
+|        Spot |     iguana | 2010-07-23 |
+|      Andrea |     iguana | 1999-09-09 |
+|       Devoe |     jackal | 2009-09-25 |
+|       Duran |     jackal | 2009-09-20 |
+|      Jethro |     jackal | 2012-04-29 |
+|     Tiffany |     jackal | 2007-12-26 |
+|         Sue |     jackal | 2003-12-21 |
+|      Alison |      llama | 1997-11-24 |
+|         Ben |      llama | 1984-01-05 |
+|    Cordelia |      llama | 1990-10-21 |
+|         Eli |      llama | 2002-02-22 |
+|        John |      llama | 1986-01-17 |
+|       Glenn |      llama | 1986-04-13 |
+|         Meg |      llama | 2011-09-08 |
+|         Mel |      llama | 2000-10-31 |
+|    Veronica |      llama | 1994-07-09 |
+|       Ricky |   mongoose | 2006-02-28 |
+|     Charlie |      moose | 2001-12-19 |
+|        Lucy |      moose | 1990-03-27 |
+|       Patty |      moose | 1996-04-19 |
+|         Max |      moose | 2002-06-15 |
+|     Francis |    narwhal | 1996-04-27 |
+|       Bacon |    narwhal | 1975-02-07 |
+|        Tori |    opossum | 2011-04-05 |
+|       Hazel |    opossum | 2009-10-24 |
+|        Neil |    opossum | 2009-08-11 |
+|        Raja |  orangutan | 1975-04-09 |
+|        Ratu |  orangutan | 1989-09-15 |
+|      Putera |  orangutan | 1993-06-29 |
+|       Gajah |  orangutan | 2011-05-26 |
+|       Singa |  orangutan | 2012-11-03 |
+|     Kambing |  orangutan | 1988-11-12 |
+|       Chris |   platypus | 2003-12-21 |
+|       Sandy |   platypus | 2008-09-09 |
+|         Pat |   platypus | 2000-04-13 |
+|         Mal |   sea lion | 1987-04-29 |
+|         Zoe |   sea lion | 1991-05-19 |
+|       River |   sea lion | 2004-07-08 |
+|       Inara |   sea lion | 2001-08-18 |
+|       Simon |   sea lion | 2000-12-16 |
+|      Morgan |    unicorn | 1875-01-24 |
+|      Laylah |    unicorn | 1752-05-20 |
+|    Bertrand |    warthog | 2007-11-12 |
+|     Hypatia |    warthog | 2007-05-20 |
+|        Emmy |    warthog | 2008-04-15 |
+|        Jack |        yak | 1996-09-20 |
+|         Mac |        yak | 1996-10-19 |
+|       Slack |        yak | 1997-09-05 |
+|         Pac |        yak | 2000-08-09 |
+|       Track |        yak | 2009-03-28 |
+|       Owuru |      zebra | 1989-03-15 |
+|     Ekwensu |      zebra | 1993-10-31 |
+|       Imaha |      zebra | 1995-06-08 |
+|      Adiaha |      zebra | 2005-05-12 |
+|     Obi Ike |      zebra | 2014-04-30 |
++-------------+------------+------------+
+#+END_SRC
+** "select * from taxonomy";
+#+BEGIN_SRC sql
++------------+---------------+-----------------+-------------------+----------------+
+|       name |       species |           genus |            family |        t_order |
++============+===============+=================+===================+================+
+|     alpaca |         pacos |         Vicugna |         Camelidae |   Artiodactyla |
+| brown bear |        arctos |           Ursus |           Ursidae |      Carnivora |
+|      camel |   dromedarius |         Camelus |         Camelidae |   Artiodactyla |
+|      dingo |         lupus |           Canis |           Canidae |      Carnivora |
+|    echidna |     aculeatus |    Tachyglossus |    Tachyglossidae |    Monotremata |
+|     ferret |      putorius |         Mustela |        Mustelidae |      Carnivora |
+|    gorilla |       gorilla |         Gorilla |         Hominidae |       Primates |
+|      hyena |       crocuta |         Crocuta |         Hyaenidae |      Carnivora |
+|     iguana |        iguana |          Iguana |         Iguanidae |       Squamata |
+|     jackal |        aureus |           Canis |           Canidae |      Carnivora |
+|      llama |         glama |            Lama |         Camelidae |   Artiodactyla |
+|    opossum |    virginiana |       Didelphis |       Didelphidae |     Marsupiala |
+|      moose |         alces |           Alces |          Cervidae |   Artiodactyla |
+|   mongoose |       parvula |        Helogale |       Herpestidae |      Carnivora |
+|    narwhal |     monoceros |         Monodon |      Monodontidae |        Cetacea |
+|  orangutan |        borneo |           Pongo |         Hominidae |       Primates |
+|   platypus |      anatinus | Ornithorhynchus | Ornithorhynchidae |    Monotremata |
+|    quetzal |       mocinno |    Pharomachrus |        Trogonidae |  Trogoniformes |
+|   sea lion | californianus |        Zalophus |         Otariidae |      Carnivora |
+|    unicorn |     monoceros |           Equus |           Equidae | Perissodactyla |
+|    warthog |     africanus |    Phacochoerus |            Suidae |   Artiodactyla |
+|        yak |     grunniens |             Bos |           Bovidae |   Artiodactyla |
+|      zebra |        quagga |           Equus |           Equidae | Perissodactyla |
++------------+---------------+-----------------+-------------------+----------------+
+
+#+END_SRC
+
+** "select * from ordernames";
+#+BEGIN_SRC sql
++----------------+----------------------+
+|        t_order |                 name |
++================+======================+
+|   Artiodactyla |  even-toed ungulates |
+|      Carnivora |           carnivores |
+|    Monotremata |           monotremes |
+|     Marsupiala |           marsupials |
+|       Primates |             primates |
+|       Squamata |   lizards and snakes |
+|        Cetacea |  whales and dolphins |
+|  Trogoniformes | trogons and quetzals |
+| Perissodactyla |   odd-toed ungulates |
+|     Chiroptera |                 bats |
++----------------+----------------------+
+#+END_SRC

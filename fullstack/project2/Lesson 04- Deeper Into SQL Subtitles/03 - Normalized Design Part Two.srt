@@ -1,0 +1,134 @@
+0:00:00.300,0:00:01.280
+So our first rule for
+
+0:00:01.280,0:00:06.010
+our normalized table, will be that every[br]row has the same number of columns.
+
+0:00:06.010,0:00:11.100
+A column can be empty or zero, but we[br]can't have two columns in some rows and
+
+0:00:11.100,0:00:12.910
+three columns in another row.
+
+0:00:12.910,0:00:16.129
+That just doesn't make sense[br]in a relational database.
+
+0:00:16.129,0:00:19.140
+In fact, that's pretty much[br]the same thing that's going on,
+
+0:00:19.140,0:00:22.940
+when we had the food one,[br]food two, and food three columns.
+
+0:00:22.940,0:00:25.180
+If you have two values[br]with the same meaning for
+
+0:00:25.180,0:00:29.582
+a given key, they're going to need to[br]end up in separate rows, like this.
+
+0:00:29.582,0:00:34.380
+Second rule, some one or[br]more columns of the table are the key,
+
+0:00:34.380,0:00:37.360
+which identify what thing[br]each row is telling us about,
+
+0:00:37.360,0:00:42.210
+like an animal, a species,[br]a bank account number, a website user.
+
+0:00:42.210,0:00:43.250
+In a simple table,
+
+0:00:43.250,0:00:47.640
+like majors, it may be that all of[br]the columns are part of the key.
+
+0:00:47.640,0:00:51.390
+Any other columns in the table[br]besides the key have to
+
+0:00:51.390,0:00:52.890
+describe something about the key.
+
+0:00:53.960,0:00:59.050
+In any row, the key provides the topic[br]of the sentence that the rest of
+
+0:00:59.050,0:01:00.290
+the row says something about.
+
+0:01:01.820,0:01:06.140
+Rule 3, in a normalized table,[br]the non-key columns describe the key.
+
+0:01:06.140,0:01:09.560
+They don't describe[br]other non-key columns.
+
+0:01:09.560,0:01:12.780
+So if you had a table of items and[br]how many there are, and
+
+0:01:12.780,0:01:16.590
+what location their in and[br]the street address of that location.
+
+0:01:16.590,0:01:20.220
+To normalize that you don't split[br]out the mapping from location to
+
+0:01:20.220,0:01:24.060
+address from the rest of the table,[br]like so.
+
+0:01:24.060,0:01:28.480
+That way you can talk about a location[br]without talking about a particular item.
+
+0:01:28.480,0:01:32.760
+It's not as if the street address is[br]specific to a particular item after all.
+
+0:01:32.760,0:01:34.990
+Lastly, in a normalized table,
+
+0:01:34.990,0:01:39.270
+the rows don't imply relationships among[br]the data that don't actually exist.
+
+0:01:39.270,0:01:42.420
+This is something to watch out for,[br]especially when you have multiple rows
+
+0:01:42.420,0:01:46.460
+about the same entity and multiple[br]facts you want to record about it.
+
+0:01:46.460,0:01:49.530
+Suppose that you have some information[br]about some people's work skills,
+
+0:01:49.530,0:01:51.450
+including the languages that they know.
+
+0:01:51.450,0:01:54.110
+Here Annabel knows Databases and and
+
+0:01:54.110,0:01:58.500
+Linux and Data Science, and[br]English, and French and Arabic.
+
+0:01:59.680,0:02:04.340
+And Leon knows Data Science and[br]Windows, and English and Kurdish.
+
+0:02:04.340,0:02:07.940
+But Databases don't have anything[br]particularly to do with English,
+
+0:02:07.940,0:02:09.919
+not Linux with French.
+
+0:02:09.919,0:02:11.980
+But these rows make[br]it look like they do.
+
+0:02:11.980,0:02:15.470
+They make it look like Annabel's Linux[br]skill has something to
+
+0:02:15.470,0:02:19.260
+do with her French language ability,[br]and that's almost certainly wrong.
+
+0:02:19.260,0:02:22.770
+So the mapping from people to[br]their technology skills, and
+
+0:02:22.770,0:02:28.240
+the mapping of people to the languages[br]they know belong in separate tables.
+
+0:02:28.240,0:02:31.090
+So there are four rules for[br]normalizing tables.
+
+0:02:31.090,0:02:33.350
+There's a lot more to learn[br]about this topic, though.
+
+0:02:33.350,0:02:35.910
+I've put some links in the instructor[br]notes, that you might want to read.

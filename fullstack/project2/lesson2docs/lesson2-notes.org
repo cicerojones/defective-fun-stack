@@ -1,0 +1,162 @@
+date: 2015-02-04 01:30:56
+name: ud197-nd/lesson-2
+---
+* <h1>Lesson 2 Reference Notes</h1>
+
+[TOC]
+** ## SQL Data Types
+
+Here's just a sampling of the many data types that SQL supports. We won't be using most of these types in this course, though.
+
+The exact list of types differs from one database to another. For a full list of types, check the manual for your database, such as [this one](http://www.postgresql.org/docs/9.4/static/datatype.html) for PostgreSQL.
+
+### Text and string types
+
+**text** — a string of any length, like Python **str** or **unicode** types.  
+**char(n)** — a string of exactly *n* characters.  
+**varchar(n)** — a string of up to *n* characters.
+
+### Numeric types
+
+**integer** — an integer value, like Python **int**.  
+**real** — a floating-point value, like Python **float**. Accurate up to six decimal places.  
+**double precision** — a higher-precision floating-point value. Accurate up to 15 decimal places.  
+**decimal** — an exact decimal value.
+
+### Date and time types
+
+**date** — a calendar date; including year, month, and day.  
+**time** — a time of day.  
+**timestamp** — a date and time together.
+
+----
+
+** ## Select statement
+
+The most basic form of the **select** statement is to select a single scalar value:
+
+**select** 2 + 2 **;**
+
+More usefully, we can select one or more columns from a table.  With no restrictions, this will return all rows in the table:
+
+**select** name, species **from** animals **;**
+
+Columns are separated by commas; use ***** to select all columns from the tables.
+
+Quite often, we don't want *all* the data from a table.  We can restrict the rows using a variety of *select clauses*, listed below. There are also a wide variety of functions that can apply to columns; including *aggregation* functions that operate on values from several rows, such as **max** and **count**.
+
+### where
+The <strong>where</strong> clause expresses <em>restrictions</em> — filtering a table for rows that follow a particular rule. <strong>where</strong> supports equalities, inequalities, and boolean operators (among other things):
+<ul>
+<li><strong>where species = 'gorilla'</strong> — return only rows that have 'gorilla' as the value of the species column.
+<li><strong>where name >= 'George'</strong> — return only rows where the name column is alphabetically after 'George'.
+<li><strong>where species != 'gorilla' and name != 'George'</strong> — return only rows where species isn't 'gorilla' and name isn't 'George'.
+</ul>
+
+###limit / offset
+The <strong>limit</strong> clause sets a limit on how many rows to return in the result table. The optional <strong>offset</strong> clause says how far to skip ahead into the results. So <strong>limit 10 offset 100</strong> will return 10 results starting with the 101st.
+<h3>order by</h3>
+The <strong>order by</strong> clause tells the database how to sort the results — usually according to one or more columns. So <strong>order by species, name</strong> says to sort results first by the species column, then by name within each species.
+
+Ordering happens before limit/offset, so you can use them together to extract pages of alphabetized results. (Think of the pages of a dictionary.)
+
+The optional <strong>desc</strong> modifier tells the database to order results in descending order — for instance from large numbers to small ones, or from Z to A.
+
+###group by
+The <strong>group by</strong> clause is only used with aggregations, such as <strong>max</strong> or <strong>sum</strong>. Without a <strong>group by</strong> clause, a select statement with an aggregation will aggregate over the whole selected table(s), returning only one row. With a <strong>group by</strong> clause, it will return one row for each distinct value of the column or expression in the <strong>group by</strong> clause.
+
+###having
+The **having** clause works like the **where** clause, but it applies after **group by** aggregations take place. The syntax is like this:
+
+**select** *columns* **from** *tables* **group by** *column* **having** *condition* **;**
+
+Usually, at least one of the *columns* will be an aggregate function such as **count**, **max**, or **sum** on one of the tables' columns. In order to apply **having** to an aggregated column, you'll want to give it a name using **as**. For instance, if you had a table of items sold in a store, and you wanted to find all the items that have sold more than five units, you could use:
+
+**select name, *count(\*) as num* from sales having num > 5;**
+
+You can have a **select** statement that uses only **where**, or only **group by**, or **group by** and **having**, or **where** and **group by**, or all three of them!
+
+But it doesn't usually make sense to use **having** without **group by**.
+
+If you use both **where** and **having**, the **where** condition will filter the rows that are going into the aggregation, and the **having** condition will filter the rows that come out of it.
+
+You can read more about **having** here:
+
+http://www.postgresql.org/docs/9.4/static/sql-select.html#SQL-HAVING
+
+----
+
+** ## All the tables in the zoo database
+
+<h3>animals</h3>
+This table lists individual animals in the zoo. Each animal has only
+one row. There may be multiple animals with the same name, or even
+multiple animals with the same name and species.
+
+<ul>
+<li>name — the animal's name (example: 'George')
+<li>species — the animal's species (example: 'gorilla')
+<li>birthdate — the animal's date of birth (example: '1998-05-18')
+</ul>
+
+<h3>diet</h3>
+This table matches up species with the foods they eat. Every species
+in the zoo eats at least one sort of food, and many eat more than one.
+If a species eats more than one food, there will be more than one row
+for that species.
+
+<ul>
+<li>species — the name of a species (example: 'hyena')
+<li>food — the name of a food that species eats (example: 'meat')
+</ul>
+
+<h3>taxonomy</h3>
+
+This table gives the (partial) biological taxonomic names for each
+species in the zoo. It can be used to find which species are more
+closely related to each other evolutionarily.
+
+<ul>
+<li>name — the common name of the species (e.g. 'jackal')
+<li>species — the taxonomic species name (e.g. 'aureus')
+<li>genus — the taxonomic genus name (e.g. 'Canis')
+<li>family — the taxonomic family name (e.g. 'Canidae')
+<li>t_order — the taxonomic order name (e.g. 'Carnivora')
+</ul>
+
+If you've never heard of this classification, don't worry about it;
+the details won't be necessary for this course. But if you're curious,
+Wikipedia articles
+[Taxonomy](http://en.wikipedia.org/wiki/Biological_classification) and
+
+[Biological classification](http://en.wikipedia.org/wiki/Biological_classification)
+may help. 
+
+
+<h3>ordernames</h3>
+
+This table gives the common names for each of the taxonomic orders in
+the <strong>taxonomy</strong> table.
+
+<ul>
+<li>t_order — the taxonomic order name (e.g. 'Cetacea')
+<li>name — the common name (e.g. 'whales and dolphins')
+</ul>
+
+----
+
+** ## Insert statement
+
+The basic syntax for the **insert** statement:
+
+**insert into** *table* **(** *column1, column2, ...* **) values (** *val1, val2, ...* **);**
+
+If the values are in the same order as the table's columns (starting with the first column), you don't have to specify the columns in the **insert** statement:
+
+**insert into** *table* **values (** *val1, val2, ...* **);**
+
+For instance, if a table has three columns **(a, b, c)** and you want to insert into **a** and **b**, you can leave off the column names from the **insert** statement. But if you want to insert into **b** and **c**, or **a** and **c**, you have to specify the columns.
+
+A single **insert** statement can only insert into a single table. (Contrast this with the **select** statement, which can pull data from several tables using a join.)
+
+----
