@@ -1,0 +1,186 @@
+* postgresql server notes
+** udacity instructor notes
+The psql command-line tool is really powerful. There's a complete reference to it in the PostgreSQL documentation.
+
+To connect psql to a database running on the same machine (such as your VM), all you need to give it is the database name. For instance, the command psql forum will connect to the forum database.
+
+From within psql, you can run any SQL statement using the tables in the connected database. Make sure to end SQL statements with a semicolon, which is not always required from Python.
+
+You can also use a number of special psql commands to get information about the database and make configuration changes. The \d posts command shown in the video is one example — this displays the columns of the posts table.
+
+Some other things you can do:
+
+\dt — list all the tables in the database.
+
+\dt+ — list tables plus additional information (notably, how big each table is on disk).
+
+\H — switch between printing tables in plain text vs. HTML.
+
+Here's a fun one to run in psql while your forum web app is running:
+
+select * from posts \watch
+
+(Note that \watch replaces the semicolon.) This will display the contents of the posts table and refresh it every two seconds, so you can see changes to the table as you use the app.
+
+In order to do this, you'll need two terminal sessions into your VM —
+one running the forum app, and the other running psql. You can connect
+to the VM from any number of terminal windows at once — just open up
+another terminal, change to the vagrant directory, and type vagrant
+ssh again.
+** basic sql for no tables
+#+BEGIN_SRC sql
+select 2+2 as a, 4+4 as b;
+#+END_SRC
+
+#+BEGIN_SRC bash
+psql forum
+#+END_SRC
+
+#+BEGIN_SRC sql
+select * from posts
+\d
+\d posts
+#+END_SRC
+* test out 'cursor' functions from a db-api instance
+** demonstration for practice project2
+#+BEGIN_SRC python
+# To see how the various functions in the DB-API work, take a look at this code,
+# then the results that it prints when you press "Test Run".
+#
+# Then modify this code so that the student records are fetched in sorted order
+# by student's name.
+#
+
+import sqlite3
+
+# Fetch some student records from the database.
+db = sqlite3.connect("students")
+c = db.cursor()
+query = "select name, id from students order by name;"
+c.execute(query)
+rows = c.fetchall()
+
+# First, what data structure did we get?
+print "Row data:"
+print rows
+
+# And let's loop over it too:
+print
+print "Student names:"
+for row in rows:
+  print "  ", row[0]
+
+db.close()
+#+END_SRC
+** inadequate notes on updating the code to connect to /forum/ db
+*** 
+The forum database has already been created for you. Your code will need to connect to it using psycopg2.connect("dbname=forum") and then perform select and insert operations on the posts table.
+
+The existing GetAllPosts function returns all the entries from a list. So its database version should return all the entries from the posts table.
+
+And likewise, the existing AddPost function inserts an entry into a list.
+
+You do not need to provide the time column when you insert a post. The table is set up to already provide a timestamp.
+
+The existing GetAllPosts function sorts the posts using a Python sort function. When you implement this function using the database, can you avoid sorting in Python by doing it in SQL?
+*** Hint: When performing insert operations consider using string substitution. Example:
+
+#+BEGIN_SRC python
+name = "Jeffrey"
+nickname = "Jeff"
+print "Name is %s and nickname is %s" % (name, nickname)
+#+END_SRC
+
+The output would be: 
+
+#+BEGIN_SRC python
+Name is Jeffrey and nickname is Jeff
+#+END_SRC
+** creating 'add to a real database' code
+*** docstring for GetAllPosts
+#+BEGIN_SRC python
+'''Get all the posts from the database, sorted with the newest first.
+
+    Returns:
+      A list of dictionaries, where each dictionary has a 'content' key
+      pointing to the post content, and 'time' key pointing to the time
+      it was posted.
+    '''
+#+END_SRC
+*** original GetAllPosts
+#+BEGIN_SRC python
+def GetAllPosts():
+    
+    posts = [{'content': str(row[1]), 'time': str(row[0])} for row in DB]
+    posts.sort(key=lambda row: row['time'], reverse=True)
+    return posts
+
+#+END_SRC
+*** docstring for AddPost
+#+BEGIN_SRC python
+    '''Add a new post to the database.
+
+    Args:
+      content: The text content of the new post.
+    '''
+#+END_SRC
+*** original AddPost
+#+BEGIN_SRC python
+
+## Add a post to the database.
+def AddPost(content):
+
+    t = time.strftime('%c', time.localtime())
+    DB.append((t, content))
+
+#+END_SRC
+*** modified GetAllPosts
+**** create database connection
+#+BEGIN_SRC python
+    DB = psycopg2.connect("dbname=forum")
+
+#+END_SRC
+**** create a cursor to the database
+#+BEGIN_SRC python
+c = DB.curso()
+#+END_SRC
+**** execute a SELECT statement using the cursor 
+#+BEGIN_SRC python
+c.execute("SELECT time, content FROM posts ORDER BY time DESC"
+#+END_SRC
+**** loop over posts as before
+#+BEGIN_SRC python
+posts = ({'content': str(row[1]), 'time': str(row[0])}
+         for row in c.fectchall())
+#+END_SRC
+**** close the connection to the database
+#+BEGIN_SRC python
+DB.close()
+#+END_SRC
+**** return the contents of the /posts/ dictionary
+#+BEGIN_SRC python
+return posts
+#+END_SRC
+*** modified AddPost
+**** create database connection again
+#+BEGIN_SRC python
+DB = psycopg2.connect("dbname=forum")
+#+END_SRC
+**** create a cursor to the database again
+#+BEGIN_SRC python
+c = DB.cursor()
+#+END_SRC
+**** execute an INSERT statement using the cursor (INJECTION!)
+#+BEGIN_SRC python
+c.execute("INSERT INTO posts (content) VALUES ('%s')" % content)
+#+END_SRC
+**** commit the change to the database
+#+BEGIN_SRC python
+DB.commit()
+#+END_SRC
+**** close the connection to the database
+#+BEGIN_SRC python
+DB.close()
+#+END_SRC
+
+
