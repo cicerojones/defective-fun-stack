@@ -1,0 +1,22 @@
+* testing out org and db code
+** get correct working directory
+#+BEGIN_SRC python :session *Python* :results output
+# import os
+
+os.getcwd()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> '/Users/a/Documents/working-directory/udacity-courses/fullstack/project2'
+** use function from development module
+#+BEGIN_SRC python :session *Python* :results output
+queries_for_tournament.doDB()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ')
+: (2, 'Jeff Jeffries                      ')
+: (3, 'Dave Davies                        ')
+: (4, 'Steve Stevens                      ')
+* 
