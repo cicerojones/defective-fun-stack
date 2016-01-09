@@ -41,6 +41,8 @@ select * from posts
 \d
 \d posts
 #+END_SRC
+** pyscopg2 documentation
+http://initd.org/psycopg/docs/index.html
 * test out 'cursor' functions from a db-api instance
 ** demonstration for practice project2
 #+BEGIN_SRC python
@@ -142,13 +144,13 @@ def AddPost(content):
 #+END_SRC
 **** create a cursor to the database
 #+BEGIN_SRC python
-c = DB.curso()
+c = DB.cursor()
 #+END_SRC
 **** execute a SELECT statement using the cursor 
 #+BEGIN_SRC python
-c.execute("SELECT time, content FROM posts ORDER BY time DESC"
+c.execute("SELECT time, content FROM posts ORDER BY time DESC")
 #+END_SRC
-**** loop over posts as before
+**** loop over posts but now retrieve data from cursor and add to a dict
 #+BEGIN_SRC python
 posts = ({'content': str(row[1]), 'time': str(row[0])}
          for row in c.fectchall())
@@ -182,5 +184,265 @@ DB.commit()
 #+BEGIN_SRC python
 DB.close()
 #+END_SRC
+* injection delete text
+'); delete from posts; --
+#+BEGIN_SRC sql
 
+#+END_SRC
+* modified forumdb.py code
+** missing a fucking comma near the tuple insertion!
+and no semi-colon as per
+http://initd.org/psycopg/docs/usage.html?highlight=gunpoint
+???
+
+But def no percent operator anymore--why again?
+#+BEGIN_SRC python
+#
+# Database access functions for the web forum.
+
+
+import time
+
+## Database connection
+
+DB = []
+
+## Get posts from database.
+
+
+def GetAllPosts():
+    '''Get all the posts from the database, sorted with the newest first.
+
+    Returns:
+      A list of dictionaries, where each dictionary has a 'content' key
+      pointing to the post content, and 'time' key pointing to the time
+      it was posted.
+    '''
+    DB = psycopg2.connect("dbname=forum")
+    c = DB.cursor()
+    c.execute("SELECT time, content FROM posts ORDER BY time DESC")
+    posts = ({'content': str(row[1]), 'time': str(row[0])}
+             for row in c.fectchall())
+    DB.close()
+    return posts
+
+## Add a post to the database.
+def AddPost(content):
+    '''Add a new post to the database.
+
+    Args:
+      content: The text content of the new post.
+    '''
+    DB = psycopg2.connect("dbname=forum")
+    c = DB.cursor()
+    c.execute("INSERT INTO posts (content) VALUES (%s)" % (content,))
+    DB.commit()
+    DB.close()
+
+#+END_SRC
+* rules for normalized tables (ffrom lesson 4)
+https://www.udacity.com/course/viewer#!/c-ud197-nd/l-3490418600/e-3514018648/m-3514018650
+** 1. Every row has the same number of columns. 
+In practice, the database system won't let us literally have different numbers of columns in different rows. But if we have columns that are sometimes empty (null) and sometimes not, or if we stuff multiple values into a single field, we're bending this rule.
+
+The example to keep in mind here is the diet table from the zoo database. Instead of trying to stuff multiple foods for a species into a single row about that species, we separate them out. This makes it much easier to do aggregations and comparisons.
+
+** 2. There is a unique key and everything in a row says something about the key. 
+The key may be one column or more than one. It may even be the whole row, as in the diet table. But we don't have duplicate rows in a table.
+
+More importantly, if we are storing non-unique facts — such as people's names — we distinguish them using a unique identifier such as a serial number. This makes sure that we don't combine two people's grades or parking tickets just because they have the same name.
+
+** 3. Facts that don't relate to the key belong in different tables. 
+The example here was the items table, which had items, their locations, and the location's street addresses in it. The address isn't a fact about the item; it's a fact about the location. Moving it to a separate table saves space and reduces ambiguity, and we can always reconstitute the original table using a join.
+
+** 4. Tables shouldn't imply relationships that don't exist. 
+The example here was the job_skills table, where a single row listed
+one of a person's technology skills (like 'Linux') and one of their
+language skills (like 'French'). This made it look like their Linux
+knowledge was specific to French, or vice versa ... when that isn't
+the case in the real world. Normalizing this involved splitting the
+tech skills and job skills into separate tables.
+
+* lesson4
+** self joins exercise
+list pairs of roommates, only once.
+#+BEGIN_SRC sql
+QUERY = '''
+select a.id, b.id, a.building, a.room
+       from residences as a, residences as b
+ where a.building = b.building
+   and a.room = b.room
+   and a.id < b.id
+ order by a.building, a.room;
+'''
+#+END_SRC
+
+** 'counting what isn't there' details from course
+*** Counting what isn’t there
+Counting rows in a single table is something you’ve seen many times
+before in this course. A column aggregated with the count aggregation
+function will return the number of rows in the table, or the number of
+rows for each value of a group by clause.
+
+
+For instance, you saw queries like these back in Lesson 2:
+
+#+BEGIN_SRC sql
+select count(*) from animals; 
+-- returns the number of animals in the zoo
+
+select count(*) from animals where species = ‘gorilla’; 
+-- returns the number of gorillas
+
+select species, count(*) from animals group by species; 
+-- returns each species’ name and the number of animals of that
+species
+#+END_SRC
+
+Things get a little more complicated if you want to count the results
+of a join. Consider these tables we saw earlier in Lesson 4, the
+products and sales tables for a store: Products and Sales Suppose that
+we want to know how many times we have sold each product. In other
+words, for each sku value in the products table, we want to know the
+number of times it occurs in the sales table. We might start out with
+a query like this:
+
+
+
+#+BEGIN_SRC sql
+select products.name, products.sku, count(*) as num
+  from products join sales
+    on products.sku = sales.sku
+  group by products.sku;
+#+END_SRC
+
+But this query might not do exactly what we want. If a particular sku
+has never been sold — if there are no entries for it in the sales
+table — then this query will not return a row for it at all.
+
+
+If we wanted to see a row with the number zero in it, we’ll be
+disappointed!
+
+
+However, there is a way to get the database to give us a count with a
+zero in it. To do this, we’ll need to change two things about this
+query —
+
+#+BEGIN_SRC sql
+select products.name, products.sku, count(sales.sku) as num
+  from products left join sales
+    on products.sku = sales.sku
+  group by products.sku;
+#+END_SRC
+
+This query will give us a row for every product in the products table,
+even the ones that have no sales in the sales table.
+
+
+What’s changed? First, we’re using count(sales.sku) instead of
+count(*). This means that the database will count only rows where
+sales.sku is defined, instead of all rows.
+
+
+Second, we’re using a left join instead of a plain join.
+
+Um, so what’s a left join?
+
+SQL supports a number of variations on the theme of joins. The kind of
+join that you have seen earlier in this course is called an inner
+join, and it is the most common kind of join — so common that SQL
+doesn’t actually make us say "inner join" to do one.
+
+
+But the second most common is the left join, and its mirror-image
+partner, the right join. The words “left” and “right” refer to the
+tables to the left and right of the join operator. (Above, the left
+table is products and the right table is sales.)
+
+
+A regular (inner) join returns only those rows where the two tables
+have entries matching the join condition. A left join returns all
+those rows, plus the rows where the left table has an entry but the
+right table doesn’t. And a right join does the same but for the right
+table.
+
+
+(Just as “join” is short for “inner join”, so too is “left join”
+actually short for “left outer join”. But SQL lets us just say “left
+join”, which is a lot less typing. So we’ll do that.)
+
+
+Quiz
+
+On the next page, you'll see a query written with count(*) and an inner join. Try running it as is, then change it as described above and see what happens!
+** inner joins
+** selecting from query tables
+*** original
+#+BEGIN_SRC python
+def lightweights(cursor):
+    """Returns a list of the players in the db whose weight is less than the average."""
+    cursor.execute("select avg(weight) as av from players;")
+    av = cursor.fetchall()[0][0]  # first column of first (and only) row
+    cursor.execute("select name, weight from players where weight < " + str(av))
+    return cursor.fetchall()
+#+END_SRC
+*** close
+#+BEGIN_SRC python
+def lightweights(cursor):
+    """Returns a list of the players in the db whose weight is less than the average."""
+    cursor.execute("select name, weight from (select name, avg(weight) as av from players) as avgs where weight < av;")
+    return cursor.fetchall()
+#+END_SRC
+*** but no cigar
+#+BEGIN_SRC python
+def lightweights(cursor):
+    """Returns a list of the players in the db whose weight is less than the average."""
+    cursor.execute("select name, weight from players, (select avg(weight) as av from players) as subq where weight < av;")
+    return cursor.fetchall()
+#+END_SRC
+** views
+* lesson5 instructions for project
+** DROP-ing vs DELETE FROM 
+drop table
+- removes a table completely, so you can recreate it
+delte from
+- removes all the rows from the table but leaves its column
+  definitions, constraints etc. intact.
+- 
+** sample setup in SQL
+#+BEGIN_SRC sql
+create table players1(pid integer PRIMARY KEY, player_name character(35), wins integer, matches integer);
+#+END_SRC
+#+BEGIN_SRC sql
+drop table players1;
+#+END_SRC
+
+Don't use double quotes!
+#+BEGIN_SRC sql
+insert into players1 values(1, 'Bill Borzo', 0, 0); 
+#+END_SRC
+#+BEGIN_SRC sql
+update players1 set wins = 1, matches = 1 where player_name = 'Bill Borzo';
+#+END_SRC
+
+#+BEGIN_SRC sql
+delete from players1 where pid = 1;
+#+END_SRC
+
+#+BEGIN_SRC sql
+insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);
+#+END_SRC
+
+#+BEGIN_SRC sql
+select count(*) from players1;
+#+END_SRC
+
+#+BEGIN_SRC sql
+delete from players1;
+#+END_SRC
+
+#+BEGIN_SRC sql
+insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);
+#+END_SRC
 
