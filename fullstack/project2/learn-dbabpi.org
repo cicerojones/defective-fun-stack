@@ -44,7 +44,7 @@ select * from posts
 ** pyscopg2 documentation
 http://initd.org/psycopg/docs/index.html
 * test out 'cursor' functions from a db-api instance
-** demonstration for practice project2
+** demonstration for practice project2 (from Lesson 03 Python DB-API)
 #+BEGIN_SRC python
 # To see how the various functions in the DB-API work, take a look at this code,
 # then the results that it prints when you press "Test Run".
@@ -411,38 +411,77 @@ delte from
   definitions, constraints etc. intact.
 - 
 ** sample setup in SQL
+*** create players1 table 
 #+BEGIN_SRC sql
 create table players1(pid integer PRIMARY KEY, player_name character(35), wins integer, matches integer);
 #+END_SRC
+*** drop players1 table
 #+BEGIN_SRC sql
 drop table players1;
 #+END_SRC
-
+*** insert a row
 Don't use double quotes!
 #+BEGIN_SRC sql
 insert into players1 values(1, 'Bill Borzo', 0, 0); 
 #+END_SRC
+*** add data to a row
 #+BEGIN_SRC sql
 update players1 set wins = 1, matches = 1 where player_name = 'Bill Borzo';
 #+END_SRC
-
+*** delete a row
 #+BEGIN_SRC sql
 delete from players1 where pid = 1;
 #+END_SRC
-
+*** insert several rows
 #+BEGIN_SRC sql
 insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);
 #+END_SRC
-
+*** count up rows
 #+BEGIN_SRC sql
 select count(*) from players1;
 #+END_SRC
-
+*** delete all rows
 #+BEGIN_SRC sql
 delete from players1;
 #+END_SRC
-
+*** insert 4 rows
 #+BEGIN_SRC sql
 insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);
 #+END_SRC
+*** create a new table for matches
+#+BEGIN_SRC sql
+create table matches(player1 int, player2 int, winner int, loser int);
+#+END_SRC
+** python code of above
+*** in progress copied example (uses sqlite3)
+#+BEGIN_SRC python
+db = sqlite3.connect("students")
+c = db.cursor()
+# query = "select name, id from students order by name;"
+# query = "select count(*) from players1;"
+query = "select pid, name from players1;"
+c.execute(query)
+rows = c.fetchall()
 
+# First, what data structure did we get?
+print "Row data:"
+print rows
+db.close()
+#+END_SRC
+*** uses psycopg2
+#+BEGIN_SRC python
+import psycopg2
+
+DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("SELECT time, content FROM posts ORDER BY time DESC")
+    posts = ({'content': str(row[1]), 'time': str(row[0])}
+             for row in c.fetchall())
+    DB.close()
+    return posts
+#+END_SRC
+
+#+BEGIN_SRC python
+query = "select pid, name from players1;"
+query = "insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);"
+#+END_SRC
