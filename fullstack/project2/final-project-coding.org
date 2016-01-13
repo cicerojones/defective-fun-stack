@@ -1,4 +1,4 @@
-* testing out org and db code
+* prepare successful org and db interaction 
 ** get correct working directory
 #+BEGIN_SRC python :session *Python* :results output
 # import os
@@ -8,15 +8,1098 @@ os.getcwd()
 
 #+RESULTS:
 : 
-: >>> '/Users/a/Documents/working-directory/udacity-courses/fullstack/project2'
+: ... >>> '/Users/a/Documents/working-directory/udacity-courses/fullstack/project2'
+
 ** use function from development module
+must be loaded in the environment first before calling from org mode?
+
+#+BEGIN_SRC python :session *Python* :results output
+import queries_for_tournament
+#+END_SRC
+
 #+BEGIN_SRC python :session *Python* :results output
 queries_for_tournament.doDB()
 #+END_SRC
+
 
 #+RESULTS:
 : (1, 'Bill Borzo                         ')
 : (2, 'Jeff Jeffries                      ')
 : (3, 'Dave Davies                        ')
 : (4, 'Steve Stevens                      ')
-* 
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ')
+: (2, 'Jeff Jeffries                      ')
+: (3, 'Dave Davies                        ')
+: (4, 'Steve Stevens                      ')
+
+** define simple function from org file
+#+BEGIN_SRC python :session *Python* :results output
+import os
+
+def printwtf():
+    my_dir = os.getcwd()
+    print my_dir
+
+#+END_SRC
+
+#+RESULTS:
+** call simple function defined in org file
+#+BEGIN_SRC python :session *Python* :results output
+printwtf()
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Documents/working-directory/udacity-courses/fullstack/project2
+
+** define db function from org file
+#+BEGIN_SRC python :session *Python* :results output
+# not complete function
+import psycopg2
+
+def showAllPLayers():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+#    query = "select * from "
+    c.execute(query)
+    rows = c.fetchall()
+    # print rows
+    for row in rows:
+        print row
+    DB.close()
+
+
+#+END_SRC
+
+#+RESULTS:
+
+** call db function from org file
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+** empty rows of content
+#+BEGIN_SRC sql
+delete from matches2; delete from players2;
+#+END_SRC
+
+** add data to table
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+* initial 'directory' for developing python-sql functions
+** model database interaction--select and printout
+** install rows
+*** addStandardPlayers
+#+BEGIN_SRC python :session *Python* :results output
+def addStandardPlayers():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);"
+    c.execute(query)
+    DB.commit()
+    DB.close()
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sql
+insert into players2 values('Bill Borzo', 0, 0); insert into players2 values('Jeff Jeffries', 0, 0); insert into players2 values('Dave Davies', 0, 0); insert into players2 values('Steve Stevens', 0, 0);
+#+END_SRC
+#+BEGIN_SRC python :session *Python* :results output
+addStandardPlayers()
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python :session *Python* :results output
+def addStandardPlayers():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);"
+    c.execute(query)
+    DB.close()
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+addStandardPlayers()
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "<stdin>", line 5, in addStandardPlayers
+: psycopg2.IntegrityError: duplicate key value violates unique constraint "players1_pkey"
+: DETAIL:  Key (pid)=(1) already exists.
+
+** create and call a function from orgmode?
+if psycopg2 has already been imported above, need not be imported again.
+#+BEGIN_SRC python :session *Python* :results output
+# import psycopg2
+
+
+def show_all():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "select * from players1;"
+    c.execute(query)
+    rows = c.fetchall()
+    for row in rows:
+        print row
+	
+    DB.close()
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+show_all()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+** delete Rows
+*** 1
+#+BEGIN_SRC python :session *Python* :results output
+def deleteRows():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "delete from players1;"
+    c.execute(query)
+    DB.close()
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deleteRows()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+show_all()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+*** 2
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+#+BEGIN_SRC python :session *Python* :results output
+def deleteRows():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("delete from players1 where pid = 1;")
+    c.execute("select * from players1;")
+    c.fetchall()
+    c.execute("delete from players1;")>
+    c.execute("select * from players1;")
+    c.fetchall()
+    DB.commit()
+    DB.close()
+
+#+END_SRC
+
+#+RESULTS:
+
+
+
+
+#+RESULTS:
+
+*** 3 finally work
+#+BEGIN_SRC python :session *Python* :results output
+def deleteRows():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("delete from players1;")
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deleteRows()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+
+** work with a matches table
+
+*** create table
+#+BEGIN_SRC sql
+create table matches2(winner text, loser text);
+#+END_SRC
+create a backup copy
+#+BEGIN_SRC sql
+select * into matches_backup from matches;
+#+END_SRC
+
+#+END_SRC
+
+*** addMatch
+
+**** hard coded players
+#+BEGIN_SRC python :session *Python* :results output
+def addMatch():
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES ('Bill Borzo', 'Mike Michaels') ;""")
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC python :session *Python* :results output
+addMatch()
+#+END_SRC
+
+#+RESULTS:
+
+**** refactor
+#+BEGIN_SRC python :session *Python* :results output
+def addMatch(winner, loser):
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+addMatch('Bill Borzo', 'Dickshit')
+#+END_SRC
+
+#+RESULTS:
+
+* use a wrapper for database execution code
+refactor to take a 'table' as argument
+** wrapper for write-only (no retrieval) SQL 'queries'
+*** original
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteWrapper("insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);")
+
+#+END_SRC
+
+#+RESULTS:
+*** refactored versions
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper(query_string, extra=None):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+** wrapper when single-value retrieval is necessary
+arggg--don't 'print' (thanks for only showing us print statements in
+the video)
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    row = c.fetchone()
+    print row
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper("select count(*) from players1;")
+#+END_SRC
+
+
+#+RESULTS:
+: (4L,)
+
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    row = c.fetchone()
+    row_item = list(row)
+    return int(row_item[0])
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper("select count(*) from players1;")
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+** wrapper when multi-entry retrieval is necessary
+
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    for row in rows:
+        print row
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper_allrows("select * from players1;")
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+* for staging
+** wrappers
+*** wrapper for write-only (no retrieval) SQL 'queries'
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteWrapper("insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);")
+
+#+END_SRC
+
+#+RESULTS:
+*** wrapper when single-value retrieval is necessary
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    row = c.fetchone()
+    print row
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper("select count(*) from players1;")
+#+END_SRC
+
+
+#+RESULTS:
+: (4L,)
+
+*** wrapper when multi-entry retrieval is necessary
+
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    for row in rows:
+        print row
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper_allrows("select * from players1;")
+#+END_SRC
+
+#+RESULTS:
+: (1, 'Bill Borzo                         ', 0, 0)
+: (2, 'Jeff Jeffries                      ', 0, 0)
+: (3, 'Dave Davies                        ', 0, 0)
+: (4, 'Steve Stevens                      ', 0, 0)
+
+*** refactored versions
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper(query_string, extra=None):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+# def dbExecuteRetrievalWrapper(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    row = c.fetchone()
+
+    DB.close()
+#+END_SRC
+** showAllPLayers--"select * from players1;"
+
+*** hardcoding
+#+BEGIN_SRC python :session *Python* :results output
+
+def showAllPLayers():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "select * from players2;"
+    c.execute(query)
+    rows = c.fetchall()
+    # print rows
+    for row in rows:
+        print row
+    DB.close()
+
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+
+*** refactor to use optional parameter
+#+BEGIN_SRC python :session *Python* :results output
+
+def showAllPLayers(table=players2):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    query = "select * from players1;"
+    c.execute(query)
+    rows = c.fetchall()
+    # print rows
+    for row in rows:
+        print row
+    DB.close()
+
+
+#+END_SRC
+
+** deleteRows--"delete from players1;"
+#+BEGIN_SRC python :session *Python* :results output
+def deleteRows():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("delete from players1;")
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deleteRows()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+showAllPLayers()
+#+END_SRC
+
+#+RESULTS:
+** countPlayers--"select count(*) from players1;"
+*** better
+writing a function like this without an explicit return value
+(previously was relying on 'print'-ing out results) was producing
+an error message that didn't make much sense to me (something about
+tuple and int?)
+
+
+#+BEGIN_SRC python :session *Python* :results output
+def countPlayers():
+    count = dbExecuteRetrievalWrapper("select count(*) from players1;")
+    return count
+#+END_SRC
+
+#+RESULTS:
+*** without using wrapper
+#+BEGIN_SRC python :session *Python* :results output
+def countPlayers():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("select count(*) from players1;")
+    row = c.fetchone()
+    row_item = list(row)
+    return int(row_item[0])
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+
+
+#+RESULTS:
+: 4
+
+** registerPlayer(name)
+*** try to understand this string substitution shit
+#+BEGIN_SRC python :session *Python* :results output
+def addPlayersDavidDavids():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("INSERT INTO players2 (player_name) VALUES (%s)" % "'David Davids'")
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+addPlayersDavidDavids()
+#+END_SRC
+
+#+RESULTS:
+
+
+
+#+BEGIN_SRC python :session *Python* :results output
+def addPlayers(name):
+    # nim = str(name)
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("INSERT INTO players2 (player_name) VALUES (%s)" 
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+addPlayers('DickShit')
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "<stdin>", line 5, in addPlayers
+: psycopg2.ProgrammingError: column "name" does not exist
+: LINE 1: INSERT INTO players2 (player_name) VALUES (name)
+:                                                    ^
+
+
+
+
+
+#+BEGIN_SRC python :session *Python* :results output
+addPlayers("player_name")
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "<stdin>", line 5, in addPlayers
+: psycopg2.ProgrammingError: column "player_name" does not exist
+: LINE 1: INSERT INTO players1 (player_name) VALUES (player_name)
+:                                                    ^
+: HINT:  There is a column named "player_name" in table "players1", but it cannot be referenced from this part of the query.
+
+#+BEGIN_SRC python :session *Python* :results output
+def addPlayersName():
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("INSERT INTO players1 (player_name) VALUES (%s)" % (,))
+    DB.commit()
+    DB.close()
+#+END_SRC
+*** preferred PSQL parameter passing
+#+BEGIN_SRC python :session *Python* :results output
+cur.execute(
+    """INSERT INTO some_table (an_int, a_date, a_string)
+        VALUES (%s, %s, %s);""",
+     (10, datetime.date(2005, 11, 18), "O'Reilly"))
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+c.execute("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", ("Will Williams", 0, 0))
+#+END_SRC
+
+
+
+#+RESULTS:
+#+BEGIN_SRC python :session *Python* :results output
+addWillName()
+#+END_SRC
+
+#+RESULTS:
+*** final
+#+BEGIN_SRC python :session *Python* :results output
+#def registerPlayer(name):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", (name, 0, 0))
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+addPlayerName("Steve Stevens")
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Steven Stevens")
+#+END_SRC
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteWrapper("insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);")
+
+#+END_SRC
+#+RESULTS:
+*** refactor to use wrapper
+should also be passing a table as a parameter?
+#+BEGIN_SRC python :session *Python* :results output
+def registerPlayer(name):
+    dbExecuteWrapper("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", (name, 0, 0))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("May Mays")
+#+END_SRC
+
+#+RESULTS:
+
+** playerStandings
+*** description
+#+BEGIN_SRC python :session *Python* :results output
+"Returns a list of the players and their win records, sorted by wins. "
+#+END_SRC
+*** joins on players and matches
+**** current tables in the database
+select * from matches2;
+select * from players2;
+**** how to register win and matches column from matches?
+- practice with a select to get the right column and query parameters
+- turn the select into an update to change the value of the 'won' column
+- ultimately, move the process into a single Python function
+**** joining tables
+table1
+        join on 'shared column values' -- restriction clause -- count aggregation
+table2
+**** naive attempts
+#+BEGIN_SRC sql
+select players2.wins from matches2 join  players2 on matches2.winner = players2.player_name;
+#+END_SRC
+#+BEGIN_SRC sql
+update players2 set wins = wins + 1  from players2  join matches2 on matches2.winner = players2.player_name;
+#+END_SRC
+#+BEGIN_SRC sql
+update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;
+#+END_SRC
+**** official postgres versions
+http://www.postgresql.org/docs/9.1/static/sql-update.html
+
+http://stackoverflow.com/questions/982919/sql-update-query-using-joins
+#+BEGIN_SRC sql
+UPDATE table1
+SET    COLUMN = value
+FROM   table2,
+       table3
+WHERE  table1.column_id = table2.id
+       AND table1.column_id = table3.id
+       AND table1.COLUMN = value
+       AND table2.COLUMN = value
+       AND table3.COLUMN = value 
+#+END_SRC
+
+#+BEGIN_SRC sql
+update ud 
+  set assid = (
+               select sale.assid 
+                 from sale 
+                where sale.udid = ud.id
+              )
+ where exists (
+               select * 
+                 from sale 
+                where sale.udid = ud.id
+              );
+#+END_SRC
+*** update with a join--move to 'reportMatch'
+#+BEGIN_SRC sql
+update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;
+#+END_SRC
+*** simple sql
+#+BEGIN_SRC sql
+select player_name, wins from players2 order by wins desc
+#+END_SRC
+*** definition
+#+BEGIN_SRC python :session *Python* :results output
+def playerStandings():
+    dbExecuteRetrievalWrapper_allrows("""select player_name, wins from players2 order by wins desc;""")
+#+END_SRC
+
+#+RESULTS:
+
+*** example of use
+#+BEGIN_SRC python :session *Python* :results output
+playerStandings()
+#+END_SRC
+#+RESULTS:
+: ('May Mays', 0)
+: ('Bill Borzo', 0)
+: ('Steve Stevens', 0)
+: ('Dick Shapiro', 0)
+
+** reportMatch(winner, loser)
+*** hardcoded table 'matches2'
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser):
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
+#+END_SRC
+
+#+RESULTS:
+*** refactoring
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper(query_string, extra=None):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+# use this when no need to display anything
+def dbExecuteWrapper_noparameter(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser):
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
+    dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;""")
+    dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.player_name = matches2.winner OR players2.player_name = matches2.loser;""")
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Bill Borzo', 'David Davids')
+#+END_SRC
+
+#+RESULTS:
+
+*** refactor to use an optional parameter for table
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser, table=None):
+    dbExecuteWrapper("""INSERT INTO %s VALUES (%s, %s) ;""", (table, winner, loser))
+    dbExecuteWrapper("""update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;""")
+    dbExecuteWrapper("""update players2 set matches = matches + 1  from matches2 where players2.player_name = matches2.winner OR player2.player_name = matches2.loser;""")
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sql
+update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Bill Borzo', 'David Davids', table=matches2)
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+: NameError: name 'matches2' is not defined
+
+** swissPairings
+
+*** description
+#+BEGIN_SRC python :session *Python* :results output
+"Returns a list of pairs of players for the next round of a match"
+#+END_SRC
+
+* required functions for final--need refactoring
+** use the provided connect() to do all the connecting
+** deleteMatches
+#+BEGIN_SRC python :session *Python* :results output
+def deleteMatches():
+    dbExecuteWrapper("""delete from matches2;""")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sql
+delete from matches2;
+#+END_SRC
+
+** deletePlayers
+#+BEGIN_SRC python :session *Python* :results output
+def deletePlayers():
+    dbExecuteWrapper("""delete from players2;""")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sql
+delete from players2;
+#+END_SRC
+
+** countPlayers--players1 hardcoded
+*** function definition
+#+BEGIN_SRC python :session *Python* :results output
+def countPlayers():
+    count = dbExecuteRetrievalWrapper("select count(*) from players1;")
+    return count
+#+END_SRC
+
+#+RESULTS:
+*** example of use
+#+BEGIN_SRC python :session *Python* :results output
+countPlayers()
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+** registerPlayer(name)
+*** basic function
+#+BEGIN_SRC python :session *Python* :results output
+def registerPlayer(name):
+    dbExecuteWrapper("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", (name, 0, 0))
+#+END_SRC
+*** examples of use
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("May Mays")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Bill Borzo")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Steve Stevens")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Dick Shapiro")
+#+END_SRC
+
+#+RESULTS:
+
+** playerStandings
+*** definition
+#+BEGIN_SRC python :session *Python* :results output
+def playerStandings():
+    dbExecuteRetrievalWrapper_allrows("""select player_name, wins from players2 order by wins desc;""")
+#+END_SRC
+
+#+RESULTS:
+
+*** example of use
+#+BEGIN_SRC python :session *Python* :results output
+playerStandings()
+#+END_SRC
+#+RESULTS:
+: ('Bill Borzo', 4)
+: ('Steve Stevens', 1)
+: ('May Mays', 0)
+: ('Dick Shapiro', 0)
+
+** reportMatch(winner, loser)
+*** basic function
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser):
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
+    dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;""")
+    dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.player_name = matches2.winner OR players2.player_name = matches2.loser;""")
+
+#+END_SRC
+*** examples of use--populate the table
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Bill Borzo', 'Dick Shapiro')
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Bill Borzo', 'May Mays')
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Bill Borzo', 'Steve Stevens')
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch('Steve Stevens', 'Dick Shapiro')
+#+END_SRC
+
+#+RESULTS:
+
+** swissPairings
+* typical SQL interactions
+** create players1 table 
+** drop players1 table
+** insert a row
+** add data to a row
+** delete a row
+** insert several rows
+** count up rows
+** DONE delete all rows
+** DONE insert 4 rows
+** create a new table for matches
+* given project test code
+#+BEGIN_SRC python :session *Python* :results output
+import psycopg2
+def deleteMatches():
+    """Remove all the match records from the database."""
+def deletePlayers():
+    """Remove all the player records from the database."""
+def countPlayers():
+    """Returns the number of players currently registered."""
+def registerPlayer(name):
+    """Adds a player to the tournament database.
+  
+    The database assigns a unique serial id number for the player.  (This
+    should be handled by your SQL database schema, not in your Python code.)
+  
+    Args:
+      name: the player's full name (need not be unique).
+    """
+def playerStandings():
+    """Returns a list of the players and their win records, sorted by wins.
+
+    The first entry in the list should be the player in first place, or a player
+    tied for first place if there is currently a tie.
+
+    Returns:
+      A list of tuples, each of which contains (id, name, wins, matches):
+        id: the player's unique id (assigned by the database)
+        name: the player's full name (as registered)
+        wins: the number of matches the player has won
+        matches: the number of matches the player has played
+    """
+
+
+def reportMatch(winner, loser):
+    """Records the outcome of a single match between two players.
+
+    Args:
+      winner:  the id number of the player who won
+      loser:  the id number of the player who lost
+    """
+ 
+ 
+def swissPairings():
+    """Returns a list of pairs of players for the next round of a match.
+  
+    Assuming that there are an even number of players registered, each player
+    appears exactly once in the pairings.  Each player is paired with another
+    player with an equal or nearly-equal win record, that is, a player adjacent
+    to him or her in the standings.
+  
+    Returns:
+      A list of tuples, each of which contains (id1, name1, id2, name2)
+        id1: the first player's unique id
+        name1: the first player's name
+        id2: the second player's unique id
+        name2: the second player's name
+    """
+
+
+
+#+END_SRC
