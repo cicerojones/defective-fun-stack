@@ -173,6 +173,13 @@ DB = psycopg2.connect("dbname=forum")
 c = DB.cursor()
 #+END_SRC
 **** execute an INSERT statement using the cursor (INJECTION!)
+This string substitution and use of parentheses within a python string
+that is also a SQL statement is potentially opaque. There is a column
+named "content"? And there is some value being passed in as string
+using Python's string substitution syntax that is named content (with
+no quoting. Thus, it is a rare case where you are including a column
+name as an 'parameter' of the SQL statement and where you are using
+that same token as a variable for string substitution just later on.
 #+BEGIN_SRC python
 c.execute("INSERT INTO posts (content) VALUES ('%s')" % content)
 #+END_SRC
@@ -263,6 +270,18 @@ knowledge was specific to French, or vice versa ... when that isn't
 the case in the real world. Normalizing this involved splitting the
 tech skills and job skills into separate tables.
 
+* serializing entries
+
+** example of adding employees to a company
+#+BEGIN_SRC sql
+CREATE TABLE COMPANY(
+   ID  SERIAL PRIMARY KEY,
+   NAME           TEXT      NOT NULL,
+   AGE            INT       NOT NULL,
+   ADDRESS        CHAR(50),
+   SALARY         REAL
+);
+#+END_SRC
 * lesson4
 ** self joins exercise
 list pairs of roommates, only once.
@@ -410,10 +429,15 @@ delte from
 - removes all the rows from the table but leaves its column
   definitions, constraints etc. intact.
 - 
-** sample setup in SQL
+** sample setup in SQL--players1
 *** create players1 table 
+prefer the use of SERIAL to 'autoincrement' player ids
 #+BEGIN_SRC sql
 create table players1(pid integer PRIMARY KEY, player_name character(35), wins integer, matches integer);
+#+END_SRC
+better schema
+#+BEGIN_SRC sql
+create table players2(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer);
 #+END_SRC
 *** drop players1 table
 #+BEGIN_SRC sql
@@ -452,6 +476,55 @@ insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(
 #+BEGIN_SRC sql
 create table matches(player1 int, player2 int, winner int, loser int);
 #+END_SRC
+** sample setup in SQL--players2
+*** create players2 table 
+prefer the use of SERIAL to 'autoincrement' player ids
+
+better schema
+#+BEGIN_SRC sql
+create table players2(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer);
+#+END_SRC
+*** drop players2 table
+#+BEGIN_SRC sql
+drop table players2;
+#+END_SRC
+*** insert a row
+Don't use double quotes!
+#+BEGIN_SRC sql
+insert into players2 values('Bill Borzo', 0, 0); 
+#+END_SRC
+
+#+BEGIN_SRC sql
+insert into players2 (id, player_name, wins, matches) values('Bill Borzo', 0, 0); 
+#+END_SRC
+*** add data to a row
+#+BEGIN_SRC sql
+update players2 set wins = 1, matches = 1 where player_name = 'Bill Borzo';
+#+END_SRC
+*** delete a row
+#+BEGIN_SRC sql
+delete from players2 where id = 1;
+#+END_SRC
+*** insert several rows
+#+BEGIN_SRC sql
+insert into players2 values(2, 'Jeff Jeffries', 0, 0); insert into players2 values(3, 'Dave Davies', 0, 0); insert into players2 values(4, 'Steve Stevens', 0, 0);
+#+END_SRC
+*** count up rows
+#+BEGIN_SRC sql
+select count(*) from players2;
+#+END_SRC
+*** delete all rows
+#+BEGIN_SRC sql
+delete from players2;
+#+END_SRC
+*** insert 4 rows
+#+BEGIN_SRC sql
+insert into players2 values(1, 'Bill Borzo', 0, 0); insert into players2 values(2, 'Jeff Jeffries', 0, 0); insert into players2 values(3, 'Dave Davies', 0, 0); insert into players2 values(4, 'Steve Stevens', 0, 0);
+#+END_SRC
+*** create a new table for matches
+#+BEGIN_SRC sql
+create table matches(player1 int, player2 int, winner int, loser int);
+#+END_SRC
 ** python code of above
 *** in progress copied example (uses sqlite3)
 #+BEGIN_SRC python
@@ -485,3 +558,7 @@ DB = psycopg2.connect("dbname=tourney_practice")
 query = "select pid, name from players1;"
 query = "insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players1 values(2, 'Jeff Jeffries', 0, 0); insert into players1 values(3, 'Dave Davies', 0, 0); insert into players1 values(4, 'Steve Stevens', 0, 0);"
 #+END_SRC
+* substitution in PSQL
+** documentation
+http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries
+http://stackoverflow.com/questions/3410455/how-do-i-use-sql-parameters-with-python
