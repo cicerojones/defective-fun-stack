@@ -1,6 +1,6 @@
 import psycopg2
 
-
+# refactor to use connect() for final version
 def dbExecuteWrapper(query_string, extra=None):
     DB = psycopg2.connect("dbname=tourney_practice")
     c = DB.cursor()
@@ -55,8 +55,10 @@ def playerStandings():
 
 def reportMatch(winner, loser):
     dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
-    dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
-    dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
+    # dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
+    dbExecuteWrapper("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
+    # dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
+    dbExecuteWrapper("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
 
 
     def swissPairings():

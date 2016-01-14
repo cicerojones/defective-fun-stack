@@ -1131,6 +1131,64 @@ reportMatch('Steve Stevens', 'Dick Shapiro')
 
 #+RESULTS:
 
+*** bug in reportMatch?
+Use 'set' in this way means that each time a match gets report, the
+appearance of a previous match in the table gets counted and means
+that certain players match count is inflated.
+
+That is, reportMatch(id1, id2) performs correctly, but then following
+it with reportMatch(id3, id4) gives another match and win to id1 and
+id2. This is because the update statements are executed across the
+full table again. 
+
+Instead, they need to be called using the winner/loser parameters
+only. I created this bug partly because I was not getting the behavior
+I wanted when calling dbExecuteWrapper, specifically without a
+parameter, which in fact was an error of logic on my part to begin
+with.
+
+Fix it. The where clause should specify the actual winners/losers
+reported in this function call.
+
+*** problematic sql code
+#+BEGIN_SRC sql
+where players2.id = matches2.winner
+where players2.id = matches2.winner OR players2.id = matches2.loser
+#+END_SRC
+
+*** python fixes
+#+BEGIN_SRC python :session *Python* :results output
+    dbExecuteWrapper("""update players2 set wins = wins + 1  
+from matches2 
+where players2.id = (%s) ;""", (winner,))
+#+END_SRC
+#+BEGIN_SRC python :session *Python* :results output
+    dbExecuteWrapper("""update players2 set matches = matches + 1  
+from matches2 
+where players2.id = (%s)
+OR players2.id = (%s);""", (loser,))
+#+END_SRC
+
+*** update reportMatch
+#+BEGIN_SRC python :session *Python* :results output
+    dbExecuteWrapper("""update players2 set wins = wins + 1 from matches2 where players2.id = (%s) ;""", (winner,))
+#+END_SRC
+#+BEGIN_SRC python :session *Python* :results output
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser):
+    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
+    # dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
+    dbExecuteWrapper("""update players2 set wins = wins + 1 from matches2 where players2.id = (%s) ;""", (winner,))
+    # dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
+    dbExecuteWrapper("""update players2 set matches = matches + 1  from matches2 where players2.id = (%s) OR players2.id = (%s);""", (winner, loser))
+
+#+END_SRC
+
+#+RESULTS:
+
 ** 
 ** swissPairings
 
@@ -1180,6 +1238,150 @@ query needs player ids as well
 select a.id, a.player_name, b.id, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
 #+END_SRC
 * run a series of SQL statement creating data
+** test lines
+#+BEGIN_SRC python :session *Python* :results output
+deleteMatches()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deletePlayers()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+countPlayers()
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+#+BEGIN_SRC python :session *Python* :results output
+playerStandings()
+#+END_SRC
+
+#+RESULTS:
+: []
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Twilight Sparkle")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Fluttershy")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Applejack")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Pinkie Pie")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+c = countPlayers()
+print c
+#+END_SRC
+
+#+RESULTS:
+: 
+: 4
+
+
+
+#+BEGIN_SRC python :session *Python* :results output
+standings = playerStandings()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+[id1, id2, id3, id4] = [row[0] for row in standings]
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+standings
+#+END_SRC
+
+#+RESULTS:
+: [(45, 'Twilight Sparkle', 1, 1), (47, 'Applejack', 1, 1), (46, 'Fluttershy', 0, 1), (48, 'Pinkie Pie', 0, 1)]
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch(id1, id2)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch(id3, id4)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+standings
+#+END_SRC
+
+#+RESULTS:
+: [(37, 'Twilight Sparkle', 0, 0), (38, 'Fluttershy', 0, 0), (39, 'Applejack', 0, 0), (40, 'Pinkie Pie', 0, 0)]
+
+#+BEGIN_SRC python :session *Python* :results output
+pairings = swissPairings()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+len(pairings) != 2
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC python :session *Python* :results output
+[(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+: ValueError: need more than 1 value to unpack
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs != actual_pairs
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+#registerPlayer("Chandra Nalaar")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+#[(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
+#+END_SRC
 * typical SQL interactions
 ** create players1 table 
 ** drop players1 table
