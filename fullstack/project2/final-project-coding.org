@@ -1122,6 +1122,47 @@ reportMatch('Steve Stevens', 'Dick Shapiro')
 ** 
 ** swissPairings
 
+*** first naive go--returns many duplicates
+#+BEGIN_SRC sql
+select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins
+#+END_SRC
+
+#+BEGIN_SRC sql
+select a.player_name, b.player_name
+from players2 as a, players2 as b
+where a.wins = b.wins
+and a.player_name != b.player_name
+
+#+END_SRC
+
+#+BEGIN_SRC sql
+select a.player_name, b.player_name
+from players2 as a, players2 as b
+where a.wins = b.wins
+and a.player_name != b.player_name
+and a.id < b.id
+
+#+END_SRC
+
+*** add to python
+#+BEGIN_SRC python :session *Python* :results output
+def swissPairings():
+    return dbExecuteRetrievalWrapper_allrows("""select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id""")
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+swissPairings()
+#+END_SRC
+
+#+RESULTS:
+: [("Boots O'Neal", 'Diane Grant')]
+
+#+BEGIN_SRC sql
+select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
+#+END_SRC
 * run a series of SQL statement creating data
 * typical SQL interactions
 ** create players1 table 
