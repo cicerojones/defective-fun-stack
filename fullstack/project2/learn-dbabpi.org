@@ -284,6 +284,8 @@ CREATE TABLE COMPANY(
 #+END_SRC
 * lesson4
 ** self joins exercise
+we use to find pairs of entries that have something in common.
+
 list pairs of roommates, only once.
 #+BEGIN_SRC sql
 QUERY = '''
@@ -410,14 +412,16 @@ def lightweights(cursor):
 #+BEGIN_SRC python
 def lightweights(cursor):
     """Returns a list of the players in the db whose weight is less than the average."""
-    cursor.execute("select name, weight from (select name, avg(weight) as av from players) as avgs where weight < av;")
+    cursor.execute(
+        "select name, weight from (select name, avg(weight) as av from players) as avgs where weight < av;")
     return cursor.fetchall()
 #+END_SRC
 *** but no cigar
 #+BEGIN_SRC python
 def lightweights(cursor):
     """Returns a list of the players in the db whose weight is less than the average."""
-    cursor.execute("select name, weight from players, (select avg(weight) as av from players) as subq where weight < av;")
+    cursor.execute(
+        "select name, weight from players, (select avg(weight) as av from players) as subq where weight < av;")
     return cursor.fetchall()
 #+END_SRC
 ** views
