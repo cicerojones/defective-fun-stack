@@ -564,5 +564,6 @@ query = "insert into players1 values(1, 'Bill Borzo', 0, 0); insert into players
 #+END_SRC
 * substitution in PSQL
 ** documentation
+http://initd.org/psycopg/docs/usage.html#the-problem-with-the-query-parameters
 http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries
 http://stackoverflow.com/questions/3410455/how-do-i-use-sql-parameters-with-python

@@ -1,5 +1,6 @@
 import psycopg2
 
+
 # refactor to use connect() for final version
 def dbExecuteWrapper(query_string, extra=None):
     DB = psycopg2.connect("dbname=tourney_practice")
@@ -18,27 +19,22 @@ def dbExecuteRetrievalWrapper_allrows(query_string):
     DB.close()
 
 
-def dbExecuteWrapper_noparameter(query_string):
-    DB = psycopg2.connect("dbname=tourney_practice")
-    c = DB.cursor()
-    c.execute(query_string)
-    DB.commit()
-    DB.close()
-
-
+# refactor all queries into a variable that is then passed to execute
 def deleteMatches():
-    dbExecuteWrapper("""delete from matches2;""")
+    query = """delete from matches2;"""
+    dbExecuteWrapper(query)
 
 
 def deletePlayers():
-    dbExecuteWrapper("""delete from players2;""")
+    query = """delete from players2;"""
+    dbExecuteWrapper(query)
 
 
 def countPlayers():
     DB = psycopg2.connect("dbname=tourney_practice")
     c = DB.cursor()
-    # refactor to use a query parameter
-    c.execute("select count(*) from players2;")
+    query = "select count(*) from players2;"
+    c.execute(query)
     row = c.fetchone()
     row_item = list(row)
     return int(row_item[0])
@@ -46,20 +42,32 @@ def countPlayers():
 
 
 def registerPlayer(name):
-    dbExecuteWrapper("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", (name, 0, 0))
+    query = ("INSERT INTO players2 (player_name, wins, matches)"
+             "VALUES (%s, %s, %s);")
+    dbExecuteWrapper(query, (name, 0, 0))
 
 
 def playerStandings():
-    return dbExecuteRetrievalWrapper_allrows("""select id, player_name, wins, matches from players2 order by wins desc;""")
+    query = ("SELECT id, player_name, wins, matches"
+             "FROM players2 ORDER BY wins DESC;")
+    return dbExecuteRetrievalWrapper_allrows(query)
 
 
 def reportMatch(winner, loser):
-    dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
-    # dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
-    dbExecuteWrapper("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
-    # dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
-    dbExecuteWrapper("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
+    query1 = ("INSERT INTO matches2 VALUES (%s, %s) ;")
+    query2 = ("UPDATE players2 SET wins = wins + 1"
+              "FROM matches2 WHERE players2.id = (%s) ;")
+    query3 = ("UPDATE players2 SET matches = matches + 1"
+              "FROM matches2 WHERE players2.id = (%s) OR players2.id = (%s);")
+    dbExecuteWrapper(query1, (winner, loser))
+    dbExecuteWrapper(query2, (winner,))
+    dbExecuteWrapper(query3, (winner, loser))
 
 
     def swissPairings():
-    return dbExecuteRetrievalWrapper_allrows("select a.id, a.player_name, b.id, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id")
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name"
+             "FROM players2 as a, players2 as b"
+             "WHERE a.wins = b.wins"
+             "AND a.player_name != b.player_name"
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)

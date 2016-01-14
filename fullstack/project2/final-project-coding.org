@@ -275,7 +275,7 @@ create table players2(id serial PRIMARY KEY, player_name text not null, wins int
 #+END_SRC
 
 #+BEGIN_SRC sql
-create table matches2(winner text, loser text);
+-- create table matches2(winner text, loser text);
 #+END_SRC
 use ids (as integers) rather than strings
 #+BEGIN_SRC sql
@@ -1180,11 +1180,8 @@ OR players2.id = (%s);""", (loser,))
 #+BEGIN_SRC python :session *Python* :results output
 def reportMatch(winner, loser):
     dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
-    # dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
     dbExecuteWrapper("""update players2 set wins = wins + 1 from matches2 where players2.id = (%s) ;""", (winner,))
-    # dbExecuteWrapper_noparameter("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;""")
     dbExecuteWrapper("""update players2 set matches = matches + 1  from matches2 where players2.id = (%s) OR players2.id = (%s);""", (winner, loser))
-
 #+END_SRC
 
 #+RESULTS:
@@ -1238,7 +1235,7 @@ query needs player ids as well
 select a.id, a.player_name, b.id, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
 #+END_SRC
 * run a series of SQL statement creating data
-** test lines
+** test lines for testReportMatches
 #+BEGIN_SRC python :session *Python* :results output
 deleteMatches()
 #+END_SRC
@@ -1382,6 +1379,107 @@ correct_pairs != actual_pairs
 #+BEGIN_SRC python :session *Python* :results output
 #[(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
 #+END_SRC
+** test sequence for testPairings
+#+BEGIN_SRC python :session *Python* :results output
+deleteMatches()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deletePlayers()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Twilight Sparkle")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Fluttershy")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Applejack")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Pinkie Pie")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+standings = playerStandings()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+[id1, id2, id3, id4] = [row[0] for row in standings]
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch(id1, id2)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+reportMatch(id3, id4)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+pairings = swissPairings()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+len(pairings) != 2
+#+END_SRC
+
+#+RESULTS:
+: False
+
+#+BEGIN_SRC python :session *Python* :results output
+[(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs != actual_pairs
+#+END_SRC
+
+
+#+RESULTS:
+: False
+
+
 * typical SQL interactions
 ** create players1 table 
 ** drop players1 table
