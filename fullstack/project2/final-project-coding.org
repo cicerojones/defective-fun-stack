@@ -916,7 +916,7 @@ reportMatch('Bill Borzo', 'David Davids', table=matches2)
 ** import psycopg2 before testing
 ** all preferred wrapper functions
 *** wrapper for plain updates, no retrieval
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 # use this when no need to display anything
 def dbExecuteWrapper(query_string, extra=None):
     DB = psycopg2.connect("dbname=tourney_practice")
@@ -927,8 +927,19 @@ def dbExecuteWrapper(query_string, extra=None):
 #+END_SRC
 
 #+RESULTS:
+*** wrapper to retrieve all rows
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# use this when no need to display anything
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = psycopg2.connect("dbname=tourney_practice")
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    return rows
+    DB.close()
+#+END_SRC
 *** wrapper for plain updates--do not use a parameter (why?)
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 # use this when no need to display anything
 def dbExecuteWrapper_noparameter(query_string):
     DB = psycopg2.connect("dbname=tourney_practice")
@@ -940,8 +951,9 @@ def dbExecuteWrapper_noparameter(query_string):
 
 #+RESULTS:
 
+
 ** deleteMatches
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def deleteMatches():
     dbExecuteWrapper("""delete from matches2;""")
 #+END_SRC
@@ -953,7 +965,7 @@ delete from matches2;
 #+END_SRC
 
 ** deletePlayers
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def deletePlayers():
     dbExecuteWrapper("""delete from players2;""")
 #+END_SRC
@@ -975,7 +987,7 @@ delete from players2;
 #+RESULTS:
 *** no dbExecuteRetrievalWrapper--do not PRINT
 refactor to use new improved dbExecuteRetrievalWrapper
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle
 def countPlayers():
     DB = psycopg2.connect("dbname=tourney_practice")
     c = DB.cursor()
@@ -998,7 +1010,7 @@ countPlayers()
 
 ** registerPlayer(name)
 *** basic function
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def registerPlayer(name):
     dbExecuteWrapper("""INSERT INTO players2 (player_name, wins, matches) VALUES (%s, %s, %s);""", (name, 0, 0))
 #+END_SRC
@@ -1058,7 +1070,7 @@ def playerStandings():
 
 #+RESULTS:
 
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def playerStandings():
     return dbExecuteRetrievalWrapper_allrows("""select id, player_name, wins, matches from players2 order by wins desc;""")
 #+END_SRC
@@ -1085,7 +1097,7 @@ def reportMatch(winner, loser):
 #+END_SRC
 
 User player ids instead of names
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def reportMatch(winner, loser):
     dbExecuteWrapper("""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
     dbExecuteWrapper_noparameter("""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;""")
@@ -1145,9 +1157,9 @@ and a.id < b.id
 #+END_SRC
 
 *** add to python
-#+BEGIN_SRC python :session *Python* :results output
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def swissPairings():
-    return dbExecuteRetrievalWrapper_allrows("""select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id""")
+    return dbExecuteRetrievalWrapper_allrows("select a.id, a.player_name, b.id, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id")
 
 #+END_SRC
 
@@ -1162,6 +1174,10 @@ swissPairings()
 
 #+BEGIN_SRC sql
 select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
+#+END_SRC
+query needs player ids as well
+#+BEGIN_SRC sql
+select a.id, a.player_name, b.id, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
 #+END_SRC
 * run a series of SQL statement creating data
 * typical SQL interactions
@@ -1297,9 +1313,47 @@ reportMatch(id3, id4)
 
 #+RESULTS:
 
+#+COMMENT for testing playerStandings
 #+BEGIN_SRC python :session *Python* :results output
 standings = playerStandings()
 #+END_SRC
 
 #+RESULTS:
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+pairings = swissPairings()
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+len(pairings) != 2
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC python :session *Python* :results output
+[(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+#+END_SRC
+
+#+RESULTS:
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+: ValueError: need more than 1 value to unpack
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+correct_pairs != actual_pairs
+#+END_SRC
+
+
 
