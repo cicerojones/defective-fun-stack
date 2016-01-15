@@ -1,11 +1,11 @@
 date: 2015-02-04 01:34:45
 name: ud197-nd/lesson-4
 ---
-<h1>Lesson 4 Reference Notes</h1>
+* <h1>Lesson 4 Reference Notes</h1>
 
 [TOC]
 
-## The **create table** statement
+** ## The **create table** statement
 
 The full syntax of the **create table** statement is quite complex. See the [PostgreSQL **create table** documentation](http://www.postgresql.org/docs/9.4/static/sql-createtable.html) for the whole thing.  Here's the syntax for the form we're seeing in this lesson:
 
@@ -13,7 +13,7 @@ The full syntax of the **create table** statement is quite complex. See the [Pos
 
 There are a lot of restrictions that can be put on a column or a row. **primary key** and **references** are just two of them. See the "Examples" section of the [**create table** documentation](http://www.postgresql.org/docs/9.4/static/sql-createtable.html) for many, many more.
 
-## Rules for normalized tables
+** ## Rules for normalized tables
 
 Examples here refer to tables in Lessons 2 and 4.
 
@@ -35,7 +35,7 @@ The example here was the **job_skills** table, where a single row listed one of 
 
 ----
 
-## The **serial** type
+** ## The **serial** type
 
 For more detail on the <strong>serial</strong> type, take a look at the last section of this page in the PostgreSQL manual:
 
@@ -43,7 +43,7 @@ http://www.postgresql.org/docs/9.4/static/datatype-numeric.html
 
 ----
 
-## Other subqueries
+** ## Other subqueries
 
 Here are some sections in the PostgreSQL documentation that discuss other forms of subqueries besides the ones discussed in this lesson:
 

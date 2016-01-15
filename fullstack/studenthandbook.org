@@ -1,4 +1,4 @@
-* TOC
+`* TOC
 ** I. Introduction                                                               
 ** II. Anatomy of a Nanodegree                                                   
                                                                                
