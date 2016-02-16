@@ -1,0 +1,29 @@
+0:00:00.220,0:00:01.930
+Rebecca just moved to a new house so
+
+0:00:01.930,0:00:04.210
+let's update her address[br]in the database.
+
+0:00:04.210,0:00:06.240
+Here, we find Rebecca in[br]the employee database,
+
+0:00:06.240,0:00:09.610
+assuming she's the only[br]Rebecca Allen in our employee table.
+
+0:00:09.610,0:00:13.600
+Next, we find her address[br]by matching rebecca.id to
+
+0:00:13.600,0:00:16.309
+the employee id in the address database.
+
+0:00:16.309,0:00:20.880
+Then, we set the street property of[br]her address to 281 Summer Circle.
+
+0:00:20.880,0:00:23.890
+We also update her zipcode to 00189.
+
+0:00:23.890,0:00:27.180
+Now, what do we add to our[br]session before we commit so
+
+0:00:27.180,0:00:28.490
+that this update takes place?

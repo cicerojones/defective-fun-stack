@@ -1,0 +1,59 @@
+0:00:00.460,0:00:03.990
+Our class code is the object-oriented[br]representation of a table in
+
+0:00:03.990,0:00:05.120
+our database.
+
+0:00:05.120,0:00:07.930
+The only thing we need to do[br]is create a class name, and
+
+0:00:07.930,0:00:10.610
+make it extend from the Base[br]class we just created.
+
+0:00:10.610,0:00:14.040
+For conventional purposes,[br]let's make all of our classes start with
+
+0:00:14.040,0:00:18.540
+a capital letter with no spaces in[br]between, also called camo casing.
+
+0:00:18.540,0:00:21.690
+Inside of this class declaration,[br]we will add all of the code for
+
+0:00:21.690,0:00:23.800
+our table and mapper code.
+
+0:00:23.800,0:00:27.280
+For this project, we will need to[br]create two classes to correspond with
+
+0:00:27.280,0:00:31.360
+the two tables we want to create in our[br]database, restaurant and menu item.
+
+0:00:31.360,0:00:34.320
+Be sure to write this class[br]code between your beginning and
+
+0:00:34.320,0:00:36.160
+ending configuration code.
+
+0:00:36.160,0:00:39.540
+Inside each of our classes,[br]we must create a table representation,
+
+0:00:39.540,0:00:43.810
+we use the special variable, double[br]underscore table name double underscore.
+
+0:00:43.810,0:00:48.100
+To let SQLAlchemy know the variable[br]that we will use to refer to our table.
+
+0:00:48.100,0:00:51.450
+For conventional purposes,[br]let's make our table names lowercase,
+
+0:00:51.450,0:00:53.190
+with underscores for spaces.
+
+0:00:53.190,0:00:56.800
+Inside our restaurant class, we will[br]set double underscore tablename double
+
+0:00:56.800,0:01:00.820
+underscore equal to restaurant,[br]and inside the MenuItem class we
+
+0:01:00.820,0:01:03.990
+will set it equal to menu[br]underscore item, as seen here.

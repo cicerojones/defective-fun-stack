@@ -1,0 +1,11 @@
+0:00:00.230,0:00:02.719
+After 35 years with the company,[br]Mark has retired and
+
+0:00:02.719,0:00:04.800
+is to be removed from[br]the employee database.
+
+0:00:04.800,0:00:08.039
+Fill in the blank here with the[br]necessary code to remove Mark from our
+
+0:00:08.039,0:00:09.000
+employee database.

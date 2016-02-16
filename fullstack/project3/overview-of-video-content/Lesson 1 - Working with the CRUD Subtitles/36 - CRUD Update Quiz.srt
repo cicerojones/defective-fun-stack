@@ -1,0 +1,14 @@
+0:00:00.370,0:00:03.660
+The variable we used to refer[br]to Rebecca's address we titled
+
+0:00:03.660,0:00:06.550
+RebeccasAddress with a capital R and[br]capital A.
+
+0:00:06.550,0:00:09.780
+So this is the same variable that we[br]used to update the address here and
+
+0:00:09.780,0:00:10.810
+the ZIP code here.
+
+0:00:10.810,0:00:12.910
+So that's what we need to add[br]to the session and then commit.

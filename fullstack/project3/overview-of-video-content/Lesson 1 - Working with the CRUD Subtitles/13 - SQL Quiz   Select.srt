@@ -1,0 +1,11 @@
+0:00:00.070,0:00:03.620
+With SQL, we're seeing almost[br]one-to-one comparison between CRUD and
+
+0:00:03.620,0:00:05.020
+a few SQL commands.
+
+0:00:05.020,0:00:06.200
+In these next four challenges,
+
+0:00:06.200,0:00:09.799
+match up the SQL command displayed with[br]the CRUD operation that it executes.

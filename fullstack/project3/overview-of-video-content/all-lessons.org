@@ -1,0 +1,92 @@
+* Lesson 1 -- Working with CRUD
+** Course Intro
+** Prereqs and Preparation
+** Project Information - CRUD
+** CRUD Review 1
+** CRUD Review 1
+** CRUD Review 1
+** CRUD Review 1
+** SQL
+** SQL Quiz Select
+** SQL Insert Into
+** SQL Update
+** SQL Delete
+** Creating a Database and ORMs
+** Introducing SQLAlchemy
+** Creating a Database Configuration
+** Creating a Database - Class and Table
+** Creating a Database - Mapper
+** Putting it All Together
+** Database Setup Quiz Part 1
+** Database Setup Quiz Part 1
+** CRUD Create
+** CRUD Create Quiz
+** CRUD Read
+** CRUD Read Quiz
+** CRUD Update
+** CRUD Update Quiz
+** CRUD Delete
+** CRUD Delete Quiz
+** CRUD Review
+** Wrap-up
+* Problem Set 1
+** Intro to Problem Set 1
+** Puppy Shelters
+** Exercise 1 - Setting Up the Database
+** Exercise 2 - Queries
+** Exercise 3 - Associations
+** Exercise 4 - Adding Shelter Capacities
+** Exercise 5 - Shelter Overflow Algorithm
+** Exercise 6 - Adopt a Puppy
+* Lesson 2 -- Making a Web Server
+** Introduction
+** Review of Clients, Servers and Protocols
+** HTTP and Response Codes
+** Building a Server with HTTPBaseServer
+** Running a Web Server
+** Port Forwarding
+** Responding to Multiple GET Requests
+** Hola Server
+** Adding POST to web server
+** Running the POST Web Server
+** Adding CRUD to our Website
+** CRUD Objectives
+** Adding CRUD Hints
+** CRUD Hints
+** Objective 1
+** Objective 2
+** Objective 3
+** Objective 4
+** Objective 5
+* Lesson 3 -- Developing with Frameworks
+** Introducig Frameworks and Flask
+** Lesson 3 Overview
+** Running Your First Flask Application
+** First Flask App Quiz
+** Adding Database to Flask Application
+** Adding Database to Flask Application Quiz
+** Routing
+** Routing Create Quiz
+** Templates
+** Templates Quiz
+** URL for Quiz
+** Form Requests and Redirects
+** Edit Menu Item Form Quiz
+** Delete Menu Item
+** Message Flashing
+** Message Flashing Quiz
+** Styling
+** Responding With JSON
+** JSON Quiz
+** Lesson 3 Wrap-Up
+* Lesson 4 -- Iterative Development
+** Lesson 4 Introduction
+** Iterative Development
+** Tackling a Complex Project
+** Mockups Exercise
+** Adding Routes
+** Adding Templates and Forms
+** CRUD Functionality
+** API Endpoints
+** Styling Your App
+** Wrap-Up

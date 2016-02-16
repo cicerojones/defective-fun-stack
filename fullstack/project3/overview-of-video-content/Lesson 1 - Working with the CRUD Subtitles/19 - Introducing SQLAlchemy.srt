@@ -1,0 +1,35 @@
+0:00:00.140,0:00:03.410
+When I Google search ORM for[br]Python I get over 14
+
+0:00:03.410,0:00:06.670
+million results with several[br]different ORM options we could use.
+
+0:00:06.670,0:00:09.320
+The first result that showed[br]up when I searched was for
+
+0:00:09.320,0:00:11.910
+an application called SQL Alchemy.
+
+0:00:11.910,0:00:15.820
+SQL Alchemy is an open source ORM for[br]Python with a slew of features.
+
+0:00:15.820,0:00:18.300
+Not to mention this awesome[br]Getting Started tutorial.
+
+0:00:18.300,0:00:20.230
+There's a lot of[br]information on this page.
+
+0:00:20.230,0:00:23.610
+But let's just focus on setting up[br]our database and tables for now.
+
+0:00:23.610,0:00:25.480
+If you're using the Vagrantfile,
+
+0:00:25.480,0:00:28.620
+SQLAlchemy is already installed[br]on your virtual machine.
+
+0:00:28.620,0:00:30.050
+If you are not using Vagrant,
+
+0:00:30.050,0:00:32.970
+you can install SQLAlchemy from[br]the link below to follow along.

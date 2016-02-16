@@ -1,0 +1,5 @@
+0:00:00.300,0:00:03.620
+Making a new profile means we're putting[br]new information on to our server.
+
+0:00:03.620,0:00:04.910
+That means we have to do a create.

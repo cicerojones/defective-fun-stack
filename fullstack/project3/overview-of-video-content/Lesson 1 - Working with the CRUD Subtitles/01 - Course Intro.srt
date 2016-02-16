@@ -1,0 +1,107 @@
+0:00:00.250,0:00:03.050
+Hi, my name is Lorenzo, and[br]I'll be your instructor as we
+
+0:00:03.050,0:00:05.780
+explore the foundations of[br]full stack web development.
+
+0:00:05.780,0:00:09.010
+In this course you will learn to build[br]your own data-driven web application,
+
+0:00:09.010,0:00:10.630
+but what does that actually mean?
+
+0:00:10.630,0:00:14.260
+Well, when I say web application[br]I'm referring to a web page or
+
+0:00:14.260,0:00:17.890
+collection of pages that allows your[br]browser to respond to user input,
+
+0:00:17.890,0:00:20.608
+similar to an offline[br]software application.
+
+0:00:20.608,0:00:23.160
+And by data-driven,[br]I mean an application that can store and
+
+0:00:23.160,0:00:27.890
+retrieve information from a database to[br]deliver customized content to the user.
+
+0:00:27.890,0:00:31.140
+Almost all of the popular websites[br]you interact with on a daily basis
+
+0:00:31.140,0:00:33.080
+are data-driven web applications.
+
+0:00:33.080,0:00:35.660
+Soon you will create a similar[br]website of your own.
+
+0:00:35.660,0:00:38.700
+In addition to creating web pages, you[br]will also learn to send data from your
+
+0:00:38.700,0:00:41.150
+server in other forms,[br]like JSON requests.
+
+0:00:41.150,0:00:44.010
+So that the data from your application[br]can be shared with other machines that
+
+0:00:44.010,0:00:47.660
+process JSON, like a data aggregator or[br]a mobile device.
+
+0:00:47.660,0:00:50.463
+Your mission in this course is[br]to help me create a menu app.
+
+0:00:50.463,0:00:53.805
+You'll be building an interactive[br]web application that presents a user
+
+0:00:53.805,0:00:57.920
+a variety of menu items they can view,[br]create, modify, and delete.
+
+0:00:57.920,0:01:00.770
+In the first lesson of this course[br]you will extract data from a database
+
+0:01:00.770,0:01:02.295
+using Python.
+
+0:01:02.295,0:01:05.209
+We'll also be using a tool called[br]an object-relational mapping, or
+
+0:01:05.209,0:01:08.720
+ORM to manipulate queries[br]as objects in Python.
+
+0:01:08.720,0:01:10.860
+If you've never heard of an ORM,[br]don't worry.
+
+0:01:10.860,0:01:12.730
+You'll be very familiar with[br]it in just a few minutes.
+
+0:01:13.860,0:01:17.640
+In the second lesson you will build[br]your first data-driven web application
+
+0:01:17.640,0:01:20.330
+using only the libraries that[br]come installed with Python.
+
+0:01:20.330,0:01:22.790
+In the third lesson we will[br]talk about frameworks and
+
+0:01:22.790,0:01:26.220
+create an application using[br]the lightweight web framework, Flask.
+
+0:01:26.220,0:01:30.020
+You will understand how frameworks help[br]developers write code more efficiently.
+
+0:01:30.020,0:01:32.945
+Once you complete this course you[br]will easily be able to compare and
+
+0:01:32.945,0:01:36.140
+contrast frameworks, and choose one[br]of your own for future projects.
+
+0:01:36.140,0:01:38.918
+Finally, you'll use what you[br]learned from lessons one, two, and
+
+0:01:38.918,0:01:42.420
+three to iteratively write code until[br]you have a polished menu application,
+
+0:01:42.420,0:01:45.300
+complete with API endpoints for[br]JSON requests.
+
+0:01:45.300,0:01:45.910
+Let's get started.

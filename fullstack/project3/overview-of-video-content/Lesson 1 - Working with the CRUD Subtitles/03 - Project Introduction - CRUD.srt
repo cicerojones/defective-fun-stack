@@ -1,0 +1,71 @@
+0:00:00.310,0:00:03.420
+Let's create a web application that[br]allows us to create multiple restaurant
+
+0:00:03.420,0:00:06.150
+menus without having to[br]change the source code.
+
+0:00:06.150,0:00:10.170
+We want to be able to create menu items,[br]read the items we've created,
+
+0:00:10.170,0:00:12.830
+update our menu items, and[br]delete items from time to time.
+
+0:00:14.570,0:00:16.610
+Hm, sounds like we[br]need to make some CRUD.
+
+0:00:16.610,0:00:18.550
+What's so special about CRUD, you ask?
+
+0:00:18.550,0:00:21.980
+Well, this four letter acronym[br]encapsulates all of the actions a user
+
+0:00:21.980,0:00:23.950
+does on a data-driven website.
+
+0:00:23.950,0:00:28.430
+Each time we make a new profile, post[br]a new status, write a new blog entry,
+
+0:00:28.430,0:00:31.270
+upload a new pic, or[br]add a new item to a menu,
+
+0:00:31.270,0:00:34.130
+we are creating new data to[br]be stored in our database.
+
+0:00:34.130,0:00:36.640
+Whenever we look through a friend's[br]latest tweets and pics, or
+
+0:00:36.640,0:00:37.890
+skim through our news feed,
+
+0:00:37.890,0:00:41.230
+we are reading data that was already[br]stored in an application's database.
+
+0:00:41.230,0:00:43.920
+When we correct the typo on[br]a blog post we already made,
+
+0:00:43.920,0:00:47.840
+modify the item quantity in our shopping[br]cart, or change our profile information,
+
+0:00:47.840,0:00:51.160
+we are performing an update on[br]existing information in the database.
+
+0:00:51.160,0:00:54.510
+And when it's time to erase that[br]embarrassing baby pic from our profile
+
+0:00:54.510,0:00:56.470
+or get rid of those items[br]in our shopping cart,
+
+0:00:56.470,0:00:59.230
+we're deleting information[br]in the database.
+
+0:00:59.230,0:01:02.070
+Virtually everything we do on the web[br]can be summarized with one little
+
+0:01:02.070,0:01:03.160
+acronym, CRUD.
+
+0:01:03.160,0:01:06.590
+I want you to take a look at[br]a few common website actions and
+
+0:01:06.590,0:01:08.150
+then decide what the CRUD is going on.
