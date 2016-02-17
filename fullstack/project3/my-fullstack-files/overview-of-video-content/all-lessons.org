@@ -13,13 +13,16 @@
 ** SQL Delete
 ** Creating a Database and ORMs
 ** Introducing SQLAlchemy
-** Creating a Database Configuration
-** Creating a Database - Class and Table
-** Creating a Database - Mapper
+** [#A] Creating a Database Configuration
+*** explanation of database_setup.py
+** [#A] Creating a Database - Class and Table
+** [#A] Creating a Database - Mapper
 ** Putting it All Together
 ** Database Setup Quiz Part 1
+*** create an employee class
 ** Database Setup Quiz Part 1
-** CRUD Create
+*** fill in the mapper code of employee class
+** [#A] CRUD Create
 ** CRUD Create Quiz
 ** CRUD Read
 ** CRUD Read Quiz

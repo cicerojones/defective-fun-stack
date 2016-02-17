@@ -7,11 +7,13 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+
 class Employee(Base):
     __tablename__ = 'employee'
 
     name = Column(String(250), nullable=False)
     id = Column(Integer, primary_key=True)
+
 
 class Address(Base):
     __tablename__ = 'address'

@@ -1,0 +1,87 @@
+* sequence
+** database setup
+running 
+#+BEGIN_SRC python
+python database_setup.py
+#+END_SRC
+
+produces an empty database in this directory:
+
+- restaurantmenu.db
+** employees
+- employee.py
+and 
+- employeeData.db
+
+** use sqlalchemy with the python shell to "populate our database"
+
+#+BEGIN_SRC python
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Restaurant, MenuItem
+engine = create_engine('sqlite:///restaurantmenu.db')
+Base.metadata.bind=engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+myFirstRestaurant = Restaurant(name = "Pizza Palace")
+session.add(myFirstRestaurant)
+session.commit()
+session.query(Restaurant).all()
+cheesepizza = MenuItem(name = "Cheese Pizza", description = "Made with all natural ingredients and fresh mozzarella", course = "Entree", price = "$8.99", restaurant = myFirstRestaurant)
+session.add(cheesepizza)
+session.commit()
+session.query(MenuItem).all()
+#+END_SRC
+
+#+BEGIN_SRC python
+newEmployee = Employee(name = "Rebecca Allen")
+
+rebeccaAddress = Address(street = "512 Sycamore Road", zip = "02001", employee = newEmployee)
+#+END_SRC
+
+** update, er, read--see CRUDreview
+
+#+BEGIN_SRC python
+python lotsofmenus.py
+#+END_SRC
+
+** read Image quiz
+#+BEGIN_SRC python
+employees = session.query(Employee).all()
+
+for employee in employees:
+    print employee.name
+#+END_SRC
+
+** update--see CRUDreview
+#+BEGIN_SRC python
+UrbanVeggieBurger = session.query(MenuItem).filter_by(id=8).one()
+UrbanVeggieBurger.price = '$2.99'
+session.add(UrbanVeggieBurger)
+session.commit() 
+#+END_SRC
+
+#+BEGIN_SRC python
+for veggieBurger in veggieBurgers:
+    if veggieBurger.price != '2.99':
+        veggieBurger.price = '$2.99'
+        session.add(veggieBurger)
+        session.commit()
+    
+#+END_SRC
+
+#+BEGIN_SRC python
+rebecca = session.query(Employee).filter_by(name = "Rebecca Allen").one()
+RebeccasAddress = session.query(Address).filter_by(employee_id = rebecca.id).one()
+RebeccasAddress.street = "281 Summer Circle"
+RebeccasAddress.zip = "00189"
+session.add(RebeccasAddress)
+session.commit()
+
+#+END_SRC
+
+#+BEGIN_SRC python
+mark = session.query(Employee).filter_by(name="Mark Gonzalez").one()
+session.delete(mark)
+session.commit()
+#+END_SRC
