@@ -1,0 +1,17 @@
+0:00:00.550,0:00:05.140
+I save my code, stop and start my server[br]again, and visit the slash hello page.
+
+0:00:05.140,0:00:06.080
+And look.
+
+0:00:06.080,0:00:08.160
+Now my server responds to my input, so
+
+0:00:08.160,0:00:10.790
+I can make it say hello[br]in any language I'd like.
+
+0:00:10.790,0:00:12.980
+Get this server up and[br]running on your machine.
+
+0:00:12.980,0:00:15.180
+Feel free to use the code in[br]the instructor notes as reference.

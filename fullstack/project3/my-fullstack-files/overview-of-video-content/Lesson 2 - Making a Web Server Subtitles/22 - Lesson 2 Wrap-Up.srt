@@ -1,0 +1,26 @@
+0:00:00.400,0:00:02.340
+Great job on finishing lesson two.
+
+0:00:02.340,0:00:04.880
+At this rate,[br]you'll be a professional in no time.
+
+0:00:04.880,0:00:08.600
+In this lesson, you created a web[br]server in Python, learned what GET and
+
+0:00:08.600,0:00:11.720
+POST requests are and[br]how to create code to handle them, and
+
+0:00:11.720,0:00:15.260
+implemented all CRUD operations[br]via web pages and forms.
+
+0:00:15.260,0:00:17.500
+So, now you've learned the basic[br]underlying concepts of
+
+0:00:17.500,0:00:20.460
+creating a data-driven web[br]app using just Python.
+
+0:00:20.460,0:00:23.410
+In lesson three, you'll be developing[br]a new web server, but this time,
+
+0:00:23.410,0:00:25.370
+using a framework to help[br]you code more efficiently.
