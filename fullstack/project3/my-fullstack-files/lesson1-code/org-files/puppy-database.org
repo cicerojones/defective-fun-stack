@@ -1,0 +1,79 @@
+#+BEGIN_SRC python :session *Python*
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from puppies import Base, Shelter, Puppy
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python*
+Base = declarative_base()
+
+engine = create_engine('sqlite:///puppyshelter.db')
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* 
+#Base.metadata.create_all(engine)
+
+Base.metadata.bind=engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+#+END_SRC
+
+from IPython.core.completerlib import module_completion
+Base = declarative_base()
+
+open('/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-21998cu7/python-21998OX2', 'w').write(str(_))
+'org_babel_python_eoe'
+
+my_dick
+
+declarative_base
+
+
+import sqlalchemy
+
+base = sqlalchemy.ext.declarative.declarative_base()
+
+engine = create_engine('sqlite:///puppyshelter.db')
+#Base.metadata.create_all(engine)
+Base.metadata.bind=engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+open('/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-21998cu7/python-21998AhF', 'w').write(str(_))
+'org_babel_python_eoe'
+
+dese_puppies = session.query(Puppy).all()
+
+.name
+
+dese_puppies
+
+.gender
+
+firstPup = session.query(Puppy).first()
+
+firstPup.name
+
+len(dese_puppies)
+
+type(dese_puppies)
+dese_puppies[:1]
+dese_puppies[12]
+
+twelfth = dese_puppies[12]
+
+twelfth.name
+
+first_twelve = dese_puppies[:11]
+
+for n in first_twelve:
+    print n
+for n in first_twelve:
+        print n.name
+
+pwd
+cd ../..
+ls
+pwd
+
+history -f puppy-database.org
