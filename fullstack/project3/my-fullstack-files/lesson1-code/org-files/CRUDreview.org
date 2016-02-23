@@ -1,4 +1,4 @@
-* CRUD Review
+* CRUD Review--file taken from Udacity Course materials
 ** Operations with SQLAlchemy
 
 In this lesson, we performed all of our CRUD operations with
@@ -99,3 +99,5 @@ spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
 session.delete(spinach)
 session.commit() 
 #+END_SRC
+
+
