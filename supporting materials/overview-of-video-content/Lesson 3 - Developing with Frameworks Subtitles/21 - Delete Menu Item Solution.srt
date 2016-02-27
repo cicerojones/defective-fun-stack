@@ -1,0 +1,26 @@
+0:00:00.260,0:00:04.300
+The first thing I'll modify in my[br]project.py file is this app.route,
+
+0:00:04.300,0:00:07.030
+such that we can respond to GET and[br]POST requests.
+
+0:00:07.030,0:00:10.220
+Similarly to when I edited a menu[br]item the next thing I'll do
+
+0:00:10.220,0:00:11.990
+is find the item I want to delete.
+
+0:00:11.990,0:00:15.180
+In my if statement I'll check again[br]to see if it's a POST request,
+
+0:00:15.180,0:00:18.000
+delete the item, and[br]redirect back to my main menu.
+
+0:00:18.000,0:00:19.790
+And if it's a GET request,[br]I'll go ahead and
+
+0:00:19.790,0:00:23.670
+render that deleteMenuItem.html file[br]with the item I want to delete.
+
+0:00:23.670,0:00:25.990
+Solutions for this challenge[br]are available in the Instructor Notes.

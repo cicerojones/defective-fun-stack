@@ -1,0 +1,80 @@
+0:00:00.390,0:00:03.650
+So up to this point, we've created[br]our code almost purely from scratch,
+
+0:00:03.650,0:00:06.939
+using a few internal libraries[br]like HTTP Base Server and
+
+0:00:06.939,0:00:09.750
+external libraries like SQL Alchemy.
+
+0:00:09.750,0:00:12.540
+Creating a website from scratch really[br]shows that you have a good grasp of
+
+0:00:12.540,0:00:16.800
+underlying programming concepts and[br]are able to utilize the power of Python.
+
+0:00:16.800,0:00:17.990
+But as we make our website more and
+
+0:00:17.990,0:00:21.710
+more complex, the code becomes[br]repetitive and difficult to maintain.
+
+0:00:21.710,0:00:25.280
+Frameworks are collections of code that[br]simplify the web development process.
+
+0:00:25.280,0:00:27.070
+They take care of repetitive tasks and
+
+0:00:27.070,0:00:30.200
+allow us to focus on the more[br]unique features of our project.
+
+0:00:30.200,0:00:30.880
+At the moment, some of
+
+0:00:30.880,0:00:34.970
+the most popular frameworks out there[br]are RubyonRails.net and Django.
+
+0:00:34.970,0:00:37.970
+But if we take a look at this Wikipedia[br]article, we see that there are hundreds
+
+0:00:37.970,0:00:41.480
+of frameworks developers have created to[br]code web applications more efficiently.
+
+0:00:41.480,0:00:42.380
+Frameworks may rise and
+
+0:00:42.380,0:00:44.720
+fall in popularity but[br]the same underlying concepts for
+
+0:00:44.720,0:00:48.190
+developing web pages applies for[br]all of these technologies.
+
+0:00:48.190,0:00:51.070
+Think of a framework as[br]a box of prepared cake mix.
+
+0:00:51.070,0:00:53.570
+We could make a cake using all[br]of these items from scratch and
+
+0:00:53.570,0:00:56.540
+would probably have a better[br]understanding of how to make cakes.
+
+0:00:56.540,0:00:59.010
+But if we have several cakes to[br]make in a short period of time,
+
+0:00:59.010,0:01:01.920
+finding a good cake mix simplifies[br]the preparation process and
+
+0:01:01.920,0:01:03.640
+helps us focus on other things.
+
+0:01:03.640,0:01:04.190
+Like frosting.
+
+0:01:05.602,0:01:09.310
+In lesson two you built a website with[br]the raw ingredients of web development.
+
+0:01:09.310,0:01:10.100
+Now it's time to see how we
+
+0:01:10.100,0:01:12.230
+can use frameworks to improve[br]our development process.

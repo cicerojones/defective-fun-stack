@@ -1,0 +1,17 @@
+0:00:00.200,0:00:02.760
+I've created a simple template here,[br]and called it menu.html.
+
+0:00:02.760,0:00:05.890
+A copy of it,[br]is available in the instructor notes.
+
+0:00:05.890,0:00:06.720
+Take a look at it, and
+
+0:00:06.720,0:00:09.890
+see if you can figure out,[br]how Flask accommodates for escape code?
+
+0:00:09.890,0:00:12.920
+You should see a few symbols here,[br]that don't look like HTML.
+
+0:00:12.920,0:00:15.230
+Try and see if you can figure out,[br]what each one of them does.

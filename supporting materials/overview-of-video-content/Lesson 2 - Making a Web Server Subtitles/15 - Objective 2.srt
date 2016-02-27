@@ -1,0 +1,26 @@
+0:00:00.150,0:00:02.830
+In order to complete this challenge,[br]I will take advantage of the for
+
+0:00:02.830,0:00:04.420
+loop I've already created.
+
+0:00:04.420,0:00:08.320
+Within it, I will add an anchor tag to[br]edit and delete each restaurant like so.
+
+0:00:08.320,0:00:11.580
+I will leave the hrefs empty[br]with hashtags for now,
+
+0:00:11.580,0:00:15.125
+since I'll be adding the edit and delete[br]functionality in later objectives.
+
+0:00:15.125,0:00:18.585
+I rerun my server again, and[br]get a restaurants page with Edit and
+
+0:00:18.585,0:00:20.555
+Delete options for each restaurant.
+
+0:00:20.555,0:00:22.485
+Objective two is in the bag.
+
+0:00:22.485,0:00:25.675
+The source code for objective two is[br]available in the instructor notes.

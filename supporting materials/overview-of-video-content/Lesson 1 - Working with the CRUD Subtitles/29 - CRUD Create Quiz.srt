@@ -1,0 +1,14 @@
+0:00:00.200,0:00:02.800
+In the last quiz,[br]you created an empty database.
+
+0:00:02.800,0:00:04.540
+Let's add our first employee to it.
+
+0:00:04.540,0:00:07.510
+Fill in the blanks below to add[br]a new employee named Rebecca Allen
+
+0:00:07.510,0:00:08.480
+to the database.
+
+0:00:08.480,0:00:11.720
+Then fill in the blank here to[br]add Rebecca's address as well.

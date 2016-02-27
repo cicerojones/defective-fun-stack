@@ -1,0 +1,17 @@
+0:00:00.070,0:00:01.120
+In this next quiz,
+
+0:00:01.120,0:00:04.200
+you're going to write code to remove[br]an item from our restaurant menu.
+
+0:00:04.200,0:00:06.580
+But this time I'll provide[br]you the template code.
+
+0:00:06.580,0:00:10.160
+Delete menu item dot HTML is[br]available in the instructor notes.
+
+0:00:10.160,0:00:14.100
+Your challenge is to refactor the code[br]and project dot pi such that we
+
+0:00:14.100,0:00:16.180
+can effectively delete[br]an item from the database.

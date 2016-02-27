@@ -1,0 +1,14 @@
+0:00:00.270,0:00:02.640
+Awesome job reaching[br]the end of lesson three.
+
+0:00:02.640,0:00:04.680
+Getting over the learning[br]curve takes some time, but
+
+0:00:04.680,0:00:08.160
+the benefits of using a framework[br]reveals themselves rather quickly.
+
+0:00:08.160,0:00:10.360
+At this point you have learned[br]all the essential tools for
+
+0:00:10.360,0:00:13.540
+creating a web application, and[br]are ready to take on the final project.

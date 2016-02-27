@@ -1,0 +1,32 @@
+0:00:00.150,0:00:02.490
+So now that we have[br]a functioning Flask application,
+
+0:00:02.490,0:00:04.220
+let's bring our CRUD[br]functionality into it.
+
+0:00:04.220,0:00:06.720
+I will import the code for[br]SQLAlchemy and
+
+0:00:06.720,0:00:10.130
+the database engine in sessionmaker[br]like in Lessons 1 and 2.
+
+0:00:10.130,0:00:12.780
+Now I'm going to change my[br]HelloWorld function such that it
+
+0:00:12.780,0:00:16.720
+performs this following query to grab[br]the first restaurant out of my database.
+
+0:00:16.720,0:00:20.578
+And list out all of the menu items and[br]stored in a string called output.
+
+0:00:20.578,0:00:23.670
+I'll also add a break line tag to[br]make my output a bit easier to read.
+
+0:00:23.670,0:00:27.690
+I will return this output string so[br]that my user sees it from the browser.
+
+0:00:27.690,0:00:31.720
+When I save my Python file my flask[br]server instantly refreshes itself.
+
+0:00:31.720,0:00:34.840
+So when I refresh the page I now[br]see all of my menu items listed

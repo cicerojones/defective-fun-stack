@@ -1,0 +1,8 @@
+0:00:00.330,0:00:05.075
+In order to solve this problem, all I[br]had to do was add i.price, a break and
+
+0:00:05.075,0:00:08.680
+i.description, followed by two[br]more breaks to my output stream.
+
+0:00:08.680,0:00:11.160
+The solution code for this is[br]available within the instructor notes.

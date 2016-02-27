@@ -1,0 +1,119 @@
+0:00:00.140,0:00:02.040
+Responding with web pages is great, but
+
+0:00:02.040,0:00:05.490
+sometimes all that needs to be[br]communicated is information.
+
+0:00:05.490,0:00:09.020
+For example, let's say that there's[br]a web application out there called Yum
+
+0:00:09.020,0:00:11.330
+that wants to collect[br]our restaurant menus and
+
+0:00:11.330,0:00:13.940
+advertise them to mobile clients[br]based on their location.
+
+0:00:13.940,0:00:15.860
+Free advertising, all right!
+
+0:00:15.860,0:00:19.290
+This app wants to see the restaurants[br]and menus available in our database but
+
+0:00:19.290,0:00:21.460
+doesn't really need to[br]parse through HTML or
+
+0:00:21.460,0:00:23.770
+waste bandwidth receiving CSS files.
+
+0:00:23.770,0:00:25.710
+It just wants the data.
+
+0:00:25.710,0:00:28.550
+For this reason,[br]developers have created APIs, or
+
+0:00:28.550,0:00:32.610
+Application Programming Interfaces,[br]that allow external applications to use
+
+0:00:32.610,0:00:34.680
+public information our[br]apps want to share,
+
+0:00:34.680,0:00:36.210
+without all the bells and whistles.
+
+0:00:36.210,0:00:39.984
+When an API is communicated over the[br]Internet, following the rules of HTTP,
+
+0:00:39.984,0:00:41.330
+we call this a restful API.
+
+0:00:41.330,0:00:46.230
+One of the most popular ways of sending[br]data with a restful architecture is with
+
+0:00:46.230,0:00:50.070
+a format called JSON, which stands for[br]JavaScript object notation.
+
+0:00:50.070,0:00:53.730
+JSON uses attribute value pairings[br]which are delimited by a colon.
+
+0:00:53.730,0:00:56.500
+Brackets are used to[br]encapsulate individual objects.
+
+0:00:56.500,0:00:59.830
+Let's start coding to add this[br]JSON feature to our application.
+
+0:00:59.830,0:01:02.570
+Before we write the JSON[br]function in our Flask menu app,
+
+0:01:02.570,0:01:06.490
+let's first open up the database[br]setup.pi and add a decorator method.
+
+0:01:06.490,0:01:10.470
+This serializable function will help[br]define what data we want to send across,
+
+0:01:10.470,0:01:13.020
+and put it in a format[br]that Flask can easily use.
+
+0:01:13.020,0:01:15.130
+Flask has a built-in package,[br]called jsonify,
+
+0:01:15.130,0:01:19.370
+that will allow us to easily configure[br]an API endpoint for our application.
+
+0:01:19.370,0:01:22.752
+I will go ahead and import this[br]package now in my project.py file.
+
+0:01:22.752,0:01:26.240
+For this lesson we are only going to[br]focus on using a get request to get
+
+0:01:26.240,0:01:27.960
+a collection of restaurant menu items.
+
+0:01:27.960,0:01:30.560
+But know that other types of[br]requests can be implemented as well.
+
+0:01:30.560,0:01:33.920
+I will now create a route similar[br]to my restaurant menu page
+
+0:01:33.920,0:01:36.000
+with /JSON at the end.
+
+0:01:36.000,0:01:39.190
+I then create a function and[br]name it restaurant menu JSON and
+
+0:01:39.190,0:01:42.260
+then perform the same query as[br]in my restaurant menu class.
+
+0:01:42.260,0:01:45.760
+But instead of returning a template,[br]I will return this jsonify class and
+
+0:01:45.760,0:01:48.740
+use this loop to serialize[br]all of my database entries.
+
+0:01:48.740,0:01:55.140
+Now, if I save and go to local host[br]port 5000/restaurants/1/menu/json,
+
+0:01:55.140,0:01:58.110
+I return with the pure data form[br]of my menu in a format that can
+
+0:01:58.110,0:02:01.080
+easily be read by humans and[br]easily parsed by other computers

@@ -1,0 +1,44 @@
+0:00:00.260,0:00:04.370
+URL building is a helpful feature[br]in Flask to create URLs based on
+
+0:00:04.370,0:00:05.870
+the functions they execute.
+
+0:00:05.870,0:00:09.240
+This is really helpful when you want[br]to create links to other pages inside
+
+0:00:09.240,0:00:10.300
+your application.
+
+0:00:10.300,0:00:14.440
+To build a URL to a specific function,[br]we can use this url_for() method.
+
+0:00:14.440,0:00:17.760
+This is one of the many helper functions[br]that Flask makes available to us.
+
+0:00:17.760,0:00:18.835
+The documentation for
+
+0:00:18.835,0:00:22.890
+url_for() can be found on[br]the Flask documentation page here.
+
+0:00:22.890,0:00:25.520
+I want you to open up[br]the menu.html template and
+
+0:00:25.520,0:00:28.780
+add some new hyperlinks to edit and[br]delete each menu item.
+
+0:00:28.780,0:00:32.970
+Remember that this URL for helper method[br]returns a complete URL stream, so
+
+0:00:32.970,0:00:35.410
+place it where it belongs[br]inside of an anchor tag.
+
+0:00:35.410,0:00:40.140
+If your code works you should have edit[br]and delete links now on every menu item.
+
+0:00:40.140,0:00:42.000
+Read through the documentation for[br]reference.
+
+0:00:42.000,0:00:44.080
+Consult your fellow students[br]if you have any questions.

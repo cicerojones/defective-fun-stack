@@ -1,0 +1,41 @@
+0:00:00.260,0:00:02.050
+So we have a working application now,[br]but
+
+0:00:02.050,0:00:05.720
+we should probably add some style to it,[br]if we want it to be appealing to users.
+
+0:00:05.720,0:00:07.100
+Flask can automatically look for
+
+0:00:07.100,0:00:11.890
+CSS, JavaScript, and media files,[br]if we put them in a folder named static.
+
+0:00:11.890,0:00:13.780
+So I will create a folder called static,
+
+0:00:13.780,0:00:16.610
+in the same directory as[br]my project.py file, as so.
+
+0:00:16.610,0:00:18.910
+I will create a CSS file, and
+
+0:00:18.910,0:00:22.360
+name it styles.css, and[br]store it inside of this directory.
+
+0:00:22.360,0:00:24.660
+By adding this following[br]link to my template files,
+
+0:00:24.660,0:00:29.390
+I will tell Flask to use this styles.css[br]file when it renders this template.
+
+0:00:29.390,0:00:30.860
+When I refresh my browser,
+
+0:00:30.860,0:00:34.500
+I turn my old unstyled menu page[br]into one that looks like this.
+
+0:00:34.500,0:00:36.950
+Take some time to add some[br]styles to your menu app.
+
+0:00:36.950,0:00:40.270
+My CSS file and templates can be found[br]in the instructor notes for reference.

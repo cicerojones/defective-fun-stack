@@ -1,0 +1,26 @@
+0:00:00.210,0:00:03.090
+Download the stutter template for[br]this code in the instructor notes.
+
+0:00:03.090,0:00:07.728
+Note that there are functions for[br]newMenuItem, editMenuItem, and
+
+0:00:07.728,0:00:11.300
+deleteMenuItem, all with[br]the parameters that they take in.
+
+0:00:11.300,0:00:13.310
+Write up the appropriate[br]route decorations to
+
+0:00:13.310,0:00:15.100
+properly execute these functions.
+
+0:00:15.100,0:00:19.030
+When you can open the URLs to create,[br]edit, and delete menu items,
+
+0:00:19.030,0:00:21.610
+you have successfully[br]completed this challenge.
+
+0:00:21.610,0:00:24.360
+Don't hesitate to view the Flask[br]documentation or ask for
+
+0:00:24.360,0:00:26.440
+help from your fellow students[br]if you have any questions.

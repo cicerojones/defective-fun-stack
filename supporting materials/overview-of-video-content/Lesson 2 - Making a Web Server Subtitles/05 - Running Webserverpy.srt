@@ -1,0 +1,32 @@
+0:00:00.420,0:00:03.230
+I will save the webserver.py file,[br]navigate to it
+
+0:00:03.230,0:00:08.010
+from within my Vagrant machine, and[br]execute it writing python webserver.py.
+
+0:00:08.010,0:00:11.110
+The Vagrant environment for this course[br]is already configured to forward port
+
+0:00:11.110,0:00:15.530
+8080 requests from the host machine[br]to port 8080 on the Vagrant machine.
+
+0:00:15.530,0:00:20.780
+So if we open up a browser and visit[br]the URL localhost8080/hello look, our
+
+0:00:20.780,0:00:24.190
+server recognized the GET request and[br]responded with the code that we wrote.
+
+0:00:24.190,0:00:26.980
+From the Vagrant machine, we can also[br]see the GET request it received from
+
+0:00:26.980,0:00:29.970
+the browser and[br]the code we sent as a reply.
+
+0:00:29.970,0:00:31.570
+Try and create this code on your own.
+
+0:00:31.570,0:00:34.560
+If you run in to any problems, a[br]functioning version of this python code,
+
+0:00:34.560,0:00:35.820
+can be found in the instructor notes.

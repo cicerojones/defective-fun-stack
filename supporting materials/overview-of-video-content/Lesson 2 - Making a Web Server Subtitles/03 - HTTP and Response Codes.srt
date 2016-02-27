@@ -1,0 +1,68 @@
+0:00:00.450,0:00:04.370
+The main concept of HTTP is that[br]clients tell servers what they
+
+0:00:04.370,0:00:08.650
+want by using an HTTP verb,[br]also know as an HTTP method.
+
+0:00:08.650,0:00:12.970
+There are nine HTTP verbs in[br]the current HTTP specification.
+
+0:00:12.970,0:00:17.340
+The two most commonly used methods for[br]websites though, are GET and POST.
+
+0:00:17.340,0:00:20.290
+A GET request can be thought of[br]as the client telling the server,
+
+0:00:20.290,0:00:22.260
+get me some information that you have.
+
+0:00:22.260,0:00:24.580
+Or, a POST can be thought[br]of as the client saying,
+
+0:00:24.580,0:00:27.160
+I want to modify some[br]information that you have.
+
+0:00:27.160,0:00:29.590
+GETs are sometimes called safe methods,
+
+0:00:29.590,0:00:32.795
+since they are only used to retrieve[br]existing data from the database,
+
+0:00:32.795,0:00:37.720
+whereas POSTs call for data to be added,[br]removed, or changed on a server.
+
+0:00:37.720,0:00:42.050
+We know that the client prefixes[br]requests to the server with HTTP verbs.
+
+0:00:42.050,0:00:43.730
+So, how does the server reply?
+
+0:00:43.730,0:00:46.650
+Status codes are the server's[br]reply to a client as to
+
+0:00:46.650,0:00:48.910
+what happened after a specific request.
+
+0:00:48.910,0:00:50.550
+In addition to a status code,
+
+0:00:50.550,0:00:54.380
+a server can also supply any requested[br]resources the client requested,
+
+0:00:54.380,0:01:00.270
+such as HTML, CSS and JavaScript, and[br]media files such as images and audio.
+
+0:01:00.270,0:01:04.420
+Some common response codes are 200,[br]which indicates a successful GET
+
+0:01:04.420,0:01:10.430
+request, 301, which is a successful[br]post request, and 404, which indicates
+
+0:01:10.430,0:01:14.170
+that we were looking for a file on the[br]server, and the server couldn't find it.
+
+0:01:14.170,0:01:17.100
+In the next section, we'll put all[br]of these concepts together as we
+
+0:01:17.100,0:01:18.710
+create our own web server in Python.

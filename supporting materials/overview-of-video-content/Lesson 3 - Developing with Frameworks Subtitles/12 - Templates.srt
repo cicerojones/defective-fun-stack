@@ -1,0 +1,68 @@
+0:00:00.140,0:00:03.280
+Generating HTML from within[br]Python isn't all that fun.
+
+0:00:03.280,0:00:06.290
+I am sure you're getting pretty tired[br]of having to create these strings we've
+
+0:00:06.290,0:00:08.630
+called output over and over and over.
+
+0:00:08.630,0:00:12.250
+This can get pretty cumbersome as our[br]application gets more and more complex.
+
+0:00:12.250,0:00:15.030
+Because of that,[br]Flask configures a template engine for
+
+0:00:15.030,0:00:16.950
+you to store your HTML code.
+
+0:00:16.950,0:00:19.900
+To render a template you can[br]use this cleverly named method
+
+0:00:19.900,0:00:21.380
+called render_template.
+
+0:00:21.380,0:00:23.900
+All you have to do is provide[br]the name of the template and
+
+0:00:23.900,0:00:27.483
+the variables you want to pass to the[br]template engine as keyword arguments.
+
+0:00:27.483,0:00:29.722
+Here I will render a template for[br]my menu items page.
+
+0:00:29.722,0:00:33.300
+Flask will look for my templates[br]in a folder named templates.
+
+0:00:33.300,0:00:35.960
+So I'll make a directory called[br]templates in the same folder as my
+
+0:00:35.960,0:00:39.930
+Flask application, and from within[br]it I'll create an HTML document and
+
+0:00:39.930,0:00:41.170
+call it menu.html.
+
+0:00:41.170,0:00:44.200
+But what about when we need to get[br]information from our database or
+
+0:00:44.200,0:00:46.420
+Python code into our HTML?
+
+0:00:46.420,0:00:49.660
+This retrieval of data[br]is called HTML escaping.
+
+0:00:49.660,0:00:53.100
+Templates in Flask are already[br]pre-configured to handle escape code.
+
+0:00:53.100,0:00:55.940
+That is, the code that we[br]are retrieving from our application and
+
+0:00:55.940,0:00:58.460
+database, and putting it into our html.
+
+0:00:58.460,0:01:01.300
+With HTML escaping we have[br]access to python variables and
+
+0:01:01.300,0:01:05.140
+functions, and can even get the results[br]added directly into our HTML code.

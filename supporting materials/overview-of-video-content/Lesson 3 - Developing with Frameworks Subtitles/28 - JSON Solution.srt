@@ -1,0 +1,26 @@
+0:00:00.170,0:00:03.240
+So, in order to add our second JSON[br]endpoint, we should add a route,
+
+0:00:03.240,0:00:04.920
+just like specified in the question.
+
+0:00:04.920,0:00:06.280
+Then we create a new function.
+
+0:00:06.280,0:00:10.575
+I decided to call it menuItemJSON,[br]that passes in the restaurant_id and
+
+0:00:10.575,0:00:13.060
+menu_id, since both of them[br]are specified in the URL.
+
+0:00:13.060,0:00:16.465
+I'll then perform a query to[br]get the one menu ID that I
+
+0:00:16.465,0:00:18.010
+want to get the information about.
+
+0:00:18.010,0:00:21.780
+I will JSONify that menu item,[br]but serializing it first.
+
+0:00:21.780,0:00:23.800
+You can see a copy of this[br]code in the instructor notes.

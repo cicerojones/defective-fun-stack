@@ -1,0 +1,65 @@
+0:00:00.202,0:00:02.650
+All right, so we see that the code[br]with the single bracket and
+
+0:00:02.650,0:00:05.410
+a percent sign on either side[br]is the logical code that we
+
+0:00:05.410,0:00:08.540
+want to execute in our HTML,[br]like a for loop.
+
+0:00:08.540,0:00:12.600
+The double brackets indicate the code[br]that we want it's results printed into
+
+0:00:12.600,0:00:14.420
+the html document itself.
+
+0:00:14.420,0:00:17.590
+Since, from within HTML codes,[br]we cannot use indentations to mark
+
+0:00:17.590,0:00:21.220
+the beginning and ending of statements[br]and loops, we must use keywords,
+
+0:00:21.220,0:00:26.000
+like endfor, and endif, to indicate[br]the end of a loop, or statement.
+
+0:00:26.000,0:00:29.510
+Going back to my menu.html, I can[br]see how I'm obtaining the result of
+
+0:00:29.510,0:00:33.510
+a query and executing the output[br]here in my HTML page.
+
+0:00:33.510,0:00:36.876
+I will also need to substitute the code[br]I had in my restaurant menu method, so
+
+0:00:36.876,0:00:38.890
+that instead of returning a string,
+
+0:00:38.890,0:00:43.420
+we will return a rendered template[br]with the new menu.html file.
+
+0:00:43.420,0:00:48.040
+Since I'm querying on my restaurant and[br]menu items table, I will path my queries
+
+0:00:48.040,0:00:51.930
+into the template, so that my escape[br]code has access to these variables.
+
+0:00:51.930,0:00:55.000
+I will also need to import[br]the render_template function from my
+
+0:00:55.000,0:00:56.270
+Flask library.
+
+0:00:56.270,0:00:59.220
+By saving and refreshing the page,[br]I see the same code with
+
+0:00:59.220,0:01:02.480
+a few stylistic modifications[br]I added inside of my template.
+
+0:01:02.480,0:01:04.620
+You'll be building your[br]own templates very soon.
+
+0:01:04.620,0:01:07.510
+I just want to talk about two more[br]topics to help you get the most out of
+
+0:01:07.510,0:01:08.050
+them first.

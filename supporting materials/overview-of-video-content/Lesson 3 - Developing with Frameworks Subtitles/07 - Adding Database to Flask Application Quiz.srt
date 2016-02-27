@@ -1,0 +1,11 @@
+0:00:00.220,0:00:03.030
+Try this thing out the menu items[br]with Flask on your own machine and
+
+0:00:03.030,0:00:06.660
+modify the code to list out the price[br]and description for each menu item.
+
+0:00:06.660,0:00:09.590
+You may want to add a few line breaks[br]to make your output easy to read from
+
+0:00:09.590,0:00:10.340
+within your browser

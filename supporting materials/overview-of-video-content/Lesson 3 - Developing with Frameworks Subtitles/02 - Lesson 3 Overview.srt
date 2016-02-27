@@ -1,0 +1,50 @@
+0:00:00.250,0:00:03.450
+In this lesson, you'll create a menu[br]app, using the Flask framework.
+
+0:00:03.450,0:00:08.029
+I will start by showing you the basic[br]components of a Flask application,
+
+0:00:08.029,0:00:11.860
+with a simple hello world program,[br]which you will then create on your own.
+
+0:00:11.860,0:00:15.930
+Then we will connect to our database via[br]SQL Alchemy to view all of the items in
+
+0:00:15.930,0:00:16.640
+each restaurant menu.
+
+0:00:17.780,0:00:19.900
+Next, you will learn about templates,[br]and
+
+0:00:19.900,0:00:23.270
+how they allow you to write HTML code,[br]separately from Python code.
+
+0:00:23.270,0:00:24.670
+Keeping your application more organized.
+
+0:00:25.680,0:00:26.540
+After that,
+
+0:00:26.540,0:00:30.380
+I will introduce a special function[br]in Flask called url_for, which builds
+
+0:00:30.380,0:00:33.670
+the URLs that you will use to navigate[br]through your new Flask application.
+
+0:00:34.710,0:00:37.670
+We will then create forms to[br]capture data from users, and
+
+0:00:37.670,0:00:41.010
+use message flashing to notify the user[br]each time they successfully change
+
+0:00:41.010,0:00:42.000
+information in the database.
+
+0:00:42.000,0:00:45.360
+I will discuss a way to use[br]flash to add the option to
+
+0:00:45.360,0:00:48.310
+send JSON messages instead of HTML.
+
+0:00:48.310,0:00:51.310
+And finally, take some time to[br]style our app with some CSS.

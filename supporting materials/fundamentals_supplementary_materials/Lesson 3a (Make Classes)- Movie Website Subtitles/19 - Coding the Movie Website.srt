@@ -1,0 +1,113 @@
+0:00:00.270,0:00:03.175
+So the first thing you want[br]to do is download this file,
+
+0:00:03.175,0:00:06.650
+fresh_tomatoes.py from[br]the instructor notes.
+
+0:00:06.650,0:00:11.670
+Once you've downloaded it, make sure you[br]save this file in the exact same folder
+
+0:00:11.670,0:00:15.500
+as the Python file where we created[br]all of these movie instances.
+
+0:00:15.500,0:00:17.970
+Okay, so I'm going to begin to[br]use the fresh_tomatoes file.
+
+0:00:19.420,0:00:22.485
+And then call the function[br]open_movies_page.
+
+0:00:24.220,0:00:28.120
+Now I know that this function[br]open_movies_page takes in a list
+
+0:00:28.120,0:00:29.800
+on an array of movies.
+
+0:00:29.800,0:00:32.570
+I do have a bunch of movies that[br]I have created over here, but
+
+0:00:32.570,0:00:35.670
+I do need to put them all[br]in a list on an array.
+
+0:00:35.670,0:00:37.320
+Let me do that next.
+
+0:00:37.320,0:00:41.380
+So, I will define an empty array or[br]a list called movies.
+
+0:00:41.380,0:00:42.660
+There it is.
+
+0:00:42.660,0:00:46.570
+And to this list, I will add all of[br]the movies I had created previously.
+
+0:00:47.610,0:00:52.078
+So, the first movie to add is toy_story,[br]next one is avatar,
+
+0:00:52.078,0:00:54.960
+next is school_of_rock,
+
+0:00:54.960,0:00:59.440
+the next one is ratatouille,[br]it's spelling is a little difficult.
+
+0:00:59.440,0:01:00.650
+I think I got it.
+
+0:01:00.650,0:01:05.800
+Next in line is midnight_in_paris and[br]the final one is hunger_games.
+
+0:01:05.800,0:01:08.250
+So there is our movies array.
+
+0:01:08.250,0:01:11.440
+By the way, in case you need[br]more information about lists or
+
+0:01:11.440,0:01:14.960
+arrays, you can find a helpful[br]link in the instructor notes.
+
+0:01:14.960,0:01:15.730
+All right.
+
+0:01:15.730,0:01:17.930
+Now that I have a list of movies,
+
+0:01:17.930,0:01:22.570
+I can give this list as input to[br]the open_movies_page function.
+
+0:01:22.570,0:01:24.240
+Let me do that next.
+
+0:01:24.240,0:01:29.570
+So I will provide movies as the argument[br]to open_movies_page function.
+
+0:01:29.570,0:01:30.710
+There it is.
+
+0:01:30.710,0:01:33.920
+Now before I save and[br]run this entire program,
+
+0:01:33.920,0:01:38.820
+I know that I still haven't imported[br]the file fresh_tomatoes in my program.
+
+0:01:38.820,0:01:43.380
+So I will scroll all the way up,[br]and import fresh_tomatoes.
+
+0:01:43.380,0:01:48.110
+Notice that this line of code will[br]work only if the fresh_tomatoes file
+
+0:01:48.110,0:01:52.000
+is in the exact same folder[br]as our current Python file.
+
+0:01:52.000,0:01:52.590
+Okay.
+
+0:01:52.590,0:01:54.650
+Time to save and run this program.
+
+0:01:55.780,0:01:57.060
+And there is our movies website.
+
+0:01:58.150,0:02:01.055
+If I click on any one of the links,[br]its trailer will play.
+
+0:02:01.055,0:02:08.216
+[MUSIC]

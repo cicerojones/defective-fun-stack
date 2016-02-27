@@ -1,0 +1,59 @@
+1
+00:00:00,400 --> 00:00:03,330
+So here we are at the course map and I want to take a minute
+
+2
+00:00:03,330 --> 00:00:08,320
+to talk about some big ideas that we will learn together. In this course, we
+
+3
+00:00:08,320 --> 00:00:09,600
+will start out with ideas that we
+
+4
+00:00:09,600 --> 00:00:13,300
+are somewhat familiar with. This includes functions, functions
+
+5
+00:00:13,300 --> 00:00:16,090
+like the simple print ("Hello World"). Soon
+
+6
+00:00:16,090 --> 00:00:18,595
+however, we will move onto learning new ideas.
+
+7
+00:00:18,595 --> 00:00:26,290
+[SOUND]
+
+8
+00:00:26,290 --> 00:00:30,750
+These ideas include classes and object oriented programming. Now, this
+
+9
+00:00:30,750 --> 00:00:35,280
+is a technique that's used by software engineers on a daily basis. And they
+
+10
+00:00:35,280 --> 00:00:39,610
+can use this technique to write and share code amongst each other. Now, while
+
+11
+00:00:39,610 --> 00:00:43,640
+we will start with functions in lesson one, we will spend most of our time
+
+12
+00:00:43,640 --> 00:00:45,300
+in the course right here, learning about
+
+13
+00:00:45,300 --> 00:00:48,060
+classes. Oh, but the way, all programs in
+
+14
+00:00:48,060 --> 00:00:49,530
+this course are written in the Python
+
+15
+00:00:49,530 --> 00:00:52,490
+programming language. So, let's begin by downloading Python.

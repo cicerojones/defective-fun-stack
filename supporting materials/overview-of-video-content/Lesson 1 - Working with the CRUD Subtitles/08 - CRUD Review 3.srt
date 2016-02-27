@@ -1,0 +1,5 @@
+0:00:00.120,0:00:02.120
+What about making a new[br]profile on a blog?
+
+0:00:02.120,0:00:04.689
+Is this a create, read,[br]update, or delete?

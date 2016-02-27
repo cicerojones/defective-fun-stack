@@ -1,0 +1,50 @@
+0:00:00.340,0:00:03.820
+Okay, so here I am, at the original[br]design of the class Movie,
+
+0:00:03.820,0:00:06.730
+to figure out the next thing[br]we have to do with our code.
+
+0:00:06.730,0:00:09.860
+So thus far, what we have done[br]is define the class Movie and
+
+0:00:09.860,0:00:13.160
+taken care of all of the instance[br]variables we want to remember.
+
+0:00:13.160,0:00:16.180
+We also designed a couple of[br]instances of the class Movie,
+
+0:00:16.180,0:00:18.450
+namely Toy Story and Avatar.
+
+0:00:18.450,0:00:23.540
+The one thing we still haven't done is[br]define this function show_trailer().
+
+0:00:23.540,0:00:27.640
+Now, this function as its name suggests,[br]will open a browser and
+
+0:00:27.640,0:00:29.680
+play the trailer of a movie.
+
+0:00:29.680,0:00:30.720
+So essentially,
+
+0:00:30.720,0:00:35.540
+what we want to do is run a line of[br]code like this: avatar.show_trailer().
+
+0:00:35.540,0:00:39.840
+And when that runs, we want it to[br]play the trailer of the movie Avatar.
+
+0:00:39.840,0:00:44.070
+By the way, a function that[br]is defined inside a class and
+
+0:00:44.070,0:00:48.230
+is associated with an instance[br]is called an instance method.
+
+0:00:48.230,0:00:51.200
+That is another new word for our list.
+
+0:00:51.200,0:00:53.710
+More on these new vocabulary words soon.
+
+0:00:53.710,0:00:56.120
+First, lets define show_trailer().

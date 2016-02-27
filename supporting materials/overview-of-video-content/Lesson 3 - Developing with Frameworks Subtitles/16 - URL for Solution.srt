@@ -1,0 +1,50 @@
+0:00:00.050,0:00:04.090
+Url_for accepts the name of the function[br]as the first argument, and a number of
+
+0:00:04.090,0:00:08.450
+keyword arguments each corresponding[br]to the variable part of the URL rule.
+
+0:00:08.450,0:00:11.290
+So if my URL needs a variable for[br]a restaurant ID and
+
+0:00:11.290,0:00:15.190
+a menu item ID, my url_for statement[br]needs to look something like this,
+
+0:00:15.190,0:00:16.590
+taking in three arguments for
+
+0:00:16.590,0:00:20.200
+the function it will call and the[br]variables to pass into that function.
+
+0:00:20.200,0:00:23.490
+So back in my template I can add this[br]code inside my anchor tags right
+
+0:00:23.490,0:00:25.030
+after the href equals.
+
+0:00:25.030,0:00:28.100
+Since this is a method in Python and[br]I want the output printed on to
+
+0:00:28.100,0:00:31.730
+my HTML document, I will enclose[br]it with a double brackets.
+
+0:00:31.730,0:00:34.060
+When I save my code now,[br]I see that there are edit and
+
+0:00:34.060,0:00:36.220
+delete links for each menu item below.
+
+0:00:36.220,0:00:39.450
+So you may be wondering why you would[br]ever want to build URLs instead of
+
+0:00:39.450,0:00:41.210
+hard coding them into your templates.
+
+0:00:41.210,0:00:44.820
+Well, now if you ever need to change[br]a URL path, with URL building,
+
+0:00:44.820,0:00:47.740
+you can change your URLs all[br]in one place without having to
+
+0:00:47.740,0:00:50.660
+remember to change URLs all over[br]the place from within your application.

@@ -1,0 +1,50 @@
+0:00:00.120,0:00:02.120
+Inside my editMenuItem function,
+
+0:00:02.120,0:00:05.775
+I see that in my render_template,[br]I'm passing in three variables that my
+
+0:00:05.775,0:00:08.710
+editmenuitem.html file is[br]going to have access to.
+
+0:00:08.710,0:00:11.270
+The restaurant_id, the menu_id, and
+
+0:00:11.270,0:00:13.880
+i, which is going to represent[br]the item we want to edit.
+
+0:00:13.880,0:00:15.450
+So to edit a new menu item,
+
+0:00:15.450,0:00:19.160
+I'm going to create a form, just like[br]I did when I created a new menu item.
+
+0:00:19.160,0:00:22.150
+Inside the form I'm going to[br]call my edit menu item function
+
+0:00:22.150,0:00:24.060
+with the appropriate parameters.
+
+0:00:24.060,0:00:27.990
+Here I'll prompt for the name of the new[br]menu item and create an input field.
+
+0:00:27.990,0:00:32.310
+Using the placeholder attribute of HTML[br]I can have that field already filled out
+
+0:00:32.310,0:00:34.670
+with the name of the item[br]I'm going to edit.
+
+0:00:34.670,0:00:36.390
+I'll then add a button called Edit.
+
+0:00:36.390,0:00:39.552
+And here I create another link to[br]cancel just in case I realize I
+
+0:00:39.552,0:00:41.770
+actually don't want to[br]edit my menu item.
+
+0:00:41.770,0:00:45.450
+When I save and run, I see that I can[br]now change the name of my menu items.
+
+0:00:45.450,0:00:48.040
+The solution code for this video is[br]available in the instructor notes

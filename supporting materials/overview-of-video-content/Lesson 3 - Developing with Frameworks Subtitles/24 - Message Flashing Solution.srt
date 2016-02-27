@@ -1,0 +1,14 @@
+0:00:00.180,0:00:03.874
+Right after I call session.commit( ),[br]I'll go ahead and add a flash message to
+
+0:00:03.874,0:00:07.000
+let my user know that a item[br]has successfully been edited.
+
+0:00:07.000,0:00:11.100
+Likewise, in my deleteMenuItem function[br]I'll add another flash message to let
+
+0:00:11.100,0:00:13.160
+the user know that[br]a item has been deleted.
+
+0:00:13.160,0:00:15.470
+Solutions for this challenge[br]are available in the instructor notes.

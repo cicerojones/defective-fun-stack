@@ -1,0 +1,1592 @@
+* 0:00:00.250,0:00:03.050
+Hi, my name is Lorenzo, and[br]I'll be your instructor as we
+
+0:00:03.050,0:00:05.780
+explore the foundations of[br]full stack web development.
+
+0:00:05.780,0:00:09.010
+In this course you will learn to build[br]your own data-driven web application,
+
+0:00:09.010,0:00:10.630
+but what does that actually mean?
+
+0:00:10.630,0:00:14.260
+Well, when I say web application[br]I'm referring to a web page or
+
+0:00:14.260,0:00:17.890
+collection of pages that allows your[br]browser to respond to user input,
+
+0:00:17.890,0:00:20.608
+similar to an offline[br]software application.
+
+0:00:20.608,0:00:23.160
+And by data-driven,[br]I mean an application that can store and
+
+0:00:23.160,0:00:27.890
+retrieve information from a database to[br]deliver customized content to the user.
+
+0:00:27.890,0:00:31.140
+Almost all of the popular websites[br]you interact with on a daily basis
+
+0:00:31.140,0:00:33.080
+are data-driven web applications.
+
+0:00:33.080,0:00:35.660
+Soon you will create a similar[br]website of your own.
+
+0:00:35.660,0:00:38.700
+In addition to creating web pages, you[br]will also learn to send data from your
+
+0:00:38.700,0:00:41.150
+server in other forms,[br]like JSON requests.
+
+0:00:41.150,0:00:44.010
+So that the data from your application[br]can be shared with other machines that
+
+0:00:44.010,0:00:47.660
+process JSON, like a data aggregator or[br]a mobile device.
+
+0:00:47.660,0:00:50.463
+Your mission in this course is[br]to help me create a menu app.
+
+0:00:50.463,0:00:53.805
+You'll be building an interactive[br]web application that presents a user
+
+0:00:53.805,0:00:57.920
+a variety of menu items they can view,[br]create, modify, and delete.
+
+0:00:57.920,0:01:00.770
+In the first lesson of this course[br]you will extract data from a database
+
+0:01:00.770,0:01:02.295
+using Python.
+
+0:01:02.295,0:01:05.209
+We'll also be using a tool called[br]an object-relational mapping, or
+
+0:01:05.209,0:01:08.720
+ORM to manipulate queries[br]as objects in Python.
+
+0:01:08.720,0:01:10.860
+If you've never heard of an ORM,[br]don't worry.
+
+0:01:10.860,0:01:12.730
+You'll be very familiar with[br]it in just a few minutes.
+
+0:01:13.860,0:01:17.640
+In the second lesson you will build[br]your first data-driven web application
+
+0:01:17.640,0:01:20.330
+using only the libraries that[br]come installed with Python.
+
+0:01:20.330,0:01:22.790
+In the third lesson we will[br]talk about frameworks and
+
+0:01:22.790,0:01:26.220
+create an application using[br]the lightweight web framework, Flask.
+
+0:01:26.220,0:01:30.020
+You will understand how frameworks help[br]developers write code more efficiently.
+
+0:01:30.020,0:01:32.945
+Once you complete this course you[br]will easily be able to compare and
+
+0:01:32.945,0:01:36.140
+contrast frameworks, and choose one[br]of your own for future projects.
+
+0:01:36.140,0:01:38.918
+Finally, you'll use what you[br]learned from lessons one, two, and
+
+0:01:38.918,0:01:42.420
+three to iteratively write code until[br]you have a polished menu application,
+
+0:01:42.420,0:01:45.300
+complete with API endpoints for[br]JSON requests.
+
+0:01:45.300,0:01:45.910
+Let's get started.
+* 0:00:00.240,0:00:03.870
+Before we get started, let's discuss[br]some of the necessary technologies you
+
+0:00:03.870,0:00:07.020
+should be familiar with in order to[br]get the most out of this course.
+
+0:00:07.020,0:00:10.910
+Most importantly, you should have[br]a basic understanding of Python coding.
+
+0:00:10.910,0:00:14.050
+If you're comfortable creating classes,[br]writing methods, and
+
+0:00:14.050,0:00:16.930
+understand inheritance,[br]you are in good shape for this course.
+
+0:00:16.930,0:00:21.310
+Knowledge of SQL statements such as[br]insert into, select, update, and
+
+0:00:21.310,0:00:23.680
+delete will also be a useful[br]skill in this course.
+
+0:00:23.680,0:00:26.460
+I will also assume you're[br]very comfortable reading and
+
+0:00:26.460,0:00:28.050
+writing HTML code.
+
+0:00:28.050,0:00:31.880
+CSS and JavaScript won't be necessary[br]to complete the activities, but
+
+0:00:31.880,0:00:35.210
+are helpful for creating a polished,[br]presentable final project.
+
+0:00:35.210,0:00:37.320
+Knowing your way around[br]the Unix command line and
+
+0:00:37.320,0:00:40.940
+being able to navigate through the file[br]system is also going to come in handy.
+
+0:00:40.940,0:00:44.110
+If you are unfamiliar or would like[br]to brush up on any of these topics,
+
+0:00:44.110,0:00:47.330
+please refer to the instructor notes for[br]some helpful links to classes and
+
+0:00:47.330,0:00:48.640
+other references.
+
+0:00:48.640,0:00:50.030
+For ease of configuration, and
+
+0:00:50.030,0:00:54.120
+installation, I strongly recommend using[br]a Vagrant machine for this course.
+
+0:00:54.120,0:00:57.230
+Vagrant allows you to create a virtual[br]machine on your computer so that you can
+
+0:00:57.230,0:01:00.750
+program without worrying about affecting[br]your computer's current configuration.
+
+0:01:00.750,0:01:04.280
+I have provided you a Vagrant file[br]with all of the necessary software
+
+0:01:04.280,0:01:05.489
+already installed.
+
+0:01:05.489,0:01:08.990
+A link to installing this Vagrant file[br]is provided in the instructor notes.
+
+0:01:08.990,0:01:12.940
+Once you successfully run vagrant up and[br]vagrant ssh, you're ready to keep going.
+* 0:00:00.310,0:00:03.420
+Let's create a web application that[br]allows us to create multiple restaurant
+
+0:00:03.420,0:00:06.150
+menus without having to[br]change the source code.
+
+0:00:06.150,0:00:10.170
+We want to be able to create menu items,[br]read the items we've created,
+
+0:00:10.170,0:00:12.830
+update our menu items, and[br]delete items from time to time.
+
+0:00:14.570,0:00:16.610
+Hm, sounds like we[br]need to make some CRUD.
+
+0:00:16.610,0:00:18.550
+What's so special about CRUD, you ask?
+
+0:00:18.550,0:00:21.980
+Well, this four letter acronym[br]encapsulates all of the actions a user
+
+0:00:21.980,0:00:23.950
+does on a data-driven website.
+
+0:00:23.950,0:00:28.430
+Each time we make a new profile, post[br]a new status, write a new blog entry,
+
+0:00:28.430,0:00:31.270
+upload a new pic, or[br]add a new item to a menu,
+
+0:00:31.270,0:00:34.130
+we are creating new data to[br]be stored in our database.
+
+0:00:34.130,0:00:36.640
+Whenever we look through a friend's[br]latest tweets and pics, or
+
+0:00:36.640,0:00:37.890
+skim through our news feed,
+
+0:00:37.890,0:00:41.230
+we are reading data that was already[br]stored in an application's database.
+
+0:00:41.230,0:00:43.920
+When we correct the typo on[br]a blog post we already made,
+
+0:00:43.920,0:00:47.840
+modify the item quantity in our shopping[br]cart, or change our profile information,
+
+0:00:47.840,0:00:51.160
+we are performing an update on[br]existing information in the database.
+
+0:00:51.160,0:00:54.510
+And when it's time to erase that[br]embarrassing baby pic from our profile
+
+0:00:54.510,0:00:56.470
+or get rid of those items[br]in our shopping cart,
+
+0:00:56.470,0:00:59.230
+we're deleting information[br]in the database.
+
+0:00:59.230,0:01:02.070
+Virtually everything we do on the web[br]can be summarized with one little
+
+0:01:02.070,0:01:03.160
+acronym, CRUD.
+
+0:01:03.160,0:01:06.590
+I want you to take a look at[br]a few common website actions and
+
+0:01:06.590,0:01:08.150
+then decide what the CRUD is going on.
+* 0:00:00.260,0:00:03.030
+Okay, let's do a few exercises just for[br]fun.
+
+0:00:03.030,0:00:06.750
+Would the following actions from[br]a user cause a create, read, update or
+
+0:00:06.750,0:00:08.480
+delete on a database?
+
+0:00:08.480,0:00:11.710
+Select your answer below and continue[br]to the next video to see my solution.
+* 0:00:00.200,0:00:02.640
+Browsing articles on[br]an online newspaper.
+
+0:00:02.640,0:00:05.500
+Well, since with an online newspaper,[br]we're only viewing things that
+
+0:00:05.500,0:00:08.420
+are already existing on the server,[br]so this is definitely a read.
+* 0:00:00.220,0:00:05.040
+Is clearing out your junk mail a create,[br]read, update, or delete on a database?
+* 0:00:00.200,0:00:02.969
+Clearing out your junk mail probably[br]involves erasing something off
+
+0:00:02.969,0:00:03.780
+of a server.
+
+0:00:03.780,0:00:04.890
+So let's just say that's a delete.
+* 0:00:00.120,0:00:02.120
+What about making a new[br]profile on a blog?
+
+0:00:02.120,0:00:04.689
+Is this a create, read,[br]update, or delete?
+* 0:00:00.300,0:00:03.620
+Making a new profile means we're putting[br]new information on to our server.
+
+0:00:03.620,0:00:04.910
+That means we have to do a create.
+* 0:00:00.180,0:00:03.290
+Let's say a user orders a t-shirt[br]online, and later on decided that they
+
+0:00:03.290,0:00:05.610
+actually want to order two more for[br]two of their friends.
+
+0:00:05.610,0:00:09.630
+Before checking out, they update their[br]shopping cart from one t-shirt to three.
+
+0:00:09.630,0:00:12.300
+Would this be a create,[br]read, update, or delete?
+* 0:00:00.322,0:00:02.310
+By changing the number of[br]items in the shopping cart,
+
+0:00:02.310,0:00:04.490
+we're creating an update[br]on the database.
+
+0:00:04.490,0:00:07.920
+The shopping cart already existed, and[br]so did the item that was inside it.
+
+0:00:07.920,0:00:10.330
+We're only changing the quantity[br]of items that we wanted to order.
+* 0:00:00.120,0:00:03.160
+So we know that web application[br]code gets the information that it
+
+0:00:03.160,0:00:06.870
+needs to create websites by performing[br]CRUD operations on the database.
+
+0:00:06.870,0:00:10.390
+But how do we get an application and a[br]database to communicate with each other?
+
+0:00:10.390,0:00:12.690
+You already know that SQL[br]is the popular language for
+
+0:00:12.690,0:00:14.420
+communicating with databases.
+
+0:00:14.420,0:00:17.570
+From our application code,[br]we can create SQL commands and
+
+0:00:17.570,0:00:20.140
+decipher the results to integrate[br]back into our application.
+* 0:00:00.070,0:00:03.620
+With SQL, we're seeing almost[br]one-to-one comparison between CRUD and
+
+0:00:03.620,0:00:05.020
+a few SQL commands.
+
+0:00:05.020,0:00:06.200
+In these next four challenges,
+
+0:00:06.200,0:00:09.799
+match up the SQL command displayed with[br]the CRUD operation that it executes.
+* 0:00:00.228,0:00:02.930
+The SELECT command retrieves[br]rows from our database and
+
+0:00:02.930,0:00:04.450
+presents them to our application.
+
+0:00:04.450,0:00:05.720
+So this is definitely a read.
+* 0:00:00.090,0:00:03.370
+Insert Into adds a new row to our table,[br]so this is a create.
+* 0:00:00.090,0:00:03.170
+The Update command updates[br]an existing row in our table, so
+
+0:00:03.170,0:00:04.410
+these two words actually match up.
+* 0:00:00.100,0:00:02.884
+The Delete command in SQL[br]deletes a row from our table, so
+
+0:00:02.884,0:00:04.460
+it also executes a CRUD delete.
+* 0:00:00.160,0:00:03.250
+So for this menu project, I want to[br]create an application where I can make
+
+0:00:03.250,0:00:07.470
+various restaurant menus with various[br]items, often within one application.
+
+0:00:07.470,0:00:10.600
+All restaurant menus in the general[br]sense contain the same thing.
+
+0:00:10.600,0:00:14.860
+Some have a few appetizers,[br]some entrees, a few desserts, and
+
+0:00:14.860,0:00:16.149
+of course some beverages.
+
+0:00:16.149,0:00:19.570
+To keep things simple, let's call[br]all of these things menu items.
+
+0:00:19.570,0:00:23.170
+And all of my menu items belong[br]to a specific restaurant menu.
+
+0:00:23.170,0:00:25.260
+It also would be helpful[br]to have a price and
+
+0:00:25.260,0:00:27.830
+brief description for[br]each of our menu items.
+
+0:00:27.830,0:00:31.760
+An important early design decision[br]to make is how to model my database.
+
+0:00:31.760,0:00:34.310
+There is more than one correct[br]way to structure a database, but
+
+0:00:34.310,0:00:36.150
+there is no need to make[br]things too complicated.
+
+0:00:36.150,0:00:39.560
+Let's walk through the process of[br]making a database layout together.
+
+0:00:39.560,0:00:43.320
+We have a restaurant table to represent[br]all of the restaurants in our database,
+
+0:00:43.320,0:00:46.250
+along with a corresponding name and[br]ID number.
+
+0:00:46.250,0:00:48.280
+Then we have a table of menu items.
+
+0:00:48.280,0:00:53.820
+Each menu item will have a name,[br]an ID, a description, a price, and
+
+0:00:53.820,0:00:59.150
+a course to categorize whether it is an[br]appetizer, entree, dessert or beverage.
+
+0:00:59.150,0:01:02.610
+We will also provide a restaurant[br]ID to assign a foreign key
+
+0:01:02.610,0:01:05.319
+relationship with our restaurant table.
+
+0:01:05.319,0:01:05.910
+Okay.[br]So
+
+0:01:05.910,0:01:08.120
+we've planned out how we[br]will design our database.
+
+0:01:08.120,0:01:09.850
+Now let's get to coding it up.
+
+0:01:09.850,0:01:13.780
+If you've used SQL before you might be[br]used to writing something like this.
+
+0:01:13.780,0:01:17.040
+If you're not an SQL expert it might[br]be a little hard to understand though.
+
+0:01:17.040,0:01:19.280
+Now there is nothing[br]wrong with this code, but
+
+0:01:19.280,0:01:21.010
+let's take a look at it for a second.
+
+0:01:21.010,0:01:25.260
+Using raw SQL we have this inquiries[br]to the database as strings.
+
+0:01:25.260,0:01:29.670
+This works, but our Python compiler has[br]no way of helping me if I make a typo or
+
+0:01:29.670,0:01:31.670
+reference a table that doesn't exist.
+
+0:01:31.670,0:01:35.080
+Every other data structure we use[br]in Python is some type of object.
+
+0:01:35.080,0:01:39.255
+So why not treat our database queries,[br]tables, and rows as objects as well.
+
+0:01:39.255,0:01:42.905
+Well this concern isn't a unique one,[br]and developers have created tools for
+
+0:01:42.905,0:01:43.770
+this very problem.
+
+0:01:43.770,0:01:48.495
+Object-Relational Mappers, or ORM's,[br]can be thought of like a translator.
+
+0:01:48.495,0:01:51.235
+Converting our code from[br]one form to another.
+
+0:01:51.235,0:01:54.562
+If we send off code written in Python or[br]any other preferred programming
+
+0:01:54.562,0:01:59.802
+language, it is transformed by the ORM[br]into SQL and sent off to our database.
+
+0:01:59.802,0:02:03.182
+The ORM also gets results[br]from an SQL statement and
+
+0:02:03.182,0:02:05.812
+allows us to use it as an object[br]from within our Python code.
+* 0:00:00.140,0:00:03.410
+When I Google search ORM for[br]Python I get over 14
+
+0:00:03.410,0:00:06.670
+million results with several[br]different ORM options we could use.
+
+0:00:06.670,0:00:09.320
+The first result that showed[br]up when I searched was for
+
+0:00:09.320,0:00:11.910
+an application called SQL Alchemy.
+
+0:00:11.910,0:00:15.820
+SQL Alchemy is an open source ORM for[br]Python with a slew of features.
+
+0:00:15.820,0:00:18.300
+Not to mention this awesome[br]Getting Started tutorial.
+
+0:00:18.300,0:00:20.230
+There's a lot of[br]information on this page.
+
+0:00:20.230,0:00:23.610
+But let's just focus on setting up[br]our database and tables for now.
+
+0:00:23.610,0:00:25.480
+If you're using the Vagrantfile,
+
+0:00:25.480,0:00:28.620
+SQLAlchemy is already installed[br]on your virtual machine.
+
+0:00:28.620,0:00:30.050
+If you are not using Vagrant,
+
+0:00:30.050,0:00:32.970
+you can install SQLAlchemy from[br]the link below to follow along.
+* 0:00:00.390,0:00:03.900
+With SQLAlchemy, we can write[br]a single Python file to set up and
+
+0:00:03.900,0:00:04.900
+configure our database.
+
+0:00:04.900,0:00:08.330
+I will call this file database_setup.py.
+
+0:00:08.330,0:00:12.770
+Creating a database with SQLAlchemy[br]has four major coding components.
+
+0:00:12.770,0:00:17.350
+The configuration code, which is what we[br]use to import all the necessary modules.
+
+0:00:17.350,0:00:20.730
+The class code that we use to[br]represent our data in Python.
+
+0:00:20.730,0:00:24.240
+The table that represents[br]the specific table in our database.
+
+0:00:24.240,0:00:27.600
+And the mapper that connects the columns[br]of our table to the class that
+
+0:00:27.600,0:00:28.720
+represents it.
+
+0:00:28.720,0:00:31.810
+Our configuration code sets up all[br]of the dependencies needed for
+
+0:00:31.810,0:00:35.380
+my database and[br]binds my code to the SQLAlchemy engine.
+
+0:00:35.380,0:00:39.020
+For most cases, this code doesn't[br]change much from project to project.
+
+0:00:39.020,0:00:42.770
+We also have to create an instance[br]of a class called declarative base,
+
+0:00:42.770,0:00:46.220
+in order for our class to inherit[br]all the features of SQLAlchemy.
+
+0:00:46.220,0:00:49.150
+In addition, we need to add some[br]configuration code at the end of
+
+0:00:49.150,0:00:51.920
+our Python file to connect[br]to an existing database.
+
+0:00:51.920,0:00:53.570
+Or in this case, create a new one.
+
+0:00:53.570,0:00:55.565
+This might not make much[br]sense right now, so
+
+0:00:55.565,0:00:57.720
+let's jump into writing[br]the configuration code.
+
+0:00:57.720,0:01:00.590
+Open a text editor like Sublime and[br]follow along.
+
+0:01:00.590,0:01:04.200
+You may have seen this import if you've[br]worked on a few Python projects before.
+
+0:01:04.200,0:01:07.600
+The sys module provides a number of[br]functions and variables that can be
+
+0:01:07.600,0:01:11.170
+used to manipulate different parts[br]of the Python run-time environment.
+
+0:01:11.170,0:01:13.290
+Next, we're going to import the column.
+
+0:01:13.290,0:01:17.150
+ForeignKey, Integer, and[br]String classes from SQLAlchemy.
+
+0:01:17.150,0:01:19.820
+These will come in handy when[br]we are writing our mapper code.
+
+0:01:19.820,0:01:23.915
+From the sqlalchemy.ext.declarative[br]library, we need to import our
+
+0:01:23.915,0:01:28.060
+declarative_base, which we will use[br]in the configuration and class code.
+
+0:01:28.060,0:01:32.820
+After that, we import relationship from[br]sqalchemy.orm in order to create our
+
+0:01:32.820,0:01:34.350
+foreign key relationships.
+
+0:01:34.350,0:01:36.990
+This, too, will be used when[br]we write up our mapper.
+
+0:01:36.990,0:01:39.210
+Let's also import[br]the create_engine class,
+
+0:01:39.210,0:01:42.670
+which we will use in our configuration[br]code at the end of the file.
+
+0:01:42.670,0:01:44.770
+This last piece of code isn't an import,[br]but
+
+0:01:44.770,0:01:47.670
+will help us get set up when we[br]begin to write our class code.
+
+0:01:47.670,0:01:51.000
+Let's make an instance of the[br]declarative_base class we just imported
+
+0:01:51.000,0:01:52.560
+and call it Base, for short.
+
+0:01:52.560,0:01:55.910
+The declarative_base will let[br]SQLAlchemy know that our classes
+
+0:01:55.910,0:02:00.610
+are special SQLAlchemy classes that[br]correspond to tables in our database.
+
+0:02:00.610,0:02:03.940
+At the end of our file,[br]we need to add two more lines of code.
+
+0:02:03.940,0:02:06.770
+We create an instance of[br]our create_engine class and
+
+0:02:06.770,0:02:08.900
+point to the database we will use.
+
+0:02:08.900,0:02:10.400
+Since we are using SQLite 3 for
+
+0:02:10.400,0:02:14.100
+this lesson, the create_engine will[br]create a new file that we can use
+
+0:02:14.100,0:02:19.560
+similarly to a more robust database[br]like MySQL or The last piece we need
+
+0:02:19.560,0:02:23.880
+is Base.metadata.create_all(engine),[br]which goes into the database and
+
+0:02:23.880,0:02:26.950
+adds the classes we will soon create[br]as new tables in our database.
+* 0:00:00.460,0:00:03.990
+Our class code is the object-oriented[br]representation of a table in
+
+0:00:03.990,0:00:05.120
+our database.
+
+0:00:05.120,0:00:07.930
+The only thing we need to do[br]is create a class name, and
+
+0:00:07.930,0:00:10.610
+make it extend from the Base[br]class we just created.
+
+0:00:10.610,0:00:14.040
+For conventional purposes,[br]let's make all of our classes start with
+
+0:00:14.040,0:00:18.540
+a capital letter with no spaces in[br]between, also called camo casing.
+
+0:00:18.540,0:00:21.690
+Inside of this class declaration,[br]we will add all of the code for
+
+0:00:21.690,0:00:23.800
+our table and mapper code.
+
+0:00:23.800,0:00:27.280
+For this project, we will need to[br]create two classes to correspond with
+
+0:00:27.280,0:00:31.360
+the two tables we want to create in our[br]database, restaurant and menu item.
+
+0:00:31.360,0:00:34.320
+Be sure to write this class[br]code between your beginning and
+
+0:00:34.320,0:00:36.160
+ending configuration code.
+
+0:00:36.160,0:00:39.540
+Inside each of our classes,[br]we must create a table representation,
+
+0:00:39.540,0:00:43.810
+we use the special variable, double[br]underscore table name double underscore.
+
+0:00:43.810,0:00:48.100
+To let SQLAlchemy know the variable[br]that we will use to refer to our table.
+
+0:00:48.100,0:00:51.450
+For conventional purposes,[br]let's make our table names lowercase,
+
+0:00:51.450,0:00:53.190
+with underscores for spaces.
+
+0:00:53.190,0:00:56.800
+Inside our restaurant class, we will[br]set double underscore tablename double
+
+0:00:56.800,0:01:00.820
+underscore equal to restaurant,[br]and inside the MenuItem class we
+
+0:01:00.820,0:01:03.990
+will set it equal to menu[br]underscore item, as seen here.
+* 0:00:00.140,0:00:03.360
+Our mapper code creates variables that[br]we will use to create columns within
+
+0:00:03.360,0:00:04.150
+our database.
+
+0:00:04.150,0:00:07.610
+When we create a column, we must also[br]pass an attribute to that column.
+
+0:00:07.610,0:00:10.420
+Here are some column attributes that[br]we will be using in the activities in
+
+0:00:10.420,0:00:11.470
+lesson one.
+
+0:00:11.470,0:00:14.920
+We can specify a string, with[br]a specified maximum string length and
+
+0:00:14.920,0:00:18.430
+we can specify integers which are handy[br]for storing whole number values.
+
+0:00:18.430,0:00:21.340
+Relationships tell SQLAlchemy[br]the type of relationship one
+
+0:00:21.340,0:00:22.870
+table has to another.
+
+0:00:22.870,0:00:25.850
+Nullable is an attribute that[br]if set to false indicates that
+
+0:00:25.850,0:00:29.400
+a column entry must have a value in[br]order for the row to be created.
+
+0:00:29.400,0:00:32.409
+Setting primary key to true[br]indicates a value that we can use to
+
+0:00:32.409,0:00:35.340
+uniquely identify each row[br]of our database table.
+
+0:00:35.340,0:00:38.780
+And foreign key we can use to reference[br]a row in a different table provided that
+
+0:00:38.780,0:00:40.810
+a relation exists[br]between the two of them.
+
+0:00:40.810,0:00:44.390
+Inside each restaurant class, for now[br]we're just going to specify a name and
+
+0:00:44.390,0:00:46.240
+an ID number to reference[br]each restaurant.
+
+0:00:46.240,0:00:49.330
+We create a variable and[br]name it name, specify it as a column,
+
+0:00:49.330,0:00:53.400
+say that this column has a string with[br]a maximum length of 80 characters, and
+
+0:00:53.400,0:00:55.050
+set nullable equal to false.
+
+0:00:55.050,0:00:57.770
+Indicating that if name is not[br]filled out we can not create a new
+
+0:00:57.770,0:00:59.790
+restaurant row in this database.
+
+0:00:59.790,0:01:02.360
+Similarly, we'll create[br]a variable called id,
+
+0:01:02.360,0:01:04.080
+which we'll also specify as a column.
+
+0:01:04.080,0:01:06.990
+But this time we'll say it's[br]an integer instead of a string, and
+
+0:01:06.990,0:01:08.710
+set primary key to true.
+
+0:01:08.710,0:01:11.040
+Our menu items are going to have[br]a little bit more information.
+
+0:01:11.040,0:01:13.930
+Just like each restaurant,[br]each menu item needs to have a name.
+
+0:01:13.930,0:01:15.830
+We'll set nullable equal to false again,
+
+0:01:15.830,0:01:18.910
+to make sure that no one can[br]create a menu item without a name.
+
+0:01:18.910,0:01:22.630
+We'll create an id for each menu item[br]which is set to the primary key.
+
+0:01:22.630,0:01:24.470
+We'll create course, description and
+
+0:01:24.470,0:01:27.480
+price variables and[br]specify them all as strings.
+
+0:01:27.480,0:01:30.580
+I'm now going to create a variable[br]called restaurant_ID and
+
+0:01:30.580,0:01:32.830
+specify this as a foreign key integer.
+
+0:01:32.830,0:01:35.580
+This will create the foreign key[br]relationship between my menu item
+
+0:01:35.580,0:01:37.410
+class and my restaurant class.
+
+0:01:37.410,0:01:40.820
+Inside the foreign key I[br]specify restaurant.id.
+
+0:01:40.820,0:01:43.280
+This will say look inside[br]the restaurant table and
+
+0:01:43.280,0:01:47.300
+retrieve the ID number whenever[br]I ask for restaurant_id.
+
+0:01:47.300,0:01:50.570
+In this last line I'm creating[br]a variable called lowercase restaurant
+
+0:01:50.570,0:01:53.530
+which I'm saying is the relationship[br]between my class restaurant.
+* 0:00:00.522,0:00:02.610
+So we've gone through[br]a fair amount of code.
+
+0:00:02.610,0:00:06.220
+Let's go ahead, and put it all together[br]in our database_setup.py file.
+
+0:00:06.220,0:00:08.800
+Let me start with this[br]configuration code that goes at
+
+0:00:08.800,0:00:11.610
+the beginning of our file,[br]and put it where it belongs.
+
+0:00:11.610,0:00:15.060
+I can also take this code at the end,[br]and put it at the end of the file.
+
+0:00:15.060,0:00:18.360
+Next, let's put our two class[br]definitions, right where they belong.
+
+0:00:18.360,0:00:20.456
+Next, we need to add[br]our table information.
+
+0:00:20.456,0:00:24.180
+And finally, our mappers.
+
+0:00:24.180,0:00:25.530
+Putting all this code together,
+
+0:00:25.530,0:00:28.710
+should give us a Python file[br]that looks something like this.
+
+0:00:28.710,0:00:32.530
+So, if we navigate to the directory,[br]where our database_setup.py file live,
+
+0:00:32.530,0:00:36.785
+and run it using the Python command,[br]we should get something like this.
+
+0:00:36.785,0:00:37.725
+Looking in the same folder,
+
+0:00:37.725,0:00:41.625
+where we have our code,[br]we see a newrestaurantmenu.db file.
+
+0:00:41.625,0:00:43.365
+This is our empty database.
+
+0:00:43.365,0:00:45.015
+Now that we have an empty database,
+
+0:00:45.015,0:00:47.015
+let's figure out how to populate[br]it with some information.
+* 0:00:00.260,0:00:03.530
+In the quiz portions of this lesson,[br]we're going to create another database
+
+0:00:03.530,0:00:05.710
+that stores employees and[br]their addresses.
+
+0:00:05.710,0:00:08.680
+Using the provided code, and[br]this diagram, fill in the blank with
+
+0:00:08.680,0:00:11.369
+the class that will make[br]an object with this base variable.
+* 0:00:00.280,0:00:02.270
+So we write declarative base here,
+
+0:00:02.270,0:00:04.790
+in order to create a base class[br]that our class code will inherit.
+* 0:00:00.350,0:00:02.130
+Now fill in the blanks[br]in our mapper code.
+* 0:00:00.170,0:00:02.100
+We specified id as an integer.
+
+0:00:02.100,0:00:05.350
+So, in our mapper we should[br]also specify the same thing.
+
+0:00:05.350,0:00:09.220
+So, we have this ForeignKey relationship[br]between our address and our employee.
+
+0:00:09.220,0:00:12.260
+So here,[br]in this lower case employee variable,
+
+0:00:12.260,0:00:15.070
+we set its relationship to the actual[br]employee class we created.
+* 0:00:00.170,0:00:03.610
+Now that we have an empty database,[br]let's populate it with some information.
+
+0:00:03.610,0:00:06.730
+With SQL, we would need to execute[br]an insert command with all of
+
+0:00:06.730,0:00:09.360
+the information we want it to[br]populate into our database.
+
+0:00:09.360,0:00:10.408
+Using SQLAlchemy,
+
+0:00:10.408,0:00:13.990
+creating a new database is as easy[br]as creating a new object in Python.
+
+0:00:13.990,0:00:16.857
+I will be executing these operations[br]from the Python show, but
+
+0:00:16.857,0:00:19.249
+they could also be done from[br]within a Python script.
+
+0:00:19.249,0:00:22.598
+We must first import the following[br]dependencies from SQLAlchemy, and
+
+0:00:22.598,0:00:25.240
+the empty database we created,[br]into our environment.
+
+0:00:25.240,0:00:27.458
+We will see what they[br]do in just a second.
+
+0:00:27.458,0:00:30.120
+From our database_setup.py[br]file that we created,
+
+0:00:30.120,0:00:34.100
+let's import our base restaurant,[br]and menu classes.
+
+0:00:34.100,0:00:37.510
+The create_engine function lets our[br]program know which database engine we
+
+0:00:37.510,0:00:38.890
+want to communicate with.
+
+0:00:38.890,0:00:42.770
+Then let's bind the engine to the base[br]class with the following command.
+
+0:00:42.770,0:00:45.910
+This command just makes the connections[br]between our class definitions and
+
+0:00:45.910,0:00:48.490
+the corresponding tables[br]within our database.
+
+0:00:48.490,0:00:51.080
+The next thing I'm going to do[br]is create a sessionmaker object.
+
+0:00:51.080,0:00:54.830
+This establishes a link of communication[br]between our code executions and
+
+0:00:54.830,0:00:55.760
+the engine we just created.
+
+0:00:55.760,0:00:59.970
+In order to create, read, update or[br]delete information on our database,
+
+0:00:59.970,0:01:03.280
+SQLAlchemy executes database[br]operations via an interface.
+
+0:01:03.280,0:01:04.879
+It's called a session.
+
+0:01:04.879,0:01:08.010
+A session allows us to write down all[br]the commands we want to execute, but
+
+0:01:08.010,0:01:10.490
+not send them to the database[br]until we call a commit.
+
+0:01:10.490,0:01:12.210
+Here, I'll show you what I mean.
+
+0:01:12.210,0:01:16.190
+I'm going to create an instance of a[br]DBSession and call it session for short.
+
+0:01:16.190,0:01:18.810
+From now on, when I want to[br]make a change to my database,
+
+0:01:18.810,0:01:21.480
+I can do it just by calling[br]a method from within session.
+
+0:01:21.480,0:01:24.220
+The DBSession object gives[br]me a staging zone for
+
+0:01:24.220,0:01:27.210
+all of the objects loaded into[br]a database session object.
+
+0:01:27.210,0:01:30.730
+Any change made to the objects in[br]the session won't be persisted into
+
+0:01:30.730,0:01:33.530
+the database until I[br]call session.commit.
+
+0:01:33.530,0:01:35.120
+Now as I promised,
+
+0:01:35.120,0:01:39.080
+making a new entry in our database is as[br]easy as making a new object in Python.
+
+0:01:39.080,0:01:41.300
+Take a look at these three[br]lines of example code and
+
+0:01:41.300,0:01:44.630
+watch as I implement them to create[br]a new restaurant in my database.
+
+0:01:44.630,0:01:47.900
+Following this example,[br]I'll make my first restaurant like so.
+
+0:01:47.900,0:01:51.180
+As you can see, it's just an instance[br]of my restaurant class with
+
+0:01:51.180,0:01:54.330
+a name attribute that I decided[br]to give it, Pizza Palace.
+
+0:01:54.330,0:01:56.790
+To persist my new restaurant[br]into the database,
+
+0:01:56.790,0:01:58.890
+I must do two more session operations.
+
+0:01:58.890,0:02:02.660
+First by calling session.add[br]my first restaurant,
+
+0:02:02.660,0:02:06.230
+my restaurant object is in the staging[br]zone to be added to the database.
+
+0:02:06.230,0:02:09.990
+Then with session.commit it's[br]now stored to my database.
+
+0:02:09.990,0:02:11.350
+But how do I know it worked?
+
+0:02:11.350,0:02:14.420
+Well, I can also use the session[br]to interact with my database and
+
+0:02:14.420,0:02:15.830
+see what's inside of it.
+
+0:02:15.830,0:02:19.210
+If I execute[br]session.query(Restaurant).all, I'm
+
+0:02:19.210,0:02:21.300
+asking my session to[br]go into the database,
+
+0:02:21.300,0:02:23.795
+find the table that corresponds[br]to the restaurant class and
+
+0:02:23.795,0:02:27.735
+find all the entires in that table and[br]return them in a list.
+
+0:02:27.735,0:02:30.430
+When I run this,[br]I get a response with something like,
+
+0:02:30.430,0:02:35.650
+database_setup.Restaurant object at and[br]some hexadecimal number.
+
+0:02:35.650,0:02:39.420
+This just lets us know that Python[br]found a restaurant in our database and
+
+0:02:39.420,0:02:42.450
+represents it as an object[br]at this location in memory.
+
+0:02:42.450,0:02:45.730
+I'm sure you're thinking, well that's[br]great but how's it useful to me?
+
+0:02:45.730,0:02:48.800
+We'll go into more detail about[br]the query method when we focus on
+
+0:02:48.800,0:02:50.660
+reading data out of our database.
+
+0:02:50.660,0:02:53.990
+So now, let's add a MenuItem[br]to our Pizza Palace menu.
+
+0:02:53.990,0:02:56.860
+Since our MenuItems all belong to[br]a Restaurant, and have a few more
+
+0:02:56.860,0:03:00.330
+attributes, we have to provide a bit[br]more information in our declaration.
+
+0:03:00.330,0:03:03.860
+I can create a Cheese Pizza by[br]executing the following command.
+
+0:03:03.860,0:03:07.460
+Notice that I provided all of the fields[br]of information for a MenuItem here and
+
+0:03:07.460,0:03:11.330
+specify the foreign key relationship[br]to the object name of my restaurant.
+
+0:03:11.330,0:03:14.590
+In order for this operation to work,[br]I didn't have to fill out every entry
+
+0:03:14.590,0:03:19.910
+unless I specified it as nullable equal[br]to false in our database_setup.py file.
+
+0:03:19.910,0:03:23.260
+Now let's run session.query[br]MenuItem .all to
+
+0:03:23.260,0:03:26.530
+see that an object now exists for[br]our cheese pizza item, as well.
+
+0:03:26.530,0:03:28.770
+Now that you know how to[br]add data to a database,
+
+0:03:28.770,0:03:30.160
+it's your turn to get[br]some practice at it.
+* 0:00:00.200,0:00:02.800
+In the last quiz,[br]you created an empty database.
+
+0:00:02.800,0:00:04.540
+Let's add our first employee to it.
+
+0:00:04.540,0:00:07.510
+Fill in the blanks below to add[br]a new employee named Rebecca Allen
+
+0:00:07.510,0:00:08.480
+to the database.
+
+0:00:08.480,0:00:11.720
+Then fill in the blank here to[br]add Rebecca's address as well.
+* 0:00:00.090,0:00:02.200
+So in order to create the new[br]entry in our database,
+
+0:00:02.200,0:00:05.590
+we have to specify the name[br]variable as Rebecca Allen.
+
+0:00:05.590,0:00:09.299
+We also need to create the ForeignKey[br]relationship between Rebecca's address
+
+0:00:09.299,0:00:12.470
+and the new employee variable that[br]we created in the previous line.
+* 0:00:00.230,0:00:03.770
+Now that we have a database that's not[br]empty, let's start reading from it.
+
+0:00:03.770,0:00:07.030
+In the last video, you saw me call[br]session.query(Restaurant).all.
+
+0:00:07.030,0:00:10.914
+If I create a variable called[br]firstResult and set it equal to
+
+0:00:10.914,0:00:14.810
+session.query(Restaurant) and[br]use .first this time,
+
+0:00:14.810,0:00:18.660
+I now have a variable that corresponds[br]to a single row in my database.
+
+0:00:18.660,0:00:22.870
+These single row references allow me to[br]extract column entries as method names.
+
+0:00:22.870,0:00:25.930
+So if I were to write firstResult.name,
+
+0:00:25.930,0:00:29.500
+I'm given the name of my restaurant[br]object as it is stored in the database.
+
+0:00:29.500,0:00:33.740
+Currently, I only have one restaurant[br]and one menu item stored in my database.
+
+0:00:33.740,0:00:37.030
+Well that's kind of boring, but with[br]the help from some fellow Udations I've
+
+0:00:37.030,0:00:40.040
+created a Python script that will[br]populate my database with several
+
+0:00:40.040,0:00:43.216
+different restaurants and menu items[br]popular amongst the Udasity team.
+
+0:00:43.216,0:00:47.180
+Download the lotsofmenus.py script[br]into your working directory and
+
+0:00:47.180,0:00:49.680
+execute it from the command line as so.
+
+0:00:49.680,0:00:53.589
+Now when we perform executions like[br]session.query(Restaurant).all,
+
+0:00:53.589,0:00:56.110
+we get back a whole list of results.
+
+0:00:56.110,0:00:59.370
+So what happens when I have a query[br]that returns a collection of results and
+
+0:00:59.370,0:01:02.180
+we want to display column[br]information for each item?
+
+0:01:02.180,0:01:06.230
+For this, we can use a python for loop[br]to return the data that we want to see.
+
+0:01:06.230,0:01:07.980
+Here, let's do an example.
+
+0:01:07.980,0:01:09.900
+I will make a variable called items and
+
+0:01:09.900,0:01:13.270
+set it equal to a query that[br]retrieves all of my menu items.
+
+0:01:13.270,0:01:17.710
+Now, I can say for[br]item in items, print item.name.
+
+0:01:17.710,0:01:21.522
+Now I get back a printed line of[br]each item name in our database.
+
+0:01:21.522,0:01:24.710
+SQL Alchemy has an extensive[br]collection of queries we can perform on
+
+0:01:24.710,0:01:25.720
+our database.
+
+0:01:25.720,0:01:28.570
+Take some time to explore[br]the query documentation here and
+
+0:01:28.570,0:01:30.280
+play around with the database for[br]a while.
+
+0:01:30.280,0:01:31.240
+When you're ready,
+
+0:01:31.240,0:01:33.340
+move on to some of the challenge[br]problems in the next section.
+* 0:00:00.110,0:00:03.360
+Going back to our employee example, fill[br]in the blanks to make a variable called
+
+0:00:03.360,0:00:06.070
+employees, which stores all[br]the employees in our database.
+
+0:00:06.070,0:00:08.960
+And then, iterate over this collection[br]to print the name of every employee.
+* 0:00:00.240,0:00:01.800
+Whenever we want to find[br]some information in
+
+0:00:01.800,0:00:05.790
+our database using SQLAlchemy,[br]we use the query command followed by
+
+0:00:05.790,0:00:08.610
+the name of the table that[br]we want to search through.
+
+0:00:08.610,0:00:10.040
+Using this enhanced for loop,
+
+0:00:10.040,0:00:13.318
+we declared employee as the variable[br]that we're going to iterate through.
+
+0:00:13.318,0:00:16.720
+So, printing employee.name will print[br]out the name of every employee in
+
+0:00:16.720,0:00:17.240
+our database.
+* 0:00:00.150,0:00:02.990
+So, we know how to create and[br]read from our database entries, but
+
+0:00:02.990,0:00:05.610
+how do we update existing[br]data within our database?
+
+0:00:05.610,0:00:08.460
+It seems we have a situation on[br]our hands that calls for this.
+
+0:00:08.460,0:00:10.680
+Veggie burgers across town[br]have been all the rage,
+
+0:00:10.680,0:00:13.530
+causing rapid price competition[br]amongst our restaurants.
+
+0:00:13.530,0:00:17.030
+Urban Burger wants to cut the price[br]of their veggie burger to $2.99.
+
+0:00:17.030,0:00:20.975
+With SQLAlchemy, performing an update[br]like this is a pretty simple,
+
+0:00:20.975,0:00:22.370
+four-step process.
+
+0:00:22.370,0:00:25.530
+First, we execute a query to find[br]the veggie burger we want and
+
+0:00:25.530,0:00:27.020
+store it in a variable.
+
+0:00:27.020,0:00:29.660
+Second, we declare the new[br]price of the variable.
+
+0:00:29.660,0:00:31.950
+Next, we add the variable[br]to our session.
+
+0:00:31.950,0:00:34.006
+And, finally,[br]we commit the session to the database.
+
+0:00:34.006,0:00:37.165
+Follow along as I do this[br]from the Python shell.
+
+0:00:37.165,0:00:40.335
+So, the first step in our update[br]process is to find the exact item we
+
+0:00:40.335,0:00:41.315
+want to update.
+
+0:00:41.315,0:00:45.265
+Looking at the SQLAlchemy documentation[br]for queries, I see we have a filter_by
+
+0:00:45.265,0:00:49.180
+feature that lets us filter queries[br]based on attribute entries, like name.
+
+0:00:49.180,0:00:51.690
+Let's go to our Python shell and[br]give it a try.
+
+0:00:51.690,0:00:54.750
+So, let's use the filter_by function[br]to find all the veggie burgers in
+
+0:00:54.750,0:00:56.410
+our restaurant menu database.
+
+0:00:56.410,0:00:58.140
+Following the syntax[br]from the documentation,
+
+0:00:58.140,0:01:01.640
+I append .filter_by to my[br]query on MenuItems and
+
+0:01:01.640,0:01:05.080
+set the Veggie Burger as the name of[br]the menu item I want to search for.
+
+0:01:05.080,0:01:07.810
+Then, I store it in the variable[br]named veggieBurgers.
+
+0:01:07.810,0:01:11.090
+The filter_by function always[br]returns a collection of objects.
+
+0:01:11.090,0:01:14.100
+So, let's create a for[br]loop to iterate over each object and
+
+0:01:14.100,0:01:17.200
+retrieve the information about[br]each of these veggie burgers.
+
+0:01:17.200,0:01:20.650
+Inside our for loop, let's print[br]out the ID of each veggie burger,
+
+0:01:20.650,0:01:23.930
+its current price, and[br]the restaurant it belongs to.
+
+0:01:23.930,0:01:26.730
+I'm also going to print a new line[br]character to make our results a little
+
+0:01:26.730,0:01:27.880
+bit easier to read.
+
+0:01:27.880,0:01:28.790
+When I close my for
+
+0:01:28.790,0:01:32.890
+loop in execute, I get back a list of[br]all the veggie burgers in my database.
+
+0:01:32.890,0:01:36.420
+The first one here is from[br]Urban Burger and has an ID of eight.
+
+0:01:36.420,0:01:39.700
+Now, I will create another query where[br]I only return the menu item with
+
+0:01:39.700,0:01:40.960
+an ID of eight.
+
+0:01:40.960,0:01:43.095
+I will store it as UrbanVeggieBurger.
+
+0:01:43.095,0:01:46.620
+If I append the .one function[br]to the end of my query,
+
+0:01:46.620,0:01:50.070
+I make sure SQLalchemy only[br]gives me the one object I want,
+
+0:01:50.070,0:01:52.410
+instead of a list that I[br]would have it iterate over.
+
+0:01:52.410,0:01:54.940
+Just to double check we have[br]the right burger, let me go ahead and
+
+0:01:54.940,0:01:56.020
+check its price.
+
+0:01:56.020,0:02:00.620
+Yep, the veggie burger costs $5.99,[br]just like it did in our first query.
+
+0:02:00.620,0:02:04.390
+Now, let's reset the price of[br]the Urban Veggie Burger to $2.99.
+
+0:02:04.390,0:02:07.710
+We can then add the UrbanVeggieBurger[br]object to our session and
+
+0:02:07.710,0:02:09.130
+commit it to the database.
+
+0:02:09.130,0:02:13.160
+So now, if we execute the same original[br]query to see all the veggie burgers in
+
+0:02:13.160,0:02:17.960
+our database, we see that Urban Burger's[br]veggie burger now has a price of $2.99.
+
+0:02:17.960,0:02:20.860
+Now, let's assume all the other[br]restaurants have reacted to
+
+0:02:20.860,0:02:23.330
+Urban Burger's audacious price drop and
+
+0:02:23.330,0:02:26.020
+want to set their burger[br]prices to $2.99 as well.
+
+0:02:26.020,0:02:29.440
+Let's use our same for loop and[br]modify it a bit to change the price of
+
+0:02:29.440,0:02:32.630
+all the veggie burgers in[br]our database to $2.99.
+
+0:02:32.630,0:02:36.460
+I'm going to use this if statement to[br]avoid unnecessary database updates to
+
+0:02:36.460,0:02:38.380
+an entry that already[br]has a price of $2.99,
+
+0:02:38.380,0:02:41.510
+and just update the other[br]veggie burger menu items.
+
+0:02:41.510,0:02:43.270
+Now, querying a third time,
+
+0:02:43.270,0:02:46.300
+I see all the veggie burgers in[br]our menu have the same price.
+
+0:02:46.300,0:02:49.240
+Let's get a little more practice with[br]updates by answering the following
+
+0:02:49.240,0:02:49.825
+quiz questions.
+* 0:00:00.220,0:00:01.930
+Rebecca just moved to a new house so
+
+0:00:01.930,0:00:04.210
+let's update her address[br]in the database.
+
+0:00:04.210,0:00:06.240
+Here, we find Rebecca in[br]the employee database,
+
+0:00:06.240,0:00:09.610
+assuming she's the only[br]Rebecca Allen in our employee table.
+
+0:00:09.610,0:00:13.600
+Next, we find her address[br]by matching rebecca.id to
+
+0:00:13.600,0:00:16.309
+the employee id in the address database.
+
+0:00:16.309,0:00:20.880
+Then, we set the street property of[br]her address to 281 Summer Circle.
+
+0:00:20.880,0:00:23.890
+We also update her zipcode to 00189.
+
+0:00:23.890,0:00:27.180
+Now, what do we add to our[br]session before we commit so
+
+0:00:27.180,0:00:28.490
+that this update takes place?
+* 0:00:00.370,0:00:03.660
+The variable we used to refer[br]to Rebecca's address we titled
+
+0:00:03.660,0:00:06.550
+RebeccasAddress with a capital R and[br]capital A.
+
+0:00:06.550,0:00:09.780
+So this is the same variable that we[br]used to update the address here and
+
+0:00:09.780,0:00:10.810
+the ZIP code here.
+
+0:00:10.810,0:00:12.910
+So that's what we need to add[br]to the session and then commit.
+* 0:00:00.300,0:00:03.180
+Most of the times, having data[br]in our database is a good idea.
+
+0:00:03.180,0:00:06.812
+But sometimes, we make a few bad ideas[br]that we may want to delete, later.
+
+0:00:06.812,0:00:10.320
+Auntie Anne's Diner just realized, that[br]their spinach ice cream wasn't a hit,
+
+0:00:10.320,0:00:11.920
+and wants to remove it from their menu.
+
+0:00:11.920,0:00:15.665
+Deleting an item is a three step[br]process similar to updating.
+
+0:00:15.665,0:00:19.105
+First, we want to execute the query[br]to find the spinach ice cream, and
+
+0:00:19.105,0:00:20.415
+store it in a variable.
+
+0:00:20.415,0:00:22.815
+Then we want to call session[br]delete on that item.
+
+0:00:22.815,0:00:24.745
+And finally, we'll commit the session.
+
+0:00:24.745,0:00:27.595
+Let's go back to the Python shell,[br]and walk through this together.
+
+0:00:27.595,0:00:31.015
+Let's assume, Auntie Anne's was the only[br]restaurant with spinach ice cream, and
+
+0:00:31.015,0:00:34.273
+use the .dot one function,[br]to grab this entry in the database.
+
+0:00:34.273,0:00:35.015
+To double check,
+
+0:00:35.015,0:00:38.060
+I will print out the name of the[br]restaurant, this menu item belongs to.
+
+0:00:38.060,0:00:40.600
+And see that it is indeed,[br]Auntie Ann's creation.
+
+0:00:40.600,0:00:43.030
+We will call session.delete[br]to stage this item for
+
+0:00:43.030,0:00:47.750
+removal from the database, and then call[br]session.commit to persist this change.
+
+0:00:47.750,0:00:51.560
+If we search for spinach now,[br]the sqlalchemy gives us, a no row was
+
+0:00:51.560,0:00:54.980
+found error, letting us know that this[br]data is no longer in our database.
+* 0:00:00.230,0:00:02.719
+After 35 years with the company,[br]Mark has retired and
+
+0:00:02.719,0:00:04.800
+is to be removed from[br]the employee database.
+
+0:00:04.800,0:00:08.039
+Fill in the blank here with the[br]necessary code to remove Mark from our
+
+0:00:08.039,0:00:09.000
+employee database.
+* 0:00:00.220,0:00:02.110
+In order to remove an item[br]from our database,
+
+0:00:02.110,0:00:04.710
+we must call session.delete[br]on that item.
+
+0:00:04.710,0:00:08.260
+Calling session.delete(mark) will remove[br]him from the employee database as soon
+
+0:00:08.260,0:00:10.033
+as we execute session.commit.
+* 0:00:00.390,0:00:03.450
+Congratulations, you have[br]reached the end of lesson one.
+
+0:00:03.450,0:00:06.350
+You've learned how to use an ORM to[br]create a database, and execute cred
+
+0:00:06.350,0:00:10.790
+operations on it, setting the foundation[br]for your interactive menu application.
+
+0:00:10.790,0:00:13.930
+Next, in lesson two, you'll build[br]a web server that will be able to
+
+0:00:13.930,0:00:16.620
+perform these cred operations[br]based on requests from the user.

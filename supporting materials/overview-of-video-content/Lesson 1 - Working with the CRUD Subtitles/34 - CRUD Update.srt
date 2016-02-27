@@ -1,0 +1,182 @@
+0:00:00.150,0:00:02.990
+So, we know how to create and[br]read from our database entries, but
+
+0:00:02.990,0:00:05.610
+how do we update existing[br]data within our database?
+
+0:00:05.610,0:00:08.460
+It seems we have a situation on[br]our hands that calls for this.
+
+0:00:08.460,0:00:10.680
+Veggie burgers across town[br]have been all the rage,
+
+0:00:10.680,0:00:13.530
+causing rapid price competition[br]amongst our restaurants.
+
+0:00:13.530,0:00:17.030
+Urban Burger wants to cut the price[br]of their veggie burger to $2.99.
+
+0:00:17.030,0:00:20.975
+With SQLAlchemy, performing an update[br]like this is a pretty simple,
+
+0:00:20.975,0:00:22.370
+four-step process.
+
+0:00:22.370,0:00:25.530
+First, we execute a query to find[br]the veggie burger we want and
+
+0:00:25.530,0:00:27.020
+store it in a variable.
+
+0:00:27.020,0:00:29.660
+Second, we declare the new[br]price of the variable.
+
+0:00:29.660,0:00:31.950
+Next, we add the variable[br]to our session.
+
+0:00:31.950,0:00:34.006
+And, finally,[br]we commit the session to the database.
+
+0:00:34.006,0:00:37.165
+Follow along as I do this[br]from the Python shell.
+
+0:00:37.165,0:00:40.335
+So, the first step in our update[br]process is to find the exact item we
+
+0:00:40.335,0:00:41.315
+want to update.
+
+0:00:41.315,0:00:45.265
+Looking at the SQLAlchemy documentation[br]for queries, I see we have a filter_by
+
+0:00:45.265,0:00:49.180
+feature that lets us filter queries[br]based on attribute entries, like name.
+
+0:00:49.180,0:00:51.690
+Let's go to our Python shell and[br]give it a try.
+
+0:00:51.690,0:00:54.750
+So, let's use the filter_by function[br]to find all the veggie burgers in
+
+0:00:54.750,0:00:56.410
+our restaurant menu database.
+
+0:00:56.410,0:00:58.140
+Following the syntax[br]from the documentation,
+
+0:00:58.140,0:01:01.640
+I append .filter_by to my[br]query on MenuItems and
+
+0:01:01.640,0:01:05.080
+set the Veggie Burger as the name of[br]the menu item I want to search for.
+
+0:01:05.080,0:01:07.810
+Then, I store it in the variable[br]named veggieBurgers.
+
+0:01:07.810,0:01:11.090
+The filter_by function always[br]returns a collection of objects.
+
+0:01:11.090,0:01:14.100
+So, let's create a for[br]loop to iterate over each object and
+
+0:01:14.100,0:01:17.200
+retrieve the information about[br]each of these veggie burgers.
+
+0:01:17.200,0:01:20.650
+Inside our for loop, let's print[br]out the ID of each veggie burger,
+
+0:01:20.650,0:01:23.930
+its current price, and[br]the restaurant it belongs to.
+
+0:01:23.930,0:01:26.730
+I'm also going to print a new line[br]character to make our results a little
+
+0:01:26.730,0:01:27.880
+bit easier to read.
+
+0:01:27.880,0:01:28.790
+When I close my for
+
+0:01:28.790,0:01:32.890
+loop in execute, I get back a list of[br]all the veggie burgers in my database.
+
+0:01:32.890,0:01:36.420
+The first one here is from[br]Urban Burger and has an ID of eight.
+
+0:01:36.420,0:01:39.700
+Now, I will create another query where[br]I only return the menu item with
+
+0:01:39.700,0:01:40.960
+an ID of eight.
+
+0:01:40.960,0:01:43.095
+I will store it as UrbanVeggieBurger.
+
+0:01:43.095,0:01:46.620
+If I append the .one function[br]to the end of my query,
+
+0:01:46.620,0:01:50.070
+I make sure SQLalchemy only[br]gives me the one object I want,
+
+0:01:50.070,0:01:52.410
+instead of a list that I[br]would have it iterate over.
+
+0:01:52.410,0:01:54.940
+Just to double check we have[br]the right burger, let me go ahead and
+
+0:01:54.940,0:01:56.020
+check its price.
+
+0:01:56.020,0:02:00.620
+Yep, the veggie burger costs $5.99,[br]just like it did in our first query.
+
+0:02:00.620,0:02:04.390
+Now, let's reset the price of[br]the Urban Veggie Burger to $2.99.
+
+0:02:04.390,0:02:07.710
+We can then add the UrbanVeggieBurger[br]object to our session and
+
+0:02:07.710,0:02:09.130
+commit it to the database.
+
+0:02:09.130,0:02:13.160
+So now, if we execute the same original[br]query to see all the veggie burgers in
+
+0:02:13.160,0:02:17.960
+our database, we see that Urban Burger's[br]veggie burger now has a price of $2.99.
+
+0:02:17.960,0:02:20.860
+Now, let's assume all the other[br]restaurants have reacted to
+
+0:02:20.860,0:02:23.330
+Urban Burger's audacious price drop and
+
+0:02:23.330,0:02:26.020
+want to set their burger[br]prices to $2.99 as well.
+
+0:02:26.020,0:02:29.440
+Let's use our same for loop and[br]modify it a bit to change the price of
+
+0:02:29.440,0:02:32.630
+all the veggie burgers in[br]our database to $2.99.
+
+0:02:32.630,0:02:36.460
+I'm going to use this if statement to[br]avoid unnecessary database updates to
+
+0:02:36.460,0:02:38.380
+an entry that already[br]has a price of $2.99,
+
+0:02:38.380,0:02:41.510
+and just update the other[br]veggie burger menu items.
+
+0:02:41.510,0:02:43.270
+Now, querying a third time,
+
+0:02:43.270,0:02:46.300
+I see all the veggie burgers in[br]our menu have the same price.
+
+0:02:46.300,0:02:49.240
+Let's get a little more practice with[br]updates by answering the following
+
+0:02:49.240,0:02:49.825
+quiz questions.
