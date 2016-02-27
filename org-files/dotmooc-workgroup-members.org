@@ -1,0 +1,8 @@
+* 0: wg-using | 
+* 1: wg-sessions | 
+* 2: udacity-directories | 
+* 3: project-todos | 
+* 4: py-session | 
+* 5: py-tutorials1 | 
+* 6: py-tutorials2 | 
+* 7: scratch-py-dirs
