@@ -1,5 +1,0 @@
-0:00:00.280,0:00:02.270
-So we write declarative base here,
-
-0:00:02.270,0:00:04.790
-in order to create a base class[br]that our class code will inherit.

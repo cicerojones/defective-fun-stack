@@ -1,8 +1,0 @@
-0:00:00.360,0:00:03.150
-In this next solution video,[br]I will tackle the second challenge by
-
-0:00:03.150,0:00:06.090
-adding a link to edit and[br]delete each restaurant entry.
-
-0:00:06.090,0:00:08.640
-Once you've attempted this objective,[br]proceed to the next video.

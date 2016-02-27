@@ -1,5 +1,0 @@
-0:00:00.090,0:00:03.170
-The Update command updates[br]an existing row in our table, so
-
-0:00:03.170,0:00:04.410
-these two words actually match up.

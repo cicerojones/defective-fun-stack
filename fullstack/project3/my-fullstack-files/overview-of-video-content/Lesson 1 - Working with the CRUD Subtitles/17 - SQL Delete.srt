@@ -1,5 +1,0 @@
-0:00:00.100,0:00:02.884
-The Delete command in SQL[br]deletes a row from our table, so
-
-0:00:02.884,0:00:04.460
-it also executes a CRUD delete.

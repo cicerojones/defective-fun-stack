@@ -1,3 +1,5 @@
+* 
+** 
 #+BEGIN_SRC python :session *Python*
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +20,7 @@ Base.metadata.bind=engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 #+END_SRC
-
+** 
 from IPython.core.completerlib import module_completion
 Base = declarative_base()
 
@@ -28,8 +30,8 @@ open('/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-21998cu7/python-219
 my_dick
 
 declarative_base
-
-
+** create puppy instances tuple (list?) object
+#+BEGIN_SRC python :session *Python*
 import sqlalchemy
 
 base = sqlalchemy.ext.declarative.declarative_base()
@@ -39,17 +41,19 @@ engine = create_engine('sqlite:///puppyshelter.db')
 Base.metadata.bind=engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-open('/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-21998cu7/python-21998AhF', 'w').write(str(_))
-'org_babel_python_eoe'
+
+# open('/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-21998cu7/python-21998AhF', 'w').write(str(_))
+# 'org_babel_python_eoe'
 
 dese_puppies = session.query(Puppy).all()
-
+#+END_SRC
 .name
 
 dese_puppies
 
 .gender
 
+#+BEGIN_SRC python :session *Python*
 firstPup = session.query(Puppy).first()
 
 firstPup.name
@@ -66,14 +70,77 @@ twelfth.name
 
 first_twelve = dese_puppies[:11]
 
+#+END_SRC
+** 
+#+BEGIN_SRC python :session *Python* :results output
 for n in first_twelve:
     print n
+#+END_SRC
+
+#+RESULTS:
+<puppies.Puppy object at 0x104826990>
+<puppies.Puppy object at 0x104826550>
+<puppies.Puppy object at 0x104826710>
+<puppies.Puppy object at 0x104826450>
+<puppies.Puppy object at 0x1048263d0>
+<puppies.Puppy object at 0x104826650>
+<puppies.Puppy object at 0x1048262d0>
+<puppies.Puppy object at 0x104826410>
+<puppies.Puppy object at 0x104826250>
+<puppies.Puppy object at 0x1048424d0>
+<puppies.Puppy object at 0x104842590>
+** 
+#+BEGIN_SRC python :session *Python* :results output
 for n in first_twelve:
         print n.name
+#+END_SRC
 
+#+RESULTS:
+#+begin_example
+
+... Bailey
+Max
+Charlie
+Buddy
+Rocky
+Jake
+Jack
+Toby
+Cody
+Buster
+Duke
+#+end_example
+** 
+
+#+BEGIN_SRC python :session *Python* :results output
+
+#+END_SRC
 pwd
 cd ../..
 ls
 pwd
 
 history -f puppy-database.org
+** 
+#+BEGIN_SRC python :session *Python* 
+for instance in session.query(Puppy).order_by(name):
+...     print(instance.name)
+Traceback (most recent call last):
+  File "<ipython-input-443-53093fc2a62c>", line 1, in <module>
+    (instance.name)
+NameError: name 'instance' is not defined
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* 
+for instance in session.query(Puppy).order_by(instance.name):
+    print(instance.name)
+
+
+#+END_SRC
+
+#+RESULTS:
+* 
+#+BEGIN_SRC python
+import sqlalchemy
+Base = sqlalchemy.ext.declarative.declarative_base()
+#+END_SRC
