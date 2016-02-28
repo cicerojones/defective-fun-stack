@@ -1,0 +1,36 @@
+* 
+* 
+#+BEGIN_SRC bash
+a:tournament a$ python tournament_test.py
+Traceback (most recent call last):
+  File "tournament_test.py", line 129, in <module>
+    testDeleteMatches()
+  File "tournament_test.py", line 8, in testDeleteMatches
+    deleteMatches()
+  File "/Users/a/Documents/working-directory/fullstack/vagrant/tournament/final_project.py", line 28, in deleteMatches
+    dbExecuteWrapper(query)
+  File "/Users/a/Documents/working-directory/fullstack/vagrant/tournament/final_project.py", line 9, in dbExecuteWrapper
+    DB = connect()
+  File "/Users/a/Documents/working-directory/fullstack/vagrant/tournament/final_project.py", line 5, in connect
+    return psycopg2.connect("dbname=tournament")
+  File "/usr/local/lib/python2.7/site-packages/psycopg2/__init__.py", line 164, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, async=async)
+psycopg2.OperationalError: could not connect to server: No such file or directory
+	Is the server running locally and accepting
+	connections on Unix domain socket "/tmp/.s.PGSQL.5432"?
+#+END_SRC
+make sure your postgres is up and running
+
+Is your database available?
+#+BEGIN_SRC bash
+a:tournament a$ python tournament_test.py
+1. Old matches can be deleted.
+2. Player records can be deleted.
+3. After deleting, countPlayers() returns zero.
+4. After registering a player, countPlayers() returns 1.
+5. Players can be registered and deleted.
+6. Newly registered players appear in the standings with no matches.
+7. After a match, players have updated standings.
+8. After one match, players with one win are paired.
+Success!  All tests pass!
+#+END_SRC

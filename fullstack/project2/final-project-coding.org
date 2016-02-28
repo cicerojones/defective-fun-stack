@@ -1479,7 +1479,6 @@ correct_pairs != actual_pairs
 #+RESULTS:
 : False
 
-
 * typical SQL interactions
 ** create players1 table 
 ** drop players1 table
