@@ -1,0 +1,44 @@
+0:00:00.160,0:00:03.770
+The problem with our code is that user[br]input gets put into a database query in
+
+0:00:03.770,0:00:05.270
+an unsafe way.
+
+0:00:05.270,0:00:08.020
+Some text submitted in the forum[br]ended up being considered as
+
+0:00:08.020,0:00:09.890
+SQL code instead of as a text value.
+
+0:00:11.510,0:00:14.320
+But there's another way to[br]do our query that's safe.
+
+0:00:14.320,0:00:18.940
+When we execute a query,[br]we can put a %s in the query text, and
+
+0:00:18.940,0:00:22.460
+then after it,[br]a tuple parameter to the execute call.
+
+0:00:22.460,0:00:26.340
+The database library will[br]substitute this into the query in
+
+0:00:26.340,0:00:28.830
+a way that's safe so[br]this problem will never happen again.
+
+0:00:29.860,0:00:33.550
+Using what you've just learned,[br]you can now update forumdb.py to
+
+0:00:33.550,0:00:37.010
+execute insert queries safely[br]using query parameters.
+
+0:00:37.010,0:00:39.940
+Test your work by checking that[br]you can now make posts with single
+
+0:00:39.940,0:00:40.950
+quotes in them and
+
+0:00:40.950,0:00:45.140
+that the SQL injection attack query[br]doesn't delete the whole forum anymore.
+
+0:00:45.140,0:00:48.660
+When you're done, press Submit,[br]then Continue to go on.

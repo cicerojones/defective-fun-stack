@@ -1,0 +1,173 @@
+0:00:00.300,0:00:03.890
+Now in adapting our form DB[br]code to use a real database,
+
+0:00:03.890,0:00:06.620
+you might have written something[br]that looks a lot like this.
+
+0:00:06.620,0:00:11.860
+In the get all posts function, you[br]connect to a database, make a cursor,
+
+0:00:11.860,0:00:15.240
+execute a SELECT statement,[br]format the results appropriately,
+
+0:00:15.240,0:00:17.400
+close the connection return the posts.
+
+0:00:17.400,0:00:21.510
+But then to add a post,[br]connect to the database, make a cursor.
+
+0:00:21.510,0:00:26.130
+Execute an INSERT that[br]substitutes in the post content,
+
+0:00:26.130,0:00:28.590
+commit that to the database and close.
+
+0:00:28.590,0:00:31.080
+Now, this looks good,[br]but it isn't quite.
+
+0:00:31.080,0:00:33.700
+If you're writing a bunch[br]of different forum app.
+
+0:00:33.700,0:00:37.571
+Are there any posts that don't[br]seem to work quite right?
+
+0:00:47.114,0:00:48.250
+Say what?
+
+0:00:48.250,0:00:49.440
+Wait a minute.
+
+0:00:49.440,0:00:52.180
+That looked like a perfectly good post.
+
+0:00:52.180,0:00:54.580
+Why are we getting this[br]weird error from it?
+
+0:00:55.670,0:00:57.550
+Let's go back to our terminal.
+
+0:00:57.550,0:00:58.230
+Oh, look at this.
+
+0:00:58.230,0:01:00.220
+We have a trace back from python.
+
+0:01:00.220,0:01:01.680
+It says programming error.
+
+0:01:01.680,0:01:03.620
+Syntax error at or near t.
+
+0:01:03.620,0:01:07.010
+And there's out INSERT statement VALUES.
+
+0:01:07.010,0:01:10.020
+I can't find a problem.
+
+0:01:10.020,0:01:11.930
+Let's look back at the code.
+
+0:01:11.930,0:01:15.290
+So, here's where the post content,[br]gets sent to the database.
+
+0:01:15.290,0:01:17.410
+It just gets added into a SQL statement.
+
+0:01:18.570,0:01:20.730
+Inside single quotes.
+
+0:01:20.730,0:01:23.870
+Because, we put SQL strings[br]inside single quotes.
+
+0:01:23.870,0:01:28.100
+But the database, sees the quote from[br]the post, and it thinks that's the end
+
+0:01:28.100,0:01:31.760
+of a string, and that t is[br]something it doesn't understand.
+
+0:01:31.760,0:01:34.270
+By the way,[br]if your code didn't have this bug,
+
+0:01:34.270,0:01:36.240
+congratulations, that's awesome.
+
+0:01:36.240,0:01:39.900
+But stay tuned, because there's more[br]to this bug than might first appear.
+
+0:01:39.900,0:01:43.520
+Despite the fact that we had a little[br]problem, we can still post things.
+
+0:01:43.520,0:01:45.020
+As long as they don't have[br]single quotes in them.
+
+0:01:46.060,0:01:47.050
+But here's something to try.
+
+0:01:48.270,0:01:49.280
+Single quote.
+
+0:01:49.280,0:01:50.215
+Close param.
+
+0:01:50.215,0:01:52.490
+Semi colon.
+
+0:01:52.490,0:01:54.720
+Don't retype this from what I'm saying.
+
+0:01:54.720,0:01:57.800
+Copy it from the instructor notes,[br]and put them into your forum.
+
+0:01:57.800,0:01:59.235
+Delete from posts.
+
+0:01:59.235,0:02:01.166
+Semi colon.
+
+0:02:01.166,0:02:02.926
+Double dash.
+
+0:02:02.926,0:02:05.090
+Post this.
+
+0:02:05.090,0:02:07.270
+Wait, all, all of our posts are gone.
+
+0:02:07.270,0:02:10.050
+I thought we had a database here.
+
+0:02:10.050,0:02:11.170
+Hey, wait a minute.
+
+0:02:11.170,0:02:13.790
+I thought I saw this one[br]on the webcomic XKCD.
+
+0:02:13.790,0:02:19.590
+What we have here is a security hole[br]called an SQL injection attack.
+
+0:02:19.590,0:02:23.610
+Some of the post's text is being[br]treated as a database command,
+
+0:02:23.610,0:02:26.500
+namely delete from posts.
+
+0:02:26.500,0:02:30.158
+Which as it happens, means delete[br]every row from the posts table.
+
+0:02:30.158,0:02:33.220
+Well, that stinks.
+
+0:02:33.220,0:02:35.390
+All those brilliant test[br]posts we wrote are gone, and
+
+0:02:35.390,0:02:37.060
+we have a famous security[br]bug in our code.
+
+0:02:37.060,0:02:40.010
+How are we going to fix this?
+
+0:02:40.010,0:02:42.710
+Well, we might not be able to get[br]all those great posts back, but
+
+0:02:42.710,0:02:44.850
+we should be able to at least[br]keep it from happening again.
