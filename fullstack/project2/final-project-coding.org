@@ -8,7 +8,13 @@ os.getcwd()
 
 #+RESULTS:
 : 
-: >>> ... >>> '/Users/a/Documents/working-directory/udacity-courses/fullstack/project2'
+: >>> '/Users/a/Documents/working-directory/udacity-courses/fullstack/project2'
+
+#+BEGIN_SRC python :session *Python* :results output
+os.chdir('/Users/a/Documents/working-directory/udacity-courses/fullstack/project2')
+#+END_SRC
+
+#+RESULTS:
 
 ** use function from development module
 must be loaded in the environment first before calling from org mode?
@@ -17,9 +23,14 @@ must be loaded in the environment first before calling from org mode?
 import queries_for_tournament
 #+END_SRC
 
+#+RESULTS:
+: [(1, 'Bill Borzo                         ', 0, 0), (2, 'Jeff Jeffries                      ', 0, 0), (3, 'Dave Davies                        ', 0, 0), (4, 'Steve Stevens                      ', 0, 0)]
+
 #+BEGIN_SRC python :session *Python* :results output
 queries_for_tournament.doDB()
 #+END_SRC
+
+
 
 
 #+RESULTS:
@@ -52,12 +63,21 @@ printwtf()
 
 #+RESULTS:
 : /Users/a/Documents/working-directory/udacity-courses/fullstack/project2
-
-** define db function from org file
+** import statement
 #+BEGIN_SRC python :session *Python* :results output
-# not complete function
 import psycopg2
+#+END_SRC
 
+#+RESULTS:
+
+** 
+** define db function from org file
+*** defining these functions from org-babel block seems to be a problem?
+need the blank line after the print statement in the for loop
+[[*showAllPLayers--"select * from players1;"][compare against showAllPLayers--"select * from players1;"]]
+#+BEGIN_SRC python :session *Python* :results output
+# not complete function? what is complete
+# i.e. query is commented out
 def showAllPLayers():
     DB = psycopg2.connect("dbname=tourney_practice")
     c = DB.cursor()
@@ -73,6 +93,13 @@ def showAllPLayers():
 #+END_SRC
 
 #+RESULTS:
+: 
+: >>> >>> ... ... ... ... ... ... ... ... ... ...   File "<ipython-input-89-6fc265d1c009>", line 10
+:     DB.close()
+:               ^
+: IndentationError: unindent does not match any outer indentation level
+: 
+: If you want to paste code into IPython, try the %paste and %cpaste magic functions.
 
 ** call db function from org file
 #+BEGIN_SRC python :session *Python* :results output
@@ -80,26 +107,22 @@ showAllPLayers()
 #+END_SRC
 
 #+RESULTS:
+: (218, 'Fluttershy', 0, 1)
+: (217, 'Twilight Sparkle', 1, 1)
+: (220, 'Pinkie Pie', 0, 1)
+: (219, 'Applejack', 1, 1)
+
 : (1, 'Bill Borzo                         ', 0, 0)
 : (2, 'Jeff Jeffries                      ', 0, 0)
 : (3, 'Dave Davies                        ', 0, 0)
 : (4, 'Steve Stevens                      ', 0, 0)
 
-** empty rows of content
+** empty rows of content--plain sql statements?
 #+BEGIN_SRC sql
 delete from matches2; delete from players2;
 #+END_SRC
 
 ** add data to table
-#+BEGIN_SRC python :session *Python* :results output
-showAllPLayers()
-#+END_SRC
-
-#+RESULTS:
-: (1, 'Bill Borzo                         ', 0, 0)
-: (2, 'Jeff Jeffries                      ', 0, 0)
-: (3, 'Dave Davies                        ', 0, 0)
-: (4, 'Steve Stevens                      ', 0, 0)
 
 * initial 'directory' for developing python-sql functions
 ** model database interaction--select and printout
@@ -531,6 +554,7 @@ def showAllPLayers():
     # print rows
     for row in rows:
         print row
+
     DB.close()
 
 
@@ -538,11 +562,17 @@ def showAllPLayers():
 
 #+RESULTS:
 
+
+
 #+BEGIN_SRC python :session *Python* :results output
 showAllPLayers()
 #+END_SRC
 
 #+RESULTS:
+: (218, 'Fluttershy', 0, 1)
+: (217, 'Twilight Sparkle', 1, 1)
+: (220, 'Pinkie Pie', 0, 1)
+: (219, 'Applejack', 1, 1)
 
 *** refactor to use optional parameter
 #+BEGIN_SRC python :session *Python* :results output
@@ -560,6 +590,24 @@ def showAllPLayers(table=players2):
 
 
 #+END_SRC
+
+#+RESULTS:
+#+begin_example
+'org_babel_python_eoe'
+*** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+ipdb> >>> >>> Traceback (most recent call last):
+  File "<ipython-input-99-ca2c63068dde>", line 1, in <module>
+    c.execute(query)
+NameError: name 'c' is not defined
+
+> <ipython-input-99-ca2c63068dde>(1)<module>()
+----> 1 c.execute(query)
+*** NameError: name 'c' is not defined
+*** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+*** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+*** NameError: name 'row' is not defined
+#+end_example
+
 
 ** deleteRows--"delete from players1;"
 #+BEGIN_SRC python :session *Python* :results output
@@ -951,7 +999,6 @@ def dbExecuteWrapper_noparameter(query_string):
 
 #+RESULTS:
 
-
 ** deleteMatches
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def deleteMatches():
@@ -1186,7 +1233,6 @@ def reportMatch(winner, loser):
 
 #+RESULTS:
 
-** 
 ** swissPairings
 
 *** first naive go--returns many duplicates
@@ -1209,6 +1255,23 @@ where a.wins = b.wins
 and a.player_name != b.player_name
 and a.id < b.id
 
+#+END_SRC
+
+*** one line for easier entering in cli--players2 vs. players
+**** omitting the last a.id < b.id clause returns two matches for same pairing
+#+BEGIN_SRC sql
+select a.player_name, b.player_name from players2 as a, players2 as b where a.wins = b.wins and a.player_name != b.player_name
+#+END_SRC
+
+   player_name    |   player_name
+------------------+------------------
+ Twilight Sparkle | Applejack
+ Fluttershy       | Pinkie Pie
+ Applejack        | Twilight Sparkle
+ Pinkie Pie       | Fluttershy
+
+#+BEGIN_SRC sql
+select a.player_name, b.player_name from players as a, players as b where a.wins = b.wins and a.player_name != b.player_name and a.id < b.id
 #+END_SRC
 
 *** add to python
@@ -1551,7 +1614,12 @@ def swissPairings():
 
 #+END_SRC
 ** blocks in org-babel
-#+END_SRC
+*** testReportMatches
+**** reportMatches--contract
+reportMatches takes two arguments, player ids as derived from
+registering Players (registerPlayer) in the tournament and then popping them into a
+standings with playerStandings
+**** line by line code
 #+BEGIN_SRC python :session *Python* :results output
 deleteMatches()
 #+END_SRC
@@ -1619,7 +1687,33 @@ standings = playerStandings()
 
 #+RESULTS:
 #+END_SRC
+*** testPairings
+**** testPairings--contract
+**** setup code shared with reportMatches
+#+BEGIN_SRC python :session *Python* :results output
+deleteMatches()
+#+END_SRC
 
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+deletePlayers()
+#+END_SRC
+**** use new unique names
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("Twilight Sparkle")
+registerPlayer("Fluttershy")
+registerPlayer("Applejack")
+registerPlayer("Pinkie Pie")
+#+END_SRC
+**** create some match results
+#+BEGIN_SRC python :session *Python* :results output
+standings = playerStandings()
+[id1, id2, id3, id4] = [row[0] for row in standings]
+reportMatch(id1, id2)
+reportMatch(id3, id4)
+#+END_SRC
+**** unique to swissPairings test code
 #+BEGIN_SRC python :session *Python* :results output
 pairings = swissPairings()
 #+END_SRC
@@ -1653,6 +1747,161 @@ actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
 #+BEGIN_SRC python :session *Python* :results output
 correct_pairs != actual_pairs
 #+END_SRC
+**** my swissPairings definition
+#+BEGIN_SRC python :session *Python* :results output
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output
+
+#+END_SRC
+* extra credit features
+** Prevent rematches between players.
+*** natural planning
+So basically, 
+
+1. register some number of players greater than 4
+   - work off an existing round number type of tournament
+2. report an intial set of victories with reportMatches
+   - plan how to set up the first batch of matches
+     - 1 d. 2
+     - 3 d. 4
+     - etc.
+3. tinker with swissPairings
+   - add a clause that looks at entries in matches
+4. use tourney_practice to experiment with the correct raw SQL 
+
+|                    | "Twilight Sparkle" | "Fluttershy" | "Applejack" | "Pinkie Pie" | "Bruno Walton" | "Boots O'Neal" | "Cathy Burton" | "Diane Grant" |
+|--------------------+--------------------+--------------+-------------+--------------+----------------+----------------+----------------+---------------|
+| "Twilight Sparkle" | nil                |              |             |              |                |                |                |               |
+| "Fluttershy"       |                    |              |             |              |                |                |                |               |
+| "Applejack"        |                    |              |             |              |                |                |                |               |
+| "Pinkie Pie"       |                    |              |             |              |                |                |                |               |
+| "Bruno Walton"     |                    |              |             |              |                |                |                |               |
+| "Boots O'Neal"     |                    |              |             |              |                |                |                |               |
+| "Cathy Burton"     |                    |              |             |              |                |                |                |               |
+| "Diane Grant"      |                    |              |             |              |                |                |                |               |
+*** 4 abcd
+| match no. | winner | loser |
+|-----------+--------+-------|
+|         1 | a      | b     |
+|         2 | c      | d     |
+|-----------+--------+-------|
+|         3 | a      | c     |
+|         4 | b      | d     |
+|         5 |        |       |
+|         6 |        |       |
+|         7 |        |       |
+|         8 |        |       |
+|         9 |        |       |
+|        10 |        |       |
+|        11 |        |       |
+|        12 |        |       |
+|        13 |        |       |
+|        14 |        |       |
+|        15 |        |       |
+|        16 |        |       |
+*** 8 abcdefgh
+| match no. | winner | loser | winner record | loser record |
+|-----------+--------+-------+---------------+--------------|
+|         1 | a      | b     |           0-0 |          0-0 |
+|         2 | c      | d     |           0-0 |          0-0 |
+|         3 | e      | f     |           0-0 |          0-0 |
+|         4 | g      | h     |           0-0 |          0-0 |
+|-----------+--------+-------+---------------+--------------|
+|         5 | a      | c     |           1-0 |          1-0 |
+|         6 | e      | g     |           1-0 |          1-0 |
+|         7 | b      | d     |           0-1 |          0-1 |
+|         8 | f      | h     |           0-1 |          0-1 |
+|-----------+--------+-------+---------------+--------------|
+|         9 | a      | e     |           2-0 |          2-0 |
+|        10 | b      | c     |           1-1 |          1-1 |
+|        11 | f      | g     |           1-1 |          1-1 |
+|        12 | d      | h     |           0-2 |          0-2 |
+|-----------+--------+-------+---------------+--------------|
 
 
+| team | wins | losses | avg. wins of teams lost to |   |
+|------+------+--------+----------------------------+---|
+| a    |    3 |      0 |                          - |   |
+| b    |    2 |      1 |                          3 |   |
+| f    |    2 |      1 |                          1 |   |
+| c    |    1 |      2 |                            |   |
+| d    |    1 |      2 |                            |   |
+| e    |    1 |      2 |                            |   |
+| g    |    1 |      2 |                            |   |
+| h    |    0 |      3 |                            |   |
+
+
+
+*** number pairs to return!
+    "For four players, swissPairings should return two pairs."
+For eight players, what number of pairs to return?
+Well, you'd need to report an initial group of 4 matches.
+
+So, whereas the test for the meets specifications starts off so:
+
+#+BEGIN_SRC python
+registerPlayer("Twilight Sparkle")
+    registerPlayer("Fluttershy")
+    registerPlayer("Applejack")
+    registerPlayer("Pinkie Pie")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+#+END_SRC
+
+We would instead do something like
+
+#+BEGIN_SRC python
+registerPlayer("Twilight Sparkle")
+registerPlayer("Fluttershy")
+registerPlayer("Applejack")
+registerPlayer("Pinkie Pie")
+
+    registerPlayer("Bruno Walton")
+    registerPlayer("Boots O'Neal")
+    registerPlayer("Cathy Burton")
+    registerPlayer("Diane Grant")
+
+    standings = playerStandings()
+    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    reportMatch(id5, id6)
+    reportMatch(id7, id8)
+#+END_SRC
+*** 
+*** 
+** 
+ Don’t assume an even number of players. If there is an odd number of
+ players, assign one player a “bye” (skipped round). A bye counts as a
+ free win. A player should not receive more than one bye in a
+ tournament.
+** 
+ Support games where a draw (tied game) is possible. This will require
+ changing the arguments to reportMatch.
+** 
+ When two players have the same number of wins, rank them according to
+ OMW (Opponent Match Wins), the total number of wins by players they
+ have played against.
+** 
+ Support more than one tournament in the database, so matches do not
+ have to be deleted between tournaments. This will require
+ distinguishing between “a registered player” and “a player who has
+ entered in tournament #123”, so it will require changes to the
+ database schema.
+** 
+ You may refer to outside resources to devise your pairing algorithm.
+ Wizards of the Coast has prepared simple instructions, and more
+ details can be found in resources linked to in the reference section
+ of Wikipedia's article on Swiss tournaments.
 
