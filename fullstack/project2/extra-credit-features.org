@@ -140,7 +140,8 @@ of Wikipedia's article on Swiss tournaments.
 create, update, delete--using wrapper function
 ** start here this works
 *** import psycopg and define a db-agnostic connect function
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_connect(dbname):						:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
 
 def new_connect(dbname):
@@ -148,7 +149,8 @@ def new_connect(dbname):
     return psycopg2.connect(dbname_string)
 #+END_SRC
 *** define a db-agnostic execute wrapper
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_dbExecuteWrapper(query_string, dbname, extra=None):	:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_dbExecuteWrapper(query_string, dbname, extra=None):
     DB = new_connect(dbname)
     c = DB.cursor()
@@ -157,7 +159,8 @@ def new_dbExecuteWrapper(query_string, dbname, extra=None):
     DB.close()
 #+END_SRC
 *** define a db-agnostic retrieval wrapper
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):	:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
     DB = new_connect(dbname)
     c = DB.cursor()
@@ -171,7 +174,8 @@ def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
 #+RESULTS:
 
 *** define a db and table-agnostic deleteTable function
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_deleteTable(dbname, table_name):				:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_deleteTable(dbname, table_name):
     tb_name = table_name
     sql_keywords = """DELETE FROM """
@@ -191,7 +195,6 @@ new_deleteTable("tourney_practice", "playerz")
 #+RESULTS:
 
 *** use new_deleteTable to define deleteMatches and deletePlayers function
-
 **** deleteTable matchez and playerz
 #+BEGIN_SRC python :session *Python* :results output
 new_deleteTable("tourney_practice", "matchez")
@@ -201,7 +204,7 @@ new_deleteTable("tourney_practice", "matchez")
 new_deleteTable("tourney_practice", "playerz")
 #+END_SRC    
 *** countPlayers
-**** refactor to take table name as argument
+**** refactor to take table name as argument--must return as last line?
 #+BEGIN_SRC python :session *Python* :results output
 def countPlayers():
     DB = connect()
@@ -214,6 +217,31 @@ def countPlayers():
     DB.close()
 
 #+END_SRC
+**** def new_countPlayers(dbname, table_name):				:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output
+new_countPlayers("tourney_practice", "playerz")
+#+END_SRC
+
+#+RESULTS:
+: 3
+
 *** refactor registerPlayer to take a table_name argument
 **** assumes columns have certain hard-coded names
 #+BEGIN_SRC python :session *Python* :results output
@@ -258,13 +286,13 @@ def update_statement_string(table_name):
     sql_keywords = """UPDATE """
     update_statement = sql_keywords + tb_name
 #+END_SRC
-
-**** make a general SQL KEYWORD + tablename statement string generator
-#+BEGIN_SRC python :session *Python* :results output
+**** make a general SQL KEYWORD + tablename statement string generator	
+**** def keyword_statement_string(table_name, sql_keyword):		:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def keyword_statement_string(table_name, sql_keyword):
     tb_name = table_name
     sql_keywords = sql_keyword + """ """
-    update_statement = sql_keywords + tb_name
+    update_statement = sql_keywords + tb_name + """ """
     return update_statement
 #+END_SRC
 
@@ -275,28 +303,48 @@ keyword_statement_string("matchez", "FROM")
 #+END_SRC
 
 #+RESULTS:
-: 'FROM matchez'
+: 'FROM matchez '
 
-#+BEGIN_SRC python :session *Python* :results output
-keyword_statement_string("matchez", "WHERE")
+**** def new_registerPlayer(dbname, table_name, player_name):		:def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name, wins, matchez)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
+
 #+END_SRC
 
 #+RESULTS:
-: 'WHERE matchez'
+
+#+BEGIN_SRC python :session *Python* :results output
+new_registerPlayer("tourney_practice", "playerz", "AAAA")
+new_registerPlayer("tourney_practice", "playerz", "BBBB")
+new_registerPlayer("tourney_practice", "playerz", "CCCC")
+new_registerPlayer("tourney_practice", "playerz", "DDDD")
+#+END_SRC
+
+#+RESULTS:
 
 *** refactor playerStandings
-**** assumes columns have certain hard-coded names
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_playerStandings(table_name)--assumes columns with hard-coded names :def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_playerStandings(table_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT id, player_name, wins, matches " +
+    query = ("SELECT id, player_name, wins, matchez " +
              from_statement + "ORDER BY wins DESC;")
-    return dbExecuteRetrievalWrapper_allrows(query)
+    return new_dbExecuteRetrievalWrapper_allrows("tourney_practice", query)
 
 #+END_SRC
 
 #+RESULTS:
 
+#+BEGIN_SRC python :session *Python* :results output
+new_playerStandings("playerz")
+#+END_SRC
+
+#+RESULTS:
+: [(1, 'AAAA', 1, 1), (2, 'BBBB', 0, 1), (3, 'CCCC', 0, 0)]
 *** refactor reportMatch(winner, loser):
 **** original contains matches and players table names
 #+BEGIN_SRC python :session *Python* :results output
@@ -311,20 +359,20 @@ def reportMatch(winner, loser):
     dbExecuteWrapper(query3, (winner, loser))
 
 #+END_SRC
-**** new_reportMatch takes db, tables, winner and loser
-#+BEGIN_SRC python :session *Python* :results output
+**** def new_reportMatch(dbname, table1, table2, winner, loser)--still hard codes column names :def:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_reportMatch(dbname, table1, table2, winner, loser):
     q1_insert = keyword_statement_string(table2, """INSERT INTO""")
     q2_update = keyword_statement_string(table1, """UPDATE""")
     q2_from = keyword_statement_string(table2, """FROM""")
     query1 = (q1_insert + "VALUES (%s, %s) ;")
     query2 = (q2_update + "SET wins = wins + 1" + 
-              q2_from + "WHERE players.id = (%s);")
-    query3 = (q2_update + "SET matches = matches + 1" + 
-              q2_from + "WHERE players.id = (%s) OR players.id = (%s);")
-    new_dbExecuteWrapper(dbname, query1, (winner, loser))
-    new_dbExecuteWrapper(dbname, query2, (winner,))
-    new_dbExecuteWrapper(dbname, query3, (winner, loser))
+              q2_from + "WHERE playerz.id = (%s);")
+    query3 = (q2_update + "SET matchez = matchez + 1" + 
+              q2_from + "WHERE playerz.id = (%s) OR playerz.id = (%s);")
+    new_dbExecuteWrapper(query1, dbname, (winner, loser))
+    new_dbExecuteWrapper(query2, dbname, (winner,))
+    new_dbExecuteWrapper(query3, dbname, (winner, loser))
 
 #+END_SRC
 
@@ -336,23 +384,7 @@ new_reportMatch("tourney_practice", "playerz", "matchez", 1, 2)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-File "<ipython-input-304-3ed6b18afcaf>", line 10, in new_reportMatch
-    new_dbExecuteWrapper(dbname, query1, (winner, loser))
-  File "<ipython-input-200-80d9ed023749>", line 2, in new_dbExecuteWrapper
-    DB = new_connect(dbname)
-  File "<ipython-input-195-c0588e66b19a>", line 3, in new_connect
-    return psycopg2.connect(dbname_string)
-  File "/usr/local/lib/python2.7/site-packages/psycopg2/__init__.py", line 164, in connect
-    conn = _connect(dsn, connection_factory=connection_factory, async=async)
-OperationalError: missing "=" after "INTO" in connection info string
 
-
-> /usr/local/lib/python2.7/site-packages/psycopg2/__init__.py(164)connect()
-    163 
---> 164     conn = _connect(dsn, connection_factory=connection_factory, async=async)
-    165     if cursor_factory is not None:
-#+end_example
 
 *** swissPairings() will require more clauses?
 #+BEGIN_SRC python :session *Python* :results output
@@ -392,6 +424,11 @@ def swissPairings():
 	 - use reportMatch_tourney(1, 2) as above
 	   - [[*call reportMatch_tourney][call reportMatch_tourney]]
 	   - check from psql SELECT *
+6. refactor reportMatches to take db, and two table names
+   - still contains hard-coded references to column names
+7. refactor registerPlayer to take db, table name
+
+
 * code that passes basic tests
 **  connect():
 *** original, with 'tournament' as dbname
@@ -482,6 +519,8 @@ def dbExecuteRetrievalWrapper_allrows(query_string):
 
 #+RESULTS:
 *** example of original
+
+
 #+BEGIN_SRC python :session *Python* :results output
 dbExecuteRetrievalWrapper_allrows("select * from players2")
 #+END_SRC
@@ -1209,6 +1248,8 @@ CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins inte
 CREATE TABLE matchez(winner integer, loser integer); 
 INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); 
 INSERT INTO playerz (player_name, wins, matchez) VALUES ('BBBB', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('CCCC', 0, 0); 
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('DDDD', 0, 0); 
 #+END_SRC
 
 #+BEGIN_SRC sql
