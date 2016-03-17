@@ -1131,8 +1131,6 @@ playerStandings()
 : [(2, 'Bill Borzo', 0, 0), (3, 'May Mays', 0, 0), (4, 'Melpomene Murray', 0, 0), (5, 'Randy Schwartz', 0, 0)]
 
 ** reportMatch(winner, loser)
-
-
 *** basic function
 
 #+BEGIN_SRC python :session *Python* :results output
