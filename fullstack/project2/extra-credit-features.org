@@ -1292,7 +1292,138 @@ INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
 update playerz set OMW = OMW + 1 from matchez where playerz.id = matchez.loser;
 #+END_SRC
 ** 5. report some Matches to start building new functionality
-*** 
+*** many sub steps to reporting Matches functionality
+**** reportMatches using SQL
+***** round 1
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez VALUES (1, 2);
+INSERT INTO matchez VALUES (3, 4);
+INSERT INTO matchez VALUES (5, 6);
+INSERT INTO matchez VALUES (7, 8);
+#+END_SRC
+***** after round1 all swissPairings will be
+
+#+RESULTS:
+| id | player_name | id | player_name |
+|----+-------------+----+-------------|
+|  2 | b           |  8 | h           |
+|  2 | b           |  4 | d           |
+|  2 | b           |  6 | f           |
+|  4 | d           |  8 | h           |
+|  4 | d           |  6 | f           |
+|  6 | f           |  8 | h           |
+|  1 | a           |  3 | c           |
+|  1 | a           |  5 | e           |
+|  1 | a           |  7 | g           |
+|  3 | c           |  5 | e           |
+|  3 | c           |  7 | g           |
+|  5 | e           |  7 | g           |
+***** round 2
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez VALUES (1, 3);
+INSERT INTO matchez VALUES (5, 7);
+INSERT INTO matchez VALUES (2, 4);
+INSERT INTO matchez VALUES (6, 8);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+have to use results from swiss pairings
+**** update players wins after first round
+***** update player 1 wins after first round
+update the wins of players with an id in the 'winner' column
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 1
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+
+***** long, hard-coded approach in SQL
+Is there a way in a query to not have to specify the exact player id,
+but instead to use the id of anyone whose id appears in the winner column?
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 3;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 5;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 7;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+| UPDATE 1 |
+| UPDATE 1 |
+
+All at once
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 1;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 3;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 5;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 7;
+#+END_SRC
+
+**** increment OMW for first round losers
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 2;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 4;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 6;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 8;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+| UPDATE 1 |
+| UPDATE 1 |
+| UPDATE 1 |
+
+**** add a match to everyplayer--use after a full set of matches reported
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 8 |
+|----------|
+
+
+** select * playerz
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz;
+#+END_SRC
+
+#+RESULTS:
+| id | player_name | wins | matchez | omw |
+|----+-------------+------+---------+-----|
+|  2 | b           |    0 |       0 |   0 |
+|  4 | d           |    0 |       0 |   0 |
+|  6 | f           |    0 |       0 |   0 |
+|  8 | h           |    0 |       0 |   0 |
+|  1 | a           |    1 |       0 |   0 |
+|  3 | c           |    1 |       0 |   0 |
+|  5 | e           |    1 |       0 |   0 |
+|  7 | g           |    1 |       0 |   0 |
+
+** select all matchez
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez
+#+END_SRC
+
+#+RESULTS:
+| winner | loser |
+|--------+-------|
+|      1 |     2 |
+|      3 |     4 |
+|      5 |     6 |
+|      7 |     8 |
+
 * SQL Babel interactions--Opponent Match Wins
 ** copied and pasted examples
 *** relevant 'reportMatch' SQL statements
