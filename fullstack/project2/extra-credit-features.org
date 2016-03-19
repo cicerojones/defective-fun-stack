@@ -1088,7 +1088,7 @@ deletePlayerz()
 #+RESULTS:
 *** define reportMatchs with tourney wrapper and playerz
 #+BEGIN_SRC python :session *Python* :results output
-def reportMatch_tourney(winner, loser):
+ def reportMatch_tourney(winner, loser):
     query1 = ("INSERT INTO matchez VALUES (%s, %s) ;")
     query2 = ("UPDATE playerz SET wins = wins + 1"
               "FROM matchez WHERE playerz.id = (%s) ;")
@@ -1210,24 +1210,119 @@ def dbExecuteRetrievalWrapper_allrows_tourn(query_string):
 
 #+END_SRC
 * steps
-** 1. 
-#+BEGIN_SRC sql
+** 1. clear tourney practice of playerz and matchez tables 
+*** do this from org-babel
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 DROP TABLE playerz; DROP TABLE matchez;
 #+END_SRC
-** 2.
+
+#+RESULTS:
+| DROP TABLE |
+|------------|
+| DROP TABLE |
+*** check that you have emptied
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz;
+#+END_SRC
+
+#+RESULTS:
+| id | player_name | wins | matchez | omw |
+|----+-------------+------+---------+-----|
+|  1 | a           |    0 |       0 |   0 |
+|  2 | b           |    0 |       0 |   0 |
+|  3 | c           |    0 |       0 |   0 |
+|  4 | d           |    0 |       0 |   0 |
+|  5 | e           |    0 |       0 |   0 |
+|  6 | f           |    0 |       0 |   0 |
+|  7 | g           |    0 |       0 |   0 |
+|  8 | h           |    0 |       0 |   0 |
+
+** 2. setup tables
+*** simple version for basic credit
 #+BEGIN_SRC sql
 CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); INSERT INTO playerz (player_name, wins, matchez) VALUES ('BBBB', 0, 0);
 #+END_SRC
+*** extended version for extra credit
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(winner integer, loser integer); 
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+| CREATE TABLE |
+
+** 3. register some players
+*** original version where playerz have a 'name', wins and matches
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('a', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('b', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('c', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('d', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('e', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('f', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('g', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('h', 0, 0);
+#+END_SRC
+*** INSERT players into playerz but provide an 'opponent matches wins' argument
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+** 4. make a query to update OMW when a Match is reported
+*** use update playerz 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 from matchez where playerz.id = matchez.loser;
+#+END_SRC
+** 5. report some Matches to start building new functionality
+*** 
 * SQL Babel interactions--Opponent Match Wins
 ** copied and pasted examples
+*** relevant 'reportMatch' SQL statements
+Uses FROM because it needs the values in the column in that table to
+determine which rows to update in the table being updated.
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;
+update players2 set matches = matches + 1  from matches2 where
+players2.id = matches2.winner OR players2.id = matches2.loser;"""
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;
+#+END_SRC
+*** update players table query to after a reported Match
+#+BEGIN_SRC python
+("""update players2 
+set matches = matches + 1  
+from matches2 
+where players2.id = (%s) OR players2.id = (%s);""", (winner, loser))
+#+END_SRC
+*** messy raw sql
 #+BEGIN_SRC sql
 """INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
 ("""update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;""")
 ("""update players2 set matches = matches + 1  from matches2 where players2.player_name = matches2.winner OR players2.player_name = matches2.loser;""")
 
 """update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;"""
-("""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;"""
+"""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;"""
 
 #+END_SRC
 
@@ -1237,12 +1332,8 @@ where players2.id = matches2.winner OR players2.id = matches2.loser
 
 #+END_SRC
 
-#+BEGIN_SRC python
-("""update players2 
-set matches = matches + 1  
-from matches2 
-where players2.id = (%s) OR players2.id = (%s);""", (winner, loser))
-#+END_SRC
+
+
 ** select * from playerz;
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from playerz;
@@ -1251,14 +1342,15 @@ select * from playerz;
 #+RESULTS:
 | id | player_name | wins | matchez |
 |----+-------------+------+---------|
-|  5 | a           |    0 |       0 |
-|  6 | b           |    0 |       0 |
-|  7 | c           |    0 |       0 |
-|  8 | d           |    0 |       0 |
-|  9 | e           |    0 |       0 |
-| 10 | f           |    0 |       0 |
-| 11 | g           |    0 |       0 |
-| 12 | h           |    0 |       0 |
+|  1 | a           |    0 |       0 |
+|  2 | b           |    0 |       0 |
+|  3 | c           |    0 |       0 |
+|  4 | d           |    0 |       0 |
+|  5 | e           |    0 |       0 |
+|  6 | f           |    0 |       0 |
+|  7 | g           |    0 |       0 |
+|  8 | h           |    0 |       0 |
+
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 delete from playerz;
@@ -1279,7 +1371,7 @@ INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); INSERT I
 
 #+END_SRC
 
-*** create 8
+*** insert 8 players from org-babel sql
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO playerz (player_name, wins, matchez) VALUES ('a', 0, 0);
@@ -1362,9 +1454,16 @@ x.
 y. 
 z. 
 ** drop tables
-#+BEGIN_SRC sql
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 DROP TABLE playerz; DROP TABLE matchez;
 #+END_SRC
+
+#+RESULTS:
+| DROP TABLE |
+|------------|
+| DROP TABLE |
+
 ** whole sequences in single blocks
 #+BEGIN_SRC sql
 DROP TABLE playerz; 
@@ -1377,10 +1476,19 @@ INSERT INTO playerz (player_name, wins, matchez) VALUES ('CCCC', 0, 0);
 INSERT INTO playerz (player_name, wins, matchez) VALUES ('DDDD', 0, 0); 
 #+END_SRC
 
-#+BEGIN_SRC sql
-DROP TABLE playerz; DROP TABLE matchez; 
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer); INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); INSERT INTO playerz (player_name, wins, matchez) VALUES ('BBBB', 0, 0);
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer); 
 #+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+| CREATE TABLE |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(winner integer, loser integer); 
+#+END_SRC
+
 ** swiss standings query
 #+BEGIN_SRC sql
 "SELECT a.id, a.player_name, b.id, b.player_name "
@@ -1392,10 +1500,6 @@ CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins inte
 
 #+BEGIN_SRC sql
 SELECT a.id, a.player_name, b.id, b.player_name FROM playerz as a, playerz as b WHERE a.wins = b.wins AND a.player_name != b.player_name AND a.id < b.id;
-#+END_SRC
-** babel sql headers BEGIN_SRC sql :engine postgresql :database tourney_practice
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
 #+END_SRC
 
 * SQL commands
@@ -1443,4 +1547,9 @@ CREATE TABLE matches(winner integer, loser integer);
 ** register a player
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO playersz (player_name, wins, matchez) VALUES ('DDDD', 0, 0);
+#+END_SRC
+
+* babel sql headers BEGIN_SRC sql :engine postgresql :database tourney_practice
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+
 #+END_SRC
