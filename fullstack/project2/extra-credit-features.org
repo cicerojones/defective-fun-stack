@@ -45,23 +45,23 @@ So basically,
 |        15 |        |       |
 |        16 |        |       |
 *** 8 abcdefgh
-| match no. | winner | loser | winner record | loser record |
-|-----------+--------+-------+---------------+--------------|
-|         1 | a      | b     |           0-0 |          0-0 |
-|         2 | c      | d     |           0-0 |          0-0 |
-|         3 | e      | f     |           0-0 |          0-0 |
-|         4 | g      | h     |           0-0 |          0-0 |
-|-----------+--------+-------+---------------+--------------|
-|         5 | a      | c     |           1-0 |          1-0 |
-|         6 | e      | g     |           1-0 |          1-0 |
-|         7 | b      | d     |           0-1 |          0-1 |
-|         8 | f      | h     |           0-1 |          0-1 |
-|-----------+--------+-------+---------------+--------------|
-|         9 | a      | e     |           2-0 |          2-0 |
-|        10 | b      | c     |           1-1 |          1-1 |
-|        11 | f      | g     |           1-1 |          1-1 |
-|        12 | d      | h     |           0-2 |          0-2 |
-|-----------+--------+-------+---------------+--------------|
+| match no. | winner | loser | win_id | lose_id | winner record | loser record |
+|-----------+--------+-------+--------+---------+---------------+--------------|
+|         1 | a      | b     |      1 |       2 |           0-0 |          0-0 |
+|         2 | c      | d     |      3 |       4 |           0-0 |          0-0 |
+|         3 | e      | f     |      5 |       6 |           0-0 |          0-0 |
+|         4 | g      | h     |      7 |       8 |           0-0 |          0-0 |
+|-----------+--------+-------+--------+---------+---------------+--------------|
+|         5 | a      | c     |      1 |       3 |           1-0 |          1-0 |
+|         6 | e      | g     |      5 |       7 |           1-0 |          1-0 |
+|         7 | b      | d     |      2 |       4 |           0-1 |          0-1 |
+|         8 | f      | h     |      6 |       8 |           0-1 |          0-1 |
+|-----------+--------+-------+--------+---------+---------------+--------------|
+|         9 | a      | e     |      1 |       5 |           2-0 |          2-0 |
+|        10 | b      | c     |      2 |       3 |           1-1 |          1-1 |
+|        11 | f      | g     |      6 |       7 |           1-1 |          1-1 |
+|        12 | d      | h     |      4 |       8 |           0-2 |          0-2 |
+|-----------+--------+-------+--------+---------+---------------+--------------|
 
 
 | team | wins | losses | avg. wins of teams lost to |   |
@@ -75,6 +75,24 @@ So basically,
 | g    |    1 |      2 |                            |   |
 | h    |    0 |      3 |                            |   |
 
+*** 16 players
+a. 
+b. 
+c. 
+d. 
+e. 
+f. 
+g. 
+h. 
+
+i. 
+j. 
+k. 
+l. 
+m. 
+n. 
+o. 
+p. 
 
 *** number pairs to return!
     "For four players, swissPairings should return two pairs."
@@ -136,8 +154,259 @@ registerPlayer("Pinkie Pie")
 Wizards of the Coast has prepared simple instructions, and more
 details can be found in resources linked to in the reference section
 of Wikipedia's article on Swiss tournaments.
-* new_ suite of functions
-create, update, delete--using wrapper function
+
+* Python code that passes basic tests
+**  connect():
+*** original, with 'tournament' as dbname
+#+BEGIN_SRC python :session *Python* :results output
+import psycopg2
+
+
+def connect():
+    """Connect to the PostgreSQL database.  Returns a database connection."""
+    return psycopg2.connect("dbname=tournament")
+
+#+END_SRC
+
+#+RESULTS:
+
+*** original, with 'tourney_practice' as dbname
+#+BEGIN_SRC python :session *Python* :results output
+import psycopg2
+
+
+def connect():
+    """Connect to the PostgreSQL database.  Returns a database connection."""
+    return psycopg2.connect("dbname=tourney_practice")
+
+#+END_SRC
+
+#+RESULTS:
+
+*** refactor 'connect' to take a dbname argument
+#+BEGIN_SRC python :session *Python* :results output
+import psycopg2
+
+def new_connect(dbname):
+    """Connect to the PostgreSQL database.  Returns a database connection."""
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+
+#+END_SRC
+
+#+RESULTS:
+**  dbExecuteWrapper(query_string, extra=None):
+*** original
+'extra' parameter gets used when calling an INSERT query 
+#+BEGIN_SRC python :session *Python* :results output
+
+# refactor to use connect() for final version
+def dbExecuteWrapper(query_string, extra=None):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+
+*** refactor for varying databases
+#+BEGIN_SRC python :session *Python* :results output
+
+# refactor to use connect() for final version
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** use new_dbExecuteWrapper with new_connect and tourney_practice
+#+BEGIN_SRC python :session *Python* :results output
+new_dbExecuteWrapper(
+#+END_SRC
+**  dbExecuteRetrievalWrapper_allrows(query_string):
+*** original
+doesn't work as a babel block without 'return' statement last
+#+BEGIN_SRC python :session *Python* :results output
+
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()
+    return rows
+
+#+END_SRC
+
+#+RESULTS:
+*** example of original
+
+
+#+BEGIN_SRC python :session *Python* :results output
+dbExecuteRetrievalWrapper_allrows("select * from players2")
+#+END_SRC
+
+#+RESULTS:
+: [(218, 'Fluttershy', 0, 1), (217, 'Twilight Sparkle', 1, 1), (220, 'Pinkie Pie', 0, 1), (219, 'Applejack', 1, 1)]
+
+**  deleteMatches():
+*** original
+#+BEGIN_SRC python :session *Python* :results output
+# refactor all queries into a variable that is then passed to execute
+
+def deleteMatches():
+    query = """DELETE FROM matches;"""
+    dbExecuteWrapper(query)
+
+#+END_SRC
+*** refactor to vary databases and tables
+#+BEGIN_SRC python :session *Python* :results output
+# refactor all queries into a variable that is then passed to execute
+
+def new_deleteTable(dbname, table_name):
+    query = """DELETE FROM (%s);"""
+    dbExecuteWrapper(query, dbname, (table_name,))
+
+#+END_SRC
+
+#+RESULTS:
+
+*** call delete with "tourney_practice" arguments
+#+BEGIN_SRC python :session *Python* :results output
+deleteTable(tourney_practice, matches2)
+#+END_SRC
+**  deletePlayers():
+*** original
+#+BEGIN_SRC python :session *Python* :results output
+def deletePlayers():
+    query = """DELETE FROM players;"""
+    dbExecuteWrapper(query)
+
+#+END_SRC
+*** refactor to take a table name as argument
+#+BEGIN_SRC python :session *Python* :results output
+def deletePlayers():
+    query = """DELETE FROM players;"""
+    dbExecuteWrapper(query)
+
+#+END_SRC
+**  countPlayers():
+*** original
+#+BEGIN_SRC python :session *Python* :results output
+def countPlayers():
+    DB = connect()
+    c = DB.cursor()
+    query = "SELECT count(*) FROM players;"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    return int(row_item[0])
+    DB.close()
+
+#+END_SRC
+**  registerPlayer(name):
+*** original
+# Some kind of problem using _allrows with multiline string formatting
+
+#+BEGIN_SRC python :session *Python* :results output
+def registerPlayer(name):
+    query = ("INSERT INTO players (player_name, wins, matches)"
+             "VALUES (%s, %s, %s);")
+    dbExecuteWrapper(query, (name, 0, 0))
+#+END_SRC
+
+*** define registerPlayer with players2 as table 
+#+BEGIN_SRC python :session *Python* :results output
+def registerPlayer(name):
+    query = ("INSERT INTO players2 (player_name, wins, matches)"
+             "VALUES (%s, %s, %s);")
+    dbExecuteWrapper(query, (name, 0, 0))
+
+
+# Some kind of problem using _allrows with multiline string formatting
+#+END_SRC
+
+*** register some players
+#+BEGIN_SRC python :session *Python* :results output
+registerPlayer("A")
+registerPlayer("B")
+registerPlayer("C")
+registerPlayer("D")
+registerPlayer("E")
+registerPlayer("F")
+registerPlayer("G")
+registerPlayer("H")
+registerPlayer("I")
+registerPlayer("J")
+registerPlayer("K")
+registerPlayer("L")
+registerPlayer("M")
+registerPlayer("N")
+registerPlayer("O")
+registerPlayer("P")
+#+END_SRC
+
+#+RESULTS:
+
+*** register some players with table playerz
+#+BEGIN_SRC python :session *Python* :results output
+new_registerPlayer("A", "playerz")
+new_registerPlayer("B", "playerz")
+new_registerPlayer("C", "playerz")
+new_registerPlayer("D", "playerz")
+new_registerPlayer("E", "playerz")
+new_registerPlayer("F", "playerz")
+new_registerPlayer("G", "playerz")
+new_registerPlayer("H", "playerz")
+new_registerPlayer("I", "playerz")
+new_registerPlayer("J", "playerz")
+new_registerPlayer("K", "playerz")
+new_registerPlayer("L", "playerz")
+new_registerPlayer("M", "playerz")
+new_registerPlayer("N", "playerz")
+new_registerPlayer("O", "playerz")
+new_registerPlayer("P", "playerz")
+#+END_SRC
+
+**  playerStandings():
+#+BEGIN_SRC python :session *Python* :results output
+def playerStandings():
+    query = ("SELECT id, player_name, wins, matches "
+             "FROM players ORDER BY wins DESC;")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+#+END_SRC
+**  reportMatch(winner, loser):
+#+BEGIN_SRC python :session *Python* :results output
+def reportMatch(winner, loser):
+    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
+    query2 = ("UPDATE players SET wins = wins + 1"
+              "FROM matches WHERE players.id = (%s) ;")
+    query3 = ("UPDATE players SET matches = matches + 1"
+              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
+    dbExecuteWrapper(query1, (winner, loser))
+    dbExecuteWrapper(query2, (winner,))
+    dbExecuteWrapper(query3, (winner, loser))
+
+#+END_SRC
+
+**  swissPairings():
+#+BEGIN_SRC python :session *Python* :results output
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+#+END_SRC
+* new_ suite of functions--create, update, delete--using wrapper function
 ** start here this works
 *** import psycopg and define a db-agnostic connect function
 **** def new_connect(dbname):						:def:
@@ -428,788 +697,7 @@ def swissPairings():
    - still contains hard-coded references to column names
 7. refactor registerPlayer to take db, table name
 
-* code that passes basic tests
-**  connect():
-*** original, with 'tournament' as dbname
-#+BEGIN_SRC python :session *Python* :results output
-import psycopg2
-
-
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
-
-#+END_SRC
-
-#+RESULTS:
-
-*** original, with 'tourney_practice' as dbname
-#+BEGIN_SRC python :session *Python* :results output
-import psycopg2
-
-
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tourney_practice")
-
-#+END_SRC
-
-#+RESULTS:
-
-*** refactor 'connect' to take a dbname argument
-#+BEGIN_SRC python :session *Python* :results output
-import psycopg2
-
-def new_connect(dbname):
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    dbname_string = "dbname={}".format(dbname)
-    return psycopg2.connect(dbname_string)
-
-#+END_SRC
-
-#+RESULTS:
-**  dbExecuteWrapper(query_string, extra=None):
-*** original
-'extra' parameter gets used when calling an INSERT query 
-#+BEGIN_SRC python :session *Python* :results output
-
-# refactor to use connect() for final version
-def dbExecuteWrapper(query_string, extra=None):
-    DB = connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-
-*** refactor for varying databases
-#+BEGIN_SRC python :session *Python* :results output
-
-# refactor to use connect() for final version
-def new_dbExecuteWrapper(query_string, dbname, extra=None):
-    DB = connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-*** use new_dbExecuteWrapper with new_connect and tourney_practice
-#+BEGIN_SRC python :session *Python* :results output
-new_dbExecuteWrapper(
-#+END_SRC
-**  dbExecuteRetrievalWrapper_allrows(query_string):
-*** original
-doesn't work as a babel block without 'return' statement last
-#+BEGIN_SRC python :session *Python* :results output
-
-def dbExecuteRetrievalWrapper_allrows(query_string):
-    DB = connect()
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()
-    return rows
-
-#+END_SRC
-
-#+RESULTS:
-*** example of original
-
-
-#+BEGIN_SRC python :session *Python* :results output
-dbExecuteRetrievalWrapper_allrows("select * from players2")
-#+END_SRC
-
-#+RESULTS:
-: [(218, 'Fluttershy', 0, 1), (217, 'Twilight Sparkle', 1, 1), (220, 'Pinkie Pie', 0, 1), (219, 'Applejack', 1, 1)]
-
-
-**  deleteMatches():
-*** original
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def deleteMatches():
-    query = """DELETE FROM matches;"""
-    dbExecuteWrapper(query)
-
-#+END_SRC
-*** refactor to vary databases and tables
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def new_deleteTable(dbname, table_name):
-    query = """DELETE FROM (%s);"""
-    dbExecuteWrapper(query, dbname, (table_name,))
-
-#+END_SRC
-
-#+RESULTS:
-
-*** call delete with "tourney_practice" arguments
-#+BEGIN_SRC python :session *Python* :results output
-deleteTable(tourney_practice, matches2)
-#+END_SRC
-**  deletePlayers():
-*** original
-#+BEGIN_SRC python :session *Python* :results output
-def deletePlayers():
-    query = """DELETE FROM players;"""
-    dbExecuteWrapper(query)
-
-#+END_SRC
-*** refactor to take a table name as argument
-#+BEGIN_SRC python :session *Python* :results output
-def deletePlayers():
-    query = """DELETE FROM players;"""
-    dbExecuteWrapper(query)
-
-#+END_SRC
-**  countPlayers():
-*** original
-#+BEGIN_SRC python :session *Python* :results output
-def countPlayers():
-    DB = connect()
-    c = DB.cursor()
-    query = "SELECT count(*) FROM players;"
-    c.execute(query)
-    row = c.fetchone()
-    row_item = list(row)
-    return int(row_item[0])
-    DB.close()
-
-#+END_SRC
-**  registerPlayer(name):
-*** original
-# Some kind of problem using _allrows with multiline string formatting
-
-#+BEGIN_SRC python :session *Python* :results output
-def registerPlayer(name):
-    query = ("INSERT INTO players (player_name, wins, matches)"
-             "VALUES (%s, %s, %s);")
-    dbExecuteWrapper(query, (name, 0, 0))
-#+END_SRC
-
-*** define registerPlayer with players2 as table 
-#+BEGIN_SRC python :session *Python* :results output
-def registerPlayer(name):
-    query = ("INSERT INTO players2 (player_name, wins, matches)"
-             "VALUES (%s, %s, %s);")
-    dbExecuteWrapper(query, (name, 0, 0))
-
-
-# Some kind of problem using _allrows with multiline string formatting
-#+END_SRC
-
-*** register some players
-#+BEGIN_SRC python :session *Python* :results output
-registerPlayer("A")
-registerPlayer("B")
-registerPlayer("C")
-registerPlayer("D")
-registerPlayer("E")
-registerPlayer("F")
-registerPlayer("G")
-registerPlayer("H")
-registerPlayer("I")
-registerPlayer("J")
-registerPlayer("K")
-registerPlayer("L")
-registerPlayer("M")
-registerPlayer("N")
-registerPlayer("O")
-registerPlayer("P")
-#+END_SRC
-
-#+RESULTS:
-
-*** register some players with table playerz
-#+BEGIN_SRC python :session *Python* :results output
-new_registerPlayer("A", "playerz")
-new_registerPlayer("B", "playerz")
-new_registerPlayer("C", "playerz")
-new_registerPlayer("D", "playerz")
-new_registerPlayer("E", "playerz")
-new_registerPlayer("F", "playerz")
-new_registerPlayer("G", "playerz")
-new_registerPlayer("H", "playerz")
-new_registerPlayer("I", "playerz")
-new_registerPlayer("J", "playerz")
-new_registerPlayer("K", "playerz")
-new_registerPlayer("L", "playerz")
-new_registerPlayer("M", "playerz")
-new_registerPlayer("N", "playerz")
-new_registerPlayer("O", "playerz")
-new_registerPlayer("P", "playerz")
-#+END_SRC
-
-**  playerStandings():
-#+BEGIN_SRC python :session *Python* :results output
-def playerStandings():
-    query = ("SELECT id, player_name, wins, matches "
-             "FROM players ORDER BY wins DESC;")
-    return dbExecuteRetrievalWrapper_allrows(query)
-
-#+END_SRC
-**  reportMatch(winner, loser):
-#+BEGIN_SRC python :session *Python* :results output
-def reportMatch(winner, loser):
-    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
-    query2 = ("UPDATE players SET wins = wins + 1"
-              "FROM matches WHERE players.id = (%s) ;")
-    query3 = ("UPDATE players SET matches = matches + 1"
-              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
-    dbExecuteWrapper(query1, (winner, loser))
-    dbExecuteWrapper(query2, (winner,))
-    dbExecuteWrapper(query3, (winner, loser))
-
-#+END_SRC
-
-**  swissPairings():
-#+BEGIN_SRC python :session *Python* :results output
-def swissPairings():
-    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
-             "FROM players as a, players as b "
-             "WHERE a.wins = b.wins "
-             "AND a.player_name != b.player_name "
-             "AND a.id < b.id")
-    return dbExecuteRetrievalWrapper_allrows(query)
-
-#+END_SRC
-* debugging
-*** doesn't work
-#+BEGIN_SRC python :session *Python* :results output
-
-import psycopg2
-
-def new_connect(dbname):
-    dbname_string = "dbname={}".format(dbname)
-    return psycopg2.connect(dbname_string)
-
-def new_dbExecuteWrapper(query_string, dbname, extra=None):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-
-def new_deleteTable(dbname, table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper(query, dbname, table_nm)
-
-
-new_deleteTable("tourney_practice", "matchez")
-#+END_SRC
-
-*** but this does
-#+BEGIN_SRC python :session *Python* :results output
-def new_dbExecuteWrapper_tourney(query_string, extra=None):
-    DB = tourney_connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-
-
-def new_deleteTable_tourney(table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper_tourney(query, table_nm)
-
-
-new_deleteTable_tourney("matchez")
-#+END_SRC
-
-*** works
-#+BEGIN_SRC python :session *Python* :results output
-def connect_and_deleteTable_dbname(dbname):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute("""DELETE FROM matchez""")
-    DB.commit()
-    DB.close()
-
-
-#+END_SRC
-
-#+RESULTS:
-
-
-#+BEGIN_SRC python :session *Python* :results output
-connect_and_deleteTable_dbname("tourney_practice")
-#+END_SRC
-
-#+RESULTS:
-
-*** ordinary string formatting should be used before running execute()
-**** won't work
-#+BEGIN_SRC python :session *Python* :results output
-def new_dbExecuteWrapper_dbname(dbname, query_string, extra=None):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-
-
-def new_deleteTable_tablenm(table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper_dbname("tourney_practice", query, table_nm)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-reportMatch_tourney(1, 2)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-new_deleteTable_tablenm("matchez")
-#+END_SRC
-
-#+BEGIN_SRC python :session *Python* :results output
-def passin_string1(table_name):
-    table_nm = (table_name,)
-    return table_nm
-    
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC python :session *Python* :results output
-passin_string("bshit")
-#+END_SRC
-
-#+RESULTS:
-: ('bshit',)
-
-#+BEGIN_SRC python :session *Python* :results output
-def passin_string2(table_name):
-    table_nm = table_name
-    return table_nm
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-passin_string2("bshit")
-#+END_SRC
-
-#+RESULTS:
-: 'bshit'
-
-** works? or testing?
-*** shouldn’t be used to set table or field names
-Only variable values should be bound via this method: it shouldn’t be used to set table or field names. For these elements, ordinary string formatting should be used before running execute().
-
-*** cursor.mogrify()
-http://initd.org/psycopg/docs/cursor.html#cursor.mogrify
-#+BEGIN_SRC python
-cur.mogrify("INSERT INTO test (num, data) VALUES (%s, %s)", (42, 'bar'))
-#+END_SRC
-
-*** psychopg
-For positional variables binding, the second argument must always be a
-sequence, even if it contains a single variable. And remember that
-Python requires a comma to create a single element tuple:
-
-#+BEGIN_SRC python
-cur.execute("INSERT INTO foo VALUES (%s)", "bar")    # WRONG
-cur.execute("INSERT INTO foo VALUES (%s)", ("bar"))  # WRONG
-cur.execute("INSERT INTO foo VALUES (%s)", ("bar",)) # correct
-cur.execute("INSERT INTO foo VALUES (%s)", ["bar"])  # correct
-#+END_SRC
-*** use new_connect to a db provided
-#+BEGIN_SRC python :session *Python* :results output
-
-import psycopg2
-
-def new_connect(dbname):
-    dbname_string = "dbname={}".format(dbname)
-    return psycopg2.connect(dbname_string)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-def test_new_connect_delete_matches(dbname):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute("""DELETE FROM matches""")
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-test_new_connect_delete_matches("tourney_practice")
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-def new_deleteTable(dbname, table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper(query, dbname, table_nm)
-
-
-new_deleteTable("tourney_practice", "matchez")
-#+END_SRC
-
-#+RESULTS:
-
-*** new execute wrappers, using new_connect
-**** define new dbExecuteWrapper to pass a dbname to new connect
-#+BEGIN_SRC python :session *Python* :results output
-def new_dbExecuteWrapper(query_string, dbname, extra=None):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-*** work on a new deleteTable to replace deleteMatches and deletePlayers
-**** define new deleteTable that uses tourney execute wrapper
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def new_deleteTable_tourney(table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper_tourney(query, table_nm)
-
-#+END_SRC
-
-#+RESULTS:
-**** use new_deleteTable_tourney
-#+BEGIN_SRC python :session *Python* :results output
-new_deleteTable_tourney("matchez")
-#+END_SRC
-
-#+RESULTS:
-**** define new deleteTable that takes a database name as well
-How will this work? That is, why is passing in a database name at
-calltime a good idea?
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def new_deleteTable(dbname, table_name):
-    query = """DELETE FROM %s;"""
-    table_nm = (table_name,)
-    new_dbExecuteWrapper(query, dbname, table_nm)
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-new_deleteTable("tourney_practice", "matchez")
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-File "<ipython-input-147-43bb0861d075>", line 4, in new_deleteTable
-    new_dbExecuteWrapper(query, dbname, table_nm)
-  File "<ipython-input-130-80d9ed023749>", line 4, in new_dbExecuteWrapper
-    c.execute(query_string, extra)
-ProgrammingError: syntax error at or near "'matchez'"
-LINE 1: DELETE FROM 'matchez';
-                    ^
-
-
-> <ipython-input-130-80d9ed023749>(4)new_dbExecuteWrapper()
-      3         c = DB.cursor()
-----> 4         c.execute(query_string, extra)
-      5         DB.commit()
-#+end_example
-*** debugging
-**** still use connect to tourney
-#+BEGIN_SRC python :session *Python* :results output
-def new_dbExecuteWrapper_tourney(query_string, extra=None):
-    DB = tourney_connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-*** TODO to be added
-**** define new register Player
-this will still need to know the names of the columns??
-#+BEGIN_SRC python :session *Python* :results output
-def new_registerPlayer(name, table_name):
-    query = ("INSERT INTO (%s,) (player_name, wins, matchez)"
-             "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, (table_name, name, 0, 0))
-
-#+END_SRC
-
-#+RESULTS:
-
-**** call new register Player
-#+BEGIN_SRC python :session *Python* :results output
-new_registerPlayer("A", "playerz")
-new_registerPlayer("B", "playerz")
-new_registerPlayer("C", "playerz")
-new_registerPlayer("D", "playerz")
-new_registerPlayer("E", "playerz")
-new_registerPlayer("F", "playerz")
-new_registerPlayer("G", "playerz")
-new_registerPlayer("H", "playerz")
-new_registerPlayer("I", "playerz")
-new_registerPlayer("J", "playerz")
-new_registerPlayer("K", "playerz")
-new_registerPlayer("L", "playerz")
-new_registerPlayer("M", "playerz")
-new_registerPlayer("N", "playerz")
-new_registerPlayer("O", "playerz")
-new_registerPlayer("P", "playerz")
-#+END_SRC
-
-#+RESULTS:
-
-
-
-***** define new retrieval wrapper function
-
-#+BEGIN_SRC python :session *Python* :results output
-def new_dbExecuteRetrievalWrapper_allrows(query_string, dbname):
-    DB = connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()    
-    return rows
-
-#+END_SRC
-
-** sequence of interactions to connect to an arbitrary database
-*** steps
-1. create a few players using bare sql in CLI or using Python
-2. evaluate relevant connect, wrapper and delete functions
-3. delete a player
-4. evaluate reportmatches function
-5. create players again
-6. you need a matches tablen
-7. report a match between to players
-8. delete matches
-9. view player Standings
-10. drop some tables and start from scratch
-*** define tourney_connect for 'tourney_practice' database
-#+BEGIN_SRC python :session *Python* :results output
-import psycopg2
-
-
-def tourney_connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tourney_practice")
-
-#+END_SRC
-
-#+RESULTS:
-
-*** tourney_practice
-**** tourney_connect wrapper
-#+BEGIN_SRC python :session *Python* :results output
-
-# refactor to use connect() for final version
-def dbExecuteWrapper_tourney(query_string, extra=None):
-    DB = tourney_connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-**** tourney_connect retrieval wrapper
-#+BEGIN_SRC python :session *Python* :results output
-
-def dbExecuteRetrievalWrapper_allrows_tourney(query_string):
-    DB = tourney_connect()
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()
-    return rows
-
-#+END_SRC
-#+RESULTS:
-**** tourney_connect delete playerz
-#+BEGIN_SRC python :session *Python* :results output
-def deletePlayerz():
-    query = """DELETE FROM playerz;"""
-    dbExecuteWrapper_tourney(query)
-
-
-#+END_SRC
-
-#+RESULTS:
-*** define registerPlayer with tourney and playerz
-# Some kind of problem using _allrows with multiline string formatting
-
-#+BEGIN_SRC python :session *Python* :results output
-def registerPlayer_tourney(name):
-    query = ("INSERT INTO playerz (player_name, wins, matchez)"
-             "VALUES (%s, %s, %s);")
-    dbExecuteWrapper_tourney(query, (name, 0, 0))
-#+END_SRC
-
-#+RESULTS:
-
-*** register players in playerz
-#+BEGIN_SRC python :session *Python* :results output
-registerPlayer_tourney("AAAA")
-registerPlayer_tourney("BBBB")
-#+END_SRC
-
-#+RESULTS:
-
-*** delete player
-**** call deletePlayerz
-#+BEGIN_SRC python :session *Python* :results output
-deletePlayerz()
-#+END_SRC
-
-#+RESULTS:
-*** define reportMatchs with tourney wrapper and playerz
-#+BEGIN_SRC python :session *Python* :results output
- def reportMatch_tourney(winner, loser):
-    query1 = ("INSERT INTO matchez VALUES (%s, %s) ;")
-    query2 = ("UPDATE playerz SET wins = wins + 1"
-              "FROM matchez WHERE playerz.id = (%s) ;")
-    query3 = ("UPDATE playerz SET matchez = matchez + 1"
-              "FROM matchez WHERE playerz.id = (%s) OR playerz.id = (%s);")
-    dbExecuteWrapper_tourney(query1, (winner, loser))
-    dbExecuteWrapper_tourney(query2, (winner,))
-    dbExecuteWrapper_tourney(query3, (winner, loser))
-#+END_SRC
-
-#+RESULTS:
-
-*** call reportMatch_tourney
-**** report a match must take an id_no--make sure you check after deleting and re-registering 
-do not give strings to reportMatch_tourney
-#+BEGIN_SRC python :session *Python* :results output
-reportMatch_tourney('AAAA', 'BBBB')
-#+END_SRC
-
-#+BEGIN_SRC python :session *Python* :results output
-reportMatch_tourney(1, 2)
-#+END_SRC
-
-#+RESULTS:
-
-*** define delete matches from tourney, still using 'matches' table
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def deleteMatches_tourney():
-    query = """DELETE FROM matchez;"""
-    dbExecuteWrapper_tourney(query)
-
-#+END_SRC
-
-#+RESULTS:
-
-*** delete tourney matches
-#+BEGIN_SRC python :session *Python* :results output
-deleteMatches_tourney()
-
-#+END_SRC
-
-#+RESULTS:
-
-*** define playerStandings with tourney retrieval wrapper and playerz table
-#+BEGIN_SRC python :session *Python* :results output
-def playerStandings_tourney():
-    query = ("SELECT id, player_name, wins, matchez "
-             "FROM playerz ORDER BY wins DESC;")
-    return dbExecuteRetrievalWrapper_allrows_tourney(query)
-
-#+END_SRC
-
-#+RESULTS:
-
-
-
-#+BEGIN_SRC python :session *Python* :results output
-standings = playerStandings_tourney()
-standings[0:]
-#+END_SRC
-
-#+RESULTS:
-: 
-: [(7, 'AAAA', 1, 1), (8, 'BBBB', 0, 1)]
-
-*** tourney_connect delete matches
-#+BEGIN_SRC python :session *Python* :results output
-# refactor all queries into a variable that is then passed to execute
-
-def deleteMatches():
-    query = """DELETE FROM matchez;"""
-    dbExecuteWrapper(query)
-
-#+END_SRC
-
-*** tourn_connect
-*** tourn_connect to tournament
-
-#+BEGIN_SRC python :session *Python* :results output
-import psycopg2
-
-
-def tourn_connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
-
-#+END_SRC
-
-#+RESULTS:
-
-*** tournament
-**** tourn_connect wrapper 
-'extra' parameter gets used when calling an INSERT query 
-#+BEGIN_SRC python :session *Python* :results output
-
-# refactor to use connect() for final version
-def dbExecuteWrapper_tourn(query_string, extra=None):
-    DB = tourn_connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-**** tourn_connect retrieval wrapper
-doesn't work as a babel block without 'return' statement last
-#+BEGIN_SRC python :session *Python* :results output
-
-def dbExecuteRetrievalWrapper_allrows_tourn(query_string):
-    DB = tourn_connect()
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()
-    return rows
-
-#+END_SRC
-* steps
+* planning steps toward implementing OMW
 ** 1. clear tourney practice of playerz and matchez tables 
 *** do this from org-babel
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
@@ -1226,6 +714,10 @@ select * from playerz;
 #+END_SRC
 
 #+RESULTS:
+
+
+
+
 | id | player_name | wins | matchez | omw |
 |----+-------------+------+---------+-----|
 |  1 | a           |    0 |       0 |   0 |
@@ -1244,7 +736,7 @@ CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins inte
 #+END_SRC
 *** extended version for extra credit
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(winner integer, loser integer); 
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); 
 #+END_SRC
 
 #+RESULTS:
@@ -1276,32 +768,34 @@ INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0);
 INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
 #+END_SRC
 
-#+RESULTS:
-| INSERT 0 1 |
-|------------|
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
 ** 4. make a query to update OMW when a Match is reported
 *** use update playerz 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 update playerz set OMW = OMW + 1 from matchez where playerz.id = matchez.loser;
 #+END_SRC
 ** 5. report some Matches to start building new functionality
-*** many sub steps to reporting Matches functionality
+- many sub steps to reporting Matches functionality
+- ultimately will need an autoincrementing matchID column to
+  distinguish matches and rounds
+
+*** round 1 interactions
 **** reportMatches using SQL
-***** round 1
+***** insert four round 1 matches
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO matchez VALUES (1, 2);
-INSERT INTO matchez VALUES (3, 4);
-INSERT INTO matchez VALUES (5, 6);
-INSERT INTO matchez VALUES (7, 8);
+INSERT INTO matchez (winner, loser) VALUES (1, 2);
+INSERT INTO matchez (winner, loser) VALUES (3, 4);
+INSERT INTO matchez (winner, loser) VALUES (5, 6);
+INSERT INTO matchez (winner, loser) VALUES (7, 8);
 #+END_SRC
-***** after round1 all swissPairings will be
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+***** after round1 all swissPairings will be:
 
 #+RESULTS:
 | id | player_name | id | player_name |
@@ -1318,32 +812,20 @@ INSERT INTO matchez VALUES (7, 8);
 |  3 | c           |  5 | e           |
 |  3 | c           |  7 | g           |
 |  5 | e           |  7 | g           |
-***** round 2
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO matchez VALUES (1, 3);
-INSERT INTO matchez VALUES (5, 7);
-INSERT INTO matchez VALUES (2, 4);
-INSERT INTO matchez VALUES (6, 8);
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1 |
-|------------|
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-
-have to use results from swiss pairings
 **** update players wins after first round
-***** update player 1 wins after first round
+***** update just player 1 wins after first round
 update the wins of players with an id in the 'winner' column
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-update playerz set wins = wins + 1 FROM matchez where playerz.id = 1
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+#+END_SRC
+***** second round (match ids 5-9) update all winners
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 4 AND matchez.match_id < 9;
 #+END_SRC
 
 #+RESULTS:
-| UPDATE 1 |
+| UPDATE 4 |
 |----------|
 
 ***** long, hard-coded approach in SQL
@@ -1370,6 +852,7 @@ update playerz set wins = wins + 1 FROM matchez where playerz.id = 7;
 #+END_SRC
 
 **** increment OMW for first round losers
+***** long, hard-coded approach in SQL
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 2;
 update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 4;
@@ -1383,7 +866,23 @@ update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 8;
 | UPDATE 1 |
 | UPDATE 1 |
 | UPDATE 1 |
+***** update OMW using match_ids
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5;
+#+END_SRC
 
+#+RESULTS:
+| UPDATE 4 |
+|----------|
+***** rethink OMW to use averaging?
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = sum(playerz.wins) FROM matchez where playerz.id = 
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select player_name
+#+END_SRC
+use new table for each player--opponents?
 **** add a match to everyplayer--use after a full set of matches reported
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 update playerz set matchez = matchez + 1
@@ -1393,7 +892,23 @@ update playerz set matchez = matchez + 1
 | UPDATE 8 |
 |----------|
 
+*** after round 2
+**** insert round 2 results such that 'a' will play 'e' in the final
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3);
+INSERT INTO matchez (winner, loser) VALUES (5, 7);
+INSERT INTO matchez (winner, loser) VALUES (2, 4);
+INSERT INTO matchez (winner, loser) VALUES (6, 8);
+#+END_SRC
 
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+have to use results from swiss pairings
 ** select * playerz
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from playerz;
@@ -1424,95 +939,30 @@ select * from matchez
 |      5 |     6 |
 |      7 |     8 |
 
-* SQL Babel interactions--Opponent Match Wins
-** copied and pasted examples
-*** relevant 'reportMatch' SQL statements
-Uses FROM because it needs the values in the column in that table to
-determine which rows to update in the table being updated.
-
+* sequence of SQL commands
+** master list
+*** clear and setup and insert players
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;
-update players2 set matches = matches + 1  from matches2 where
-players2.id = matches2.winner OR players2.id = matches2.loser;"""
-#+END_SRC
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;
-#+END_SRC
-*** update players table query to after a reported Match
-#+BEGIN_SRC python
-("""update players2 
-set matches = matches + 1  
-from matches2 
-where players2.id = (%s) OR players2.id = (%s);""", (winner, loser))
-#+END_SRC
-*** messy raw sql
-#+BEGIN_SRC sql
-"""INSERT INTO matches2 VALUES (%s, %s) ;""", (winner, loser))
-("""update players2 set wins = wins + 1  from matches2 where players2.player_name = matches2.winner;""")
-("""update players2 set matches = matches + 1  from matches2 where players2.player_name = matches2.winner OR players2.player_name = matches2.loser;""")
-
-"""update players2 set wins = wins + 1  from matches2 where players2.id = matches2.winner;"""
-"""update players2 set matches = matches + 1  from matches2 where players2.id = matches2.winner OR players2.id = matches2.loser;"""
-
-#+END_SRC
-
-#+BEGIN_SRC sql
-where players2.id = matches2.winner
-where players2.id = matches2.winner OR players2.id = matches2.loser
-
-#+END_SRC
-
-
-
-** select * from playerz;
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from playerz;
+DROP TABLE playerz; DROP TABLE matchez; CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0); 
 #+END_SRC
 
 #+RESULTS:
-| id | player_name | wins | matchez |
-|----+-------------+------+---------|
-|  1 | a           |    0 |       0 |
-|  2 | b           |    0 |       0 |
-|  3 | c           |    0 |       0 |
-|  4 | d           |    0 |       0 |
-|  5 | e           |    0 |       0 |
-|  6 | f           |    0 |       0 |
-|  7 | g           |    0 |       0 |
-|  8 | h           |    0 |       0 |
-
-
+| DROP TABLE   |
+|--------------|
+| DROP TABLE   |
+| CREATE TABLE |
+| CREATE TABLE |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+| INSERT 0 1   |
+*** insert winner-loser pairs for first round; update wins, OMW, matches
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-delete from playerz;
-#+END_SRC
-
-#+RESULTS:
-| DELETE 4 |
-|----------|
-
-** create players from SQL
-*** create 2
-#+BEGIN_SRC sql
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); INSERT INTO playerz (player_name, wins, matchez) VALUES ('BBBB', 0, 0);
-#+END_SRC
-
-*** create 4
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
-#+END_SRC
-
-*** insert 8 players from org-babel sql
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('a', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('b', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('c', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('d', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('e', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('f', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('g', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('h', 0, 0);
+INSERT INTO matchez (winner, loser) VALUES (1, 2); INSERT INTO matchez (winner, loser) VALUES (3, 4); INSERT INTO matchez (winner, loser) VALUES (5, 6); INSERT INTO matchez (winner, loser) VALUES (7, 8); update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5; update playerz set matchez = matchez + 1;
 #+END_SRC
 
 #+RESULTS:
@@ -1521,71 +971,25 @@ INSERT INTO playerz (player_name, wins, matchez) VALUES ('h', 0, 0);
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
+| UPDATE 4   |
+| UPDATE 4   |
+| UPDATE 8   |
+*** insert second winner-loser pairs such that: 'a' will play 'e' in the final
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3); INSERT INTO matchez (winner, loser) VALUES (5, 7); INSERT INTO matchez (winner, loser) VALUES (2, 4); INSERT INTO matchez (winner, loser) VALUES (6, 8);  update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 4 AND matchez.match_id < 9; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 4 AND matchez.match_id < 9; update playerz set matchez = matchez + 1;
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
-| INSERT 0 1 |
+| UPDATE 4   |
+| UPDATE 4   |
+| UPDATE 8   |
 
- 
-
-*** 8 players
-a. 
-b. 
-c. 
-d. 
-e. 
-f. 
-g. 
-h. 
-*** 16 players
-a. 
-b. 
-c. 
-d. 
-e. 
-f. 
-g. 
-h. 
-
-i. 
-j. 
-k. 
-l. 
-
-m. 
-n. 
-o. 
-p. 
-
-*** 26 players
-a. 
-b. 
-c. 
-d. 
-e. 
-f. 
-g. 
-h. 
-i. 
-j. 
-k. 
-l. 
-m. 
-n. 
-o. 
-p. 
-q. 
-r. 
-s. 
-t. 
-u. 
-v. 
-w. 
-x. 
-y. 
-z. 
-** drop tables
-
+** 1. clear and setup tables again
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 DROP TABLE playerz; DROP TABLE matchez;
 #+END_SRC
@@ -1595,92 +999,160 @@ DROP TABLE playerz; DROP TABLE matchez;
 |------------|
 | DROP TABLE |
 
-** whole sequences in single blocks
-#+BEGIN_SRC sql
-DROP TABLE playerz; 
-DROP TABLE matchez; 
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer); 
-CREATE TABLE matchez(winner integer, loser integer); 
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('AAAA', 0, 0); 
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('BBBB', 0, 0);
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('CCCC', 0, 0); 
-INSERT INTO playerz (player_name, wins, matchez) VALUES ('DDDD', 0, 0); 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5; update playerz set matchez = matchez + 1;
 #+END_SRC
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer); 
+INSERT INTO matchez (winner, loser) VALUES (1, 3); INSERT INTO matchez (winner, loser) VALUES (5, 7); INSERT INTO matchez (winner, loser) VALUES (2, 4); INSERT INTO matchez (winner, loser) VALUES (6, 8); 
+
+#+END_SRC
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+#+END_SRC
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+** 2. insert players into players table
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
 #+END_SRC
 
 #+RESULTS:
-| CREATE TABLE |
-|--------------|
-| CREATE TABLE |
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+** 3. insert first winner-loser pairs into matches table
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 2);
+INSERT INTO matchez (winner, loser) VALUES (3, 4);
+INSERT INTO matchez (winner, loser) VALUES (5, 6);
+INSERT INTO matchez (winner, loser) VALUES (7, 8);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+** 4. update 'wins', 'OMW', and 'matches' for the affected players
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 4 |
+|----------|
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(winner integer, loser integer); 
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5;
 #+END_SRC
 
-** swiss standings query
-#+BEGIN_SRC sql
-"SELECT a.id, a.player_name, b.id, b.player_name "
-             "FROM players as a, players as b "
-             "WHERE a.wins = b.wins "
-             "AND a.player_name != b.player_name "
-             "AND a.id < b.id"
-#+END_SRC
+#+RESULTS:
+| UPDATE 4 |
+|----------|
 
-#+BEGIN_SRC sql
-SELECT a.id, a.player_name, b.id, b.player_name FROM playerz as a, playerz as b WHERE a.wins = b.wins AND a.player_name != b.player_name AND a.id < b.id;
-#+END_SRC
-
-* SQL commands
-** as single lines
-** table definitions for setup
-#+BEGIN_SRC sql
-CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer);
-
-CREATE TABLE matchez(winner integer, loser integer);
-
-SELECT * FROM matchez; SELECT * FROM playerz;
-#+END_SRC
-** extend table definition
-#+BEGIN_SRC sql
-CREATE TABLE playerz(
-       id serial PRIMARY KEY,
-       player_name text not null,
-       wins integer,
-       matchez integer
-       opponent_wins integer);
-
-CREATE TABLE matchez(
-       winner integer,
-       loser integer);
-
--- CREATE TABLE matchez(winner integer, loser integer);
-
--- CREATE TABLE matchez(player1 integer, player2, integer, player1_score integer, player2_score integer);
-
-SELECT * FROM matchez; SELECT * FROM playerz;
-#+END_SRC
-** as script con
-#+BEGIN_SRC sql
--- Table definitions for the tournament project.
-CREATE DATABASE tournament;
-
-\c tournament
-
-CREATE TABLE players(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer);
-
-CREATE TABLE matches(winner integer, loser integer);
-
-#+END_SRC
-
-** register a player
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO playersz (player_name, wins, matchez) VALUES ('DDDD', 0, 0);
+update playerz set matchez = matchez + 1;
 #+END_SRC
 
-* babel sql headers BEGIN_SRC sql :engine postgresql :database tourney_practice
+#+RESULTS:
+| UPDATE 8 |
+|----------|
+
+** 5. insert second winner-loser pairs into matches table
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
+INSERT INTO matchez (winner, loser) VALUES (1, 3);
+INSERT INTO matchez (winner, loser) VALUES (5, 7);
+INSERT INTO matchez (winner, loser) VALUES (2, 4);
+INSERT INTO matchez (winner, loser) VALUES (6, 8);
 #+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+** 6. REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 4 and matchez.match_id < 9;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 3 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 4 and matchez.match_id < 9;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 3 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 8 |
+|----------|
+
+** 7. insert third winner-loser pairs, a-e championship
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 5); INSERT INTO matchez (winner, loser) VALUES (2, 6); INSERT INTO matchez (winner, loser) VALUES (3, 7); INSERT INTO matchez (winner, loser) VALUES (4, 8);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
+** 9. REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 8 and matchez.match_id < 13;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 4 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 8 and matchez.match_id < 13;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 4 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 8 |
+|----------|
