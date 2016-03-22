@@ -814,3 +814,32 @@ INSERT INTO playersz (player_name, wins, matchez) VALUES ('DDDD', 0, 0);
 
  #+END_SRC
 
+** update 'wins', 'OMW', and 'matches' for the affected players
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-22 Tue 11:17
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_OLPATH: new/add values to tables
+   :ARCHIVE_CATEGORY: ???
+   :END:
+*** archived work on updating 
+   #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update player_records set wins = wins + 1
+       FROM matchez
+       where playerz.id = matchez.winner
+       AND matchez.match_id < 5;
+   #+END_SRC
+
+   #+RESULTS:
+   | UPDATE 4 |
+   |----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1;
+   #+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update player_recordz
+set wins = wins + 1 FROM match_participants, score_results
+WHERE  
+#+END_SRC
+
