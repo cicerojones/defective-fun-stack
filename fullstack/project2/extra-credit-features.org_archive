@@ -1118,3 +1118,142 @@ AND a.away = player_id;
  | UPDATE 1 |
  | UPDATE 4 |
 
+** log home and away results (long way)
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-25 Fri 17:04
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_OLPATH: use one org-block/log first round results into player records/calculate points total for weighted wins + draws
+   :ARCHIVE_CATEGORY: ???
+   :END:
+*** all at once
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.home = player_id;
+
+
+
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.home = player_id;
+
+
+UPDATE player_recordz SET draws = draws + 1
+from tournament_matches as a 
+WHERE a.home_score = a.away_score
+AND (a.home = player_id OR a.away = player_id);
+
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.away = player_id;
+
+
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.away = player_id;
+#+END_SRC
+#+RESULTS:
+| INSERT 0 1  |
+|-------------|
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| INSERT 0 1  |
+| CREATE VIEW |
+| CREATE VIEW |
+| UPDATE 1    |
+| UPDATE 2    |
+| UPDATE 2    |
+| UPDATE 1    |
+| UPDATE 2    |
+*** individually
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- update home team losses
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.home = player_id;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+--update home team wins
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.home = player_id;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 2 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- update teams that drew
+UPDATE player_recordz SET draws = draws + 1
+from tournament_matches as a 
+WHERE a.home_score = a.away_score
+AND (a.home = player_id OR a.away = player_id);
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 2 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- update away teams that won
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.away = player_id;
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- update away teams that lost
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.away = player_id;
+#+END_SRC
+#+RESULTS:
+| UPDATE 2 |
+|----------|
+
