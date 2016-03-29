@@ -3195,8 +3195,6 @@ select * FROM player_OMW(1)
  #+RESULTS:
  | opponent | opponent_omw |
  |----------+--------------|
- |        2 |            3 |
- |        5 |            3 |
 
 ***** use coalesce with player_2 view
  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
