@@ -1257,3 +1257,46 @@ AND a.away = player_id;
 | UPDATE 2 |
 |----------|
 
+** trigger function debugging
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:01
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_OLPATH: as much in one block as possible/logging end-of-round functionality
+   :ARCHIVE_CATEGORY: ???
+   :END:
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_records_on_insert_scores_first() RETURNS trigger as $log_records_on_insert_scores_first$
+       BEGIN
+       PERFORM log_home_losses(1);
+       PERFORM log_home_wins(1);
+       PERFORM log_away_losses(1);
+       PERFORM log_away_wins(1);
+       PERFORM log_draws(1);
+       PERFORM update_points();
+       RETURN NEW;
+       END;
+       $log_records_on_insert_scores_first$ LANGUAGE plpgsql;
+
+
+CREATE trigger log_records_first_round_first
+AFTER INSERT on score_results
+FOR EACH STATEMENT
+EXECUTE PROCEDURE log_records_on_insert_scores_first();
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
+| CREATE TRIGGER  |
+
+** define plain log_records at end of each round
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:01
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_OLPATH: as much in one block as possible/logging end-of-round functionality
+   :ARCHIVE_CATEGORY: ???
+   :END:
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
