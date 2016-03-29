@@ -1,0 +1,170 @@
+
+Archived entries from file /Users/a/Documents/working-directory/udacity-courses/fullstack/project2/final-project-coding.org
+
+
+* Archived Tasks
+
+** extra credit features
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:28
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/final-project-coding.org
+   :ARCHIVE_CATEGORY: final-project-coding
+   :END:
+*** Prevent rematches between players.
+**** natural planning
+ So basically, 
+
+ 1. register some number of players greater than 4
+    - work off an existing round number type of tournament
+ 2. report an intial set of victories with reportMatches
+    - plan how to set up the first batch of matches
+      - 1 d. 2
+      - 3 d. 4
+      - etc.
+ 3. tinker with swissPairings
+    - add a clause that looks at entries in matches
+ 4. use tourney_practice to experiment with the correct raw SQL 
+
+ |                    | "Twilight Sparkle" | "Fluttershy" | "Applejack" | "Pinkie Pie" | "Bruno Walton" | "Boots O'Neal" | "Cathy Burton" | "Diane Grant" |
+ |--------------------+--------------------+--------------+-------------+--------------+----------------+----------------+----------------+---------------|
+ | "Twilight Sparkle" | nil                |              |             |              |                |                |                |               |
+ | "Fluttershy"       |                    |              |             |              |                |                |                |               |
+ | "Applejack"        |                    |              |             |              |                |                |                |               |
+ | "Pinkie Pie"       |                    |              |             |              |                |                |                |               |
+ | "Bruno Walton"     |                    |              |             |              |                |                |                |               |
+ | "Boots O'Neal"     |                    |              |             |              |                |                |                |               |
+ | "Cathy Burton"     |                    |              |             |              |                |                |                |               |
+ | "Diane Grant"      |                    |              |             |              |                |                |                |               |
+**** 4 abcd
+ | match no. | winner | loser |
+ |-----------+--------+-------|
+ |         1 | a      | b     |
+ |         2 | c      | d     |
+ |-----------+--------+-------|
+ |         3 | a      | c     |
+ |         4 | b      | d     |
+ |         5 |        |       |
+ |         6 |        |       |
+ |         7 |        |       |
+ |         8 |        |       |
+ |         9 |        |       |
+ |        10 |        |       |
+ |        11 |        |       |
+ |        12 |        |       |
+ |        13 |        |       |
+ |        14 |        |       |
+ |        15 |        |       |
+ |        16 |        |       |
+**** 8 abcdefgh
+ | match no. | winner | loser | winner record | loser record |
+ |-----------+--------+-------+---------------+--------------|
+ |         1 | a      | b     |           0-0 |          0-0 |
+ |         2 | c      | d     |           0-0 |          0-0 |
+ |         3 | e      | f     |           0-0 |          0-0 |
+ |         4 | g      | h     |           0-0 |          0-0 |
+ |-----------+--------+-------+---------------+--------------|
+ |         5 | a      | c     |           1-0 |          1-0 |
+ |         6 | e      | g     |           1-0 |          1-0 |
+ |         7 | b      | d     |           0-1 |          0-1 |
+ |         8 | f      | h     |           0-1 |          0-1 |
+ |-----------+--------+-------+---------------+--------------|
+ |         9 | a      | e     |           2-0 |          2-0 |
+ |        10 | b      | c     |           1-1 |          1-1 |
+ |        11 | f      | g     |           1-1 |          1-1 |
+ |        12 | d      | h     |           0-2 |          0-2 |
+ |-----------+--------+-------+---------------+--------------|
+
+
+ | team | wins | losses | avg. wins of teams lost to |   |
+ |------+------+--------+----------------------------+---|
+ | a    |    3 |      0 |                          - |   |
+ | b    |    2 |      1 |                          3 |   |
+ | f    |    2 |      1 |                          1 |   |
+ | c    |    1 |      2 |                            |   |
+ | d    |    1 |      2 |                            |   |
+ | e    |    1 |      2 |                            |   |
+ | g    |    1 |      2 |                            |   |
+ | h    |    0 |      3 |                            |   |
+
+
+
+**** number pairs to return!
+     "For four players, swissPairings should return two pairs."
+ For eight players, what number of pairs to return?
+ Well, you'd need to report an initial group of 4 matches.
+
+ So, whereas the test for the meets specifications starts off so:
+
+ #+BEGIN_SRC python
+registerPlayer("Twilight Sparkle")
+    registerPlayer("Fluttershy")
+    registerPlayer("Applejack")
+    registerPlayer("Pinkie Pie")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+ #+END_SRC
+
+ We would instead do something like
+
+ #+BEGIN_SRC python
+registerPlayer("Twilight Sparkle")
+registerPlayer("Fluttershy")
+registerPlayer("Applejack")
+registerPlayer("Pinkie Pie")
+
+    registerPlayer("Bruno Walton")
+    registerPlayer("Boots O'Neal")
+    registerPlayer("Cathy Burton")
+    registerPlayer("Diane Grant")
+
+    standings = playerStandings()
+    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    reportMatch(id5, id6)
+    reportMatch(id7, id8)
+ #+END_SRC
+**** 
+**** 
+*** 
+  Don’t assume an even number of players. If there is an odd number of
+  players, assign one player a “bye” (skipped round). A bye counts as a
+  free win. A player should not receive more than one bye in a
+  tournament.
+*** 
+  Support games where a draw (tied game) is possible. This will require
+  changing the arguments to reportMatch.
+*** 
+  When two players have the same number of wins, rank them according to
+  OMW (Opponent Match Wins), the total number of wins by players they
+  have played against.
+*** 
+  Support more than one tournament in the database, so matches do not
+  have to be deleted between tournaments. This will require
+  distinguishing between “a registered player” and “a player who has
+  entered in tournament #123”, so it will require changes to the
+  database schema.
+*** 
+  You may refer to outside resources to devise your pairing algorithm.
+  Wizards of the Coast has prepared simple instructions, and more
+  details can be found in resources linked to in the reference section
+  of Wikipedia's article on Swiss tournaments.
+
+** typical SQL interactions
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:28
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/final-project-coding.org
+   :ARCHIVE_CATEGORY: final-project-coding
+   :END:
+*** create players1 table 
+*** drop players1 table
+*** insert a row
+*** add data to a row
+*** delete a row
+*** insert several rows
+*** count up rows
+*** DONE delete all rows
+*** DONE insert 4 rows
+*** create a new table for matches
