@@ -1,872 +1,33 @@
-* new_ suite of functions--create, update, delete--using wrapper function
-** start here this works
-*** import psycopg and define a db-agnostic connect function
-**** def new_connect(dbname):						:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-import psycopg2
-
-def new_connect(dbname):
-    dbname_string = "dbname={}".format(dbname)
-    return psycopg2.connect(dbname_string)
-#+END_SRC
-
-#+RESULTS:
-
-*** define a db-agnostic execute wrapper
-**** def new_dbExecuteWrapper(query_string, dbname, extra=None):	:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_dbExecuteWrapper(query_string, dbname, extra=None):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-*** define a db-agnostic retrieval wrapper
-**** def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):	:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()    
-    return rows
-
-#+END_SRC
-
-#+RESULTS:
-
-*** define a db and table-agnostic deleteTable function
-**** def new_deleteTable(dbname, table_name):				:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_deleteTable(dbname, table_name):
-    tb_name = table_name
-    sql_keywords = """DELETE FROM """
-    query = sql_keywords + tb_name
-    table_nm = (table_name,)
-    new_dbExecuteWrapper(query, dbname)
-#+END_SRC
-**** examples of new_deleteTable
-#+BEGIN_SRC python :session *Python* :results output
+* Python
+** all Python functions grouped with examples
+*** using examples for playerz and matchez
+**** deleting
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
 new_deleteTable("tourney_practice", "matchez")
-#+END_SRC    
+ #+END_SRC
 
-#+BEGIN_SRC python :session *Python* :results output
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
 new_deleteTable("tourney_practice", "playerz")
-#+END_SRC    
-
-#+RESULTS:
-
-*** use new_deleteTable to define deleteMatches and deletePlayers function
-**** deleteTable matchez and playerz
-#+BEGIN_SRC python :session *Python* :results output
-new_deleteTable("tourney_practice", "matchez")
-#+END_SRC    
-
-#+BEGIN_SRC python :session *Python* :results output
-new_deleteTable("tourney_practice", "playerz")
-#+END_SRC    
-*** countPlayers
-**** refactor to take table name as argument--must return as last line?
-#+BEGIN_SRC python :session *Python* :results output
-def countPlayers():
-    DB = connect()
-    c = DB.cursor()
-    query = "SELECT count(*) FROM players;"
-    c.execute(query)
-    row = c.fetchone()
-    row_item = list(row)
-    return int(row_item[0])
-    DB.close()
-
-#+END_SRC
-**** def new_countPlayers(dbname, table_name):				:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_countPlayers(dbname, table_name):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = "SELECT count(*)" + from_statement + ";"
-    c.execute(query)
-    row = c.fetchone()
-    row_item = list(row)
-    DB.close()
-    return int(row_item[0])
-
-
-#+END_SRC
-
-#+RESULTS:
-**** example of new_countPlayers
-#+BEGIN_SRC python :session *Python* :results output
-new_countPlayers("tourney_practice", "playerz")
-#+END_SRC
-
-#+RESULTS:
-: 3
-
-*** refactor registerPlayer to take a table_name argument
-**** assumes columns have certain hard-coded names
-#+BEGIN_SRC python :session *Python* :results output
-def new_registerPlayer(dbname, table_name, player_name):
-    tb_name = table_name
-    sql_keywords = """INSERT INTO """
-    insert_statement = sql_keywords + tb_name
-    query = (insert_statement + "(player_name, wins, matchez)"
-             "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
-
-#+END_SRC
-
-#+RESULTS:
-
-
-#+BEGIN_SRC python :session *Python* :results output
-new_registerPlayer("tourney_practice", "playerz", "CCCC")
-#+END_SRC
-
-#+RESULTS:
-**** make a general INSERT statement string generator
-#+BEGIN_SRC python :session *Python* :results value
-def insert_statement_string(table_name):
-    tb_name = table_name
-    sql_keywords = """INSERT INTO """
-    insert_statement = sql_keywords + tb_name
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results value
-insert_statement_string("matchez")
-#+END_SRC
-
-#+RESULTS:
-
-**** make a general UPDATE statement string generator
-#+BEGIN_SRC python :session *Python* :results output
-def update_statement_string(table_name):
-    tb_name = table_name
-    sql_keywords = """UPDATE """
-    update_statement = sql_keywords + tb_name
-#+END_SRC
-**** make a general SQL KEYWORD + tablename statement string generator	
-**** def keyword_statement_string(table_name, sql_keyword):		:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def keyword_statement_string(table_name, sql_keyword):
-    tb_name = table_name
-    sql_keywords = sql_keyword + """ """
-    update_statement = sql_keywords + tb_name + """ """
-    return update_statement
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-keyword_statement_string("matchez", "FROM")
-#+END_SRC
-
-#+RESULTS:
-: 'FROM matchez '
-
-**** def new_registerPlayer(dbname, table_name, player_name):		:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_registerPlayer(dbname, table_name, player_name):
-    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "(player_name, wins, matchez)" + 
-             "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-new_registerPlayer("tourney_practice", "playerz", "AAAA")
-new_registerPlayer("tourney_practice", "playerz", "BBBB")
-new_registerPlayer("tourney_practice", "playerz", "CCCC")
-new_registerPlayer("tourney_practice", "playerz", "DDDD")
-#+END_SRC
-
-#+RESULTS:
-
-*** refactor playerStandings
-**** def new_playerStandings(table_name)--assumes columns with hard-coded names :def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_playerStandings(table_name):
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT id, player_name, wins, matchez " +
-             from_statement + "ORDER BY wins DESC;")
-    return new_dbExecuteRetrievalWrapper_allrows("tourney_practice", query)
-
-#+END_SRC
-
-#+RESULTS:
-**** examples of new_playerStandings
-#+BEGIN_SRC python :session *Python* :results output
+ #+END_SRC
+**** counting
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_countPlayers("tourney_practice", "playersz")
+ #+END_SRC
+*** examples that rely on hardcoded column names
+**** registering players
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playersz", "a")
+ #+END_SRC
+**** determining player standings
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
 new_playerStandings("playerz")
-#+END_SRC
-
-#+RESULTS:
-: [(1, 'AAAA', 1, 1), (2, 'BBBB', 0, 1), (3, 'CCCC', 0, 0)]
-*** refactor reportMatch(winner, loser):
-**** original contains matches and players table names
-#+BEGIN_SRC python :session *Python* :results output
-def reportMatch(winner, loser):
-    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
-    query2 = ("UPDATE players SET wins = wins + 1"
-              "FROM matches WHERE players.id = (%s) ;")
-    query3 = ("UPDATE players SET matches = matches + 1"
-              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
-    dbExecuteWrapper(query1, (winner, loser))
-    dbExecuteWrapper(query2, (winner,))
-    dbExecuteWrapper(query3, (winner, loser))
-
-#+END_SRC
-**** def new_reportMatch(dbname, table1, table2, winner, loser)--still hard codes column names :def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_reportMatch(dbname, table1, table2, winner, loser):
-    q1_insert = keyword_statement_string(table2, """INSERT INTO""")
-    q2_update = keyword_statement_string(table1, """UPDATE""")
-    q2_from = keyword_statement_string(table2, """FROM""")
-    query1 = (q1_insert + "VALUES (%s, %s) ;")
-    query2 = (q2_update + "SET wins = wins + 1" + 
-              q2_from + "WHERE playerz.id = (%s);")
-    query3 = (q2_update + "SET matchez = matchez + 1" + 
-              q2_from + "WHERE playerz.id = (%s) OR playerz.id = (%s);")
-    new_dbExecuteWrapper(query1, dbname, (winner, loser))
-    new_dbExecuteWrapper(query2, dbname, (winner,))
-    new_dbExecuteWrapper(query3, dbname, (winner, loser))
-
-#+END_SRC
-
-#+RESULTS:
-**** examples of use
-#+BEGIN_SRC python :session *Python* :results output
-new_reportMatch("tourney_practice", "playerz", "matchez", 1, 2)
-#+END_SRC
-
-#+RESULTS:
-
-*** swissPairings() will require more clauses?
-#+BEGIN_SRC python :session *Python* :results output
-def swissPairings():
-    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
-             "FROM players as a, players as b "
-             "WHERE a.wins = b.wins "
-             "AND a.player_name != b.player_name "
-             "AND a.id < b.id")
-    return dbExecuteRetrievalWrapper_allrows(query)
-
-#+END_SRC
-** steps
-1. drop tables
-2. redefine tablez for tourney_practice with sql statements
-3. create players using bare sql in CLI
-4. delete matches first function
-   - using deleteTable function that takes a table name to delete all
-     rows from
-   - got stuck on imitating passing VALUES () sql syntax i.e. adding
-     parens where unnecessary in a straight DELETE FROM statement
-   - trouble using new_deleteTable that takes a db name as well, as a tablename
-     - [[*define new deleteTable that takes a database name as well][define new deleteTable that takes a database name as well]]
-     - syntax error: LINE 1: DELETE FROM 'matchez';
-       - why is the argument getting passed with single-quotes
-       - i.e. of the two following code blocks, the first doesn't
-         work, while the second does
-5. delete anything using new_dbexecuteWrapper
-   - test out new_connect
-     - in order to test new_connect using a delete, need to register
-       players and report matches between them
-       - where is this done?
-	 - DROP matchez and playerz tables; then create new with bare SQL
-	 - check from psql SELECT *
-	 - INSERT INTO playerz from psql
-	 - use reportMatch_tourney(1, 2) as above
-	   - [[*call reportMatch_tourney][call reportMatch_tourney]]
-	   - check from psql SELECT *
-6. refactor reportMatches to take db, and two table names
-   - still contains hard-coded references to column names
-7. refactor registerPlayer to take db, table name
-
-* all SQL 1st
-** all debugged
-** 
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
--- CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
---        select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
---        ON opposing_player = player_id
---        WHERE opposing_player IS NOT NULL;
--- $$ LANGUAGE SQL;
-#+END_SRC
-** 
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_records$
-       SELECT log_home_losses($1);
-       SELECT log_home_wins($1);
-       SELECT log_away_losses($1);
-       SELECT log_away_wins($1);
-       SELECT log_draws($1);
-       SELECT update_points();
-       $log_records$ LANGUAGE SQL;
-
---  define OMW functions
-CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
-       select 
-       	      CASE WHEN a.away = $1 THEN a.home
-	      	   WHEN a.home = $1 THEN a.away
-		   ELSE NULL
-		END as opposing_player
-FROM match_participants as a;
-$$ LANGUAGE SQL;
-
--- CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
---        select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
---        ON opposing_player = player_id
---        WHERE opposing_player IS NOT NULL;
--- $$ LANGUAGE SQL;
-
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (2, 'tennis', 1);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (3, 'tennis', 1);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (4, 'tennis', 1);
-
-
-INSERT INTO playerz (player_name) VALUES ('a');
-INSERT INTO playerz (player_name) VALUES ('b');
-INSERT INTO playerz (player_name) VALUES ('c');
-INSERT INTO playerz (player_name) VALUES ('d');
-INSERT INTO playerz (player_name) VALUES ('e');
-INSERT INTO playerz (player_name) VALUES ('f');
-INSERT INTO playerz (player_name) VALUES ('g');
-INSERT INTO playerz (player_name) VALUES ('h');
-
-INSERT INTO player_recordz (player_id) VALUES (1);
--- INSERT INTO player_recordz (player_id) VALUES IN [1, 2];
-INSERT INTO player_recordz (player_id) VALUES (2);
-INSERT INTO player_recordz (player_id) VALUES (3);
-INSERT INTO player_recordz (player_id) VALUES (4);
-INSERT INTO player_recordz (player_id) VALUES (5);
-INSERT INTO player_recordz (player_id) VALUES (6);
-INSERT INTO player_recordz (player_id) VALUES (7);
-INSERT INTO player_recordz (player_id) VALUES (8);
-#+END_SRC
-
-#+RESULTS:
-| DROP TABLE      |
-|-----------------|
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE VIEW     |
-| CREATE VIEW     |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-** omw functionality
-*** using OMW
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
-       select * from set_OMW(1);
-       select * from set_OMW(2);
-       select * from set_OMW(3);
-       select * from set_OMW(4);
-       select * from set_OMW(5);
-       select * from set_OMW(6);
-       select * from set_OMW(7);
-       select * from set_OMW(8);
-$$ LANGUAGE SQL;
-#+END_SRC
-
-#+RESULTS:
-| CREATE FUNCTION |
-|-----------------|
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
--- select * from set_OMW(0);
-
-#+END_SRC
-
-#+RESULTS:
-| set_omw |
-|---------|
-|         |
-select * from set_OMW(3);
-set_OMW(2)
-** insert round one match datap
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO match_participants VALUES (1, 1, 2);
-INSERT INTO match_participants VALUES (2, 3, 4);
-INSERT INTO match_participants VALUES (3, 5, 6);
-INSERT INTO match_participants VALUES (4, 7, 8);
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1 |
-|------------|
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-
-** insert round one match score results
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO score_results VALUES (1, 0, 1);
-INSERT INTO score_results VALUES (2, 1, 0);
-INSERT INTO score_results VALUES (3, 0, 1);
-INSERT INTO score_results VALUES (4, 1, 0);
-SELECT * FROM log_records(1);
-SELECT * FROM set_all_OMW();
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1  |
-|-------------|
-| INSERT 0 1  |
-| INSERT 0 1  |
-| INSERT 0 1  |
-| log_records |
-|             |
-| set_all_omw |
-|             |
-
-** insert round two match info
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (5, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (6, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (7, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (8, 'tennis', 2);
-INSERT INTO match_participants VALUES (5, 2, 3);
-INSERT INTO match_participants VALUES (6, 6, 7);
-INSERT INTO match_participants VALUES (7, 1, 4);
-INSERT INTO match_participants VALUES (8, 5, 8);
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1 |
-|------------|
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-
-** insert round two match score results
-
-*** serially
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO score_results VALUES (5, 0, 10);
-INSERT INTO score_results VALUES (6, 10, 0);
-INSERT INTO score_results VALUES (7, 0, 10);
-INSERT INTO score_results VALUES (8, 1, 10);
-select * from log_records(2);
-select * from set_all_omw();
-#+END_SRC
-
-#+RESULTS:
-| set_all_omw |
-|-------------|
-|             |
-
-*** 
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-SELECT log_home_losses(2);
-SELECT log_home_wins(2);
-SELECT log_away_losses(2);
-SELECT log_away_wins(2);
-SELECT log_draws(2);
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1      |
-|-----------------|
-| INSERT 0 1      |
-| INSERT 0 1      |
-| INSERT 0 1      |
-| log_home_losses |
-|                 |
-| log_home_wins   |
-|                 |
-| log_away_losses |
-|                 |
-| log_away_wins   |
-|                 |
-| log_draws       |
-|                 |
-
-*** all at once
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (5, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (6, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (7, 'tennis', 2);
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (8, 'tennis', 2);
-INSERT INTO match_participants VALUES (5, 2, 3);
-INSERT INTO match_participants VALUES (6, 6, 7);
-INSERT INTO match_participants VALUES (7, 1, 4);
-INSERT INTO match_participants VALUES (8, 5, 8);
-INSERT INTO score_results VALUES (5, 0, 10);
-INSERT INTO score_results VALUES (6, 10, 0);
-INSERT INTO score_results VALUES (7, 0, 10);
-INSERT INTO score_results VALUES (8, 1, 10);
-
-SELECT log_home_losses(2);
-SELECT log_home_wins(2);
-SELECT log_away_losses(2);
-SELECT log_away_wins(2);
-SELECT log_draws(2);
-#+END_SRC
-* display contents of tables and views
-** plain tables
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from matchez;
-select * from playerz;
-select * from match_participants;
-select * from score_results;
-select * from player_recordz;
-#+END_SRC
-
-
-#+RESULTS:
-|  match_id | tournament_name |      round |       |        |     |
-|-----------+-----------------+------------+-------+--------+-----|
-|         1 |          tennis |          1 |       |        |     |
-|         2 |          tennis |          1 |       |        |     |
-|         3 |          tennis |          1 |       |        |     |
-|         4 |          tennis |          1 |       |        |     |
-|         5 |          tennis |          2 |       |        |     |
-|         6 |          tennis |          2 |       |        |     |
-|         7 |          tennis |          2 |       |        |     |
-|         8 |          tennis |          2 |       |        |     |
-| player_id |     player_name |            |       |        |     |
-|         1 |               a |            |       |        |     |
-|         2 |               b |            |       |        |     |
-|         3 |               c |            |       |        |     |
-|         4 |               d |            |       |        |     |
-|         5 |               e |            |       |        |     |
-|         6 |               f |            |       |        |     |
-|         7 |               g |            |       |        |     |
-|         8 |               h |            |       |        |     |
-|  match_id |            home |       away |       |        |     |
-|         1 |               1 |          2 |       |        |     |
-|         2 |               3 |          4 |       |        |     |
-|         3 |               5 |          6 |       |        |     |
-|         4 |               7 |          8 |       |        |     |
-|         5 |               2 |          3 |       |        |     |
-|         6 |               6 |          7 |       |        |     |
-|         7 |               1 |          4 |       |        |     |
-|         8 |               5 |          8 |       |        |     |
-|  match_id |      home_score | away_score |       |        |     |
-|         1 |               0 |          1 |       |        |     |
-|         2 |               1 |          0 |       |        |     |
-|         3 |               0 |          1 |       |        |     |
-|         4 |               1 |          0 |       |        |     |
-|         1 |               0 |          1 |       |        |     |
-|         2 |               1 |          0 |       |        |     |
-|         3 |               0 |          1 |       |        |     |
-|         4 |               1 |          0 |       |        |     |
-|         5 |               0 |         10 |       |        |     |
-|         6 |              10 |          0 |       |        |     |
-|         7 |               0 |         10 |       |        |     |
-|         8 |               1 |         10 |       |        |     |
-| player_id |            wins |     losses | draws | points | omw |
-|         1 |               0 |          2 |     0 |      0 |   6 |
-|         5 |               0 |          2 |     0 |      0 |   6 |
-|         2 |               1 |          1 |     0 |      3 |   6 |
-|         6 |               2 |          0 |     0 |      6 |   6 |
-|         7 |               1 |          1 |     0 |      3 |   6 |
-|         3 |               2 |          0 |     0 |      6 |   6 |
-|         4 |               1 |          1 |     0 |      3 |   6 |
-|         8 |               1 |          1 |     0 |      3 |   6 |
-
-** two views
-*** tournament_matches and player_recordz
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from tournament_matches;
-#+END_SRC
-
-#+RESULTS:
-| match_id | tournament_name | round | home | away | home_score | away_score |
-|----------+-----------------+-------+------+------+------------+------------|
-|        1 | tennis          |     1 |    1 |    2 |          0 |          1 |
-|        2 | tennis          |     1 |    3 |    4 |          1 |          0 |
-|        3 | tennis          |     1 |    5 |    6 |          0 |          1 |
-|        4 | tennis          |     1 |    7 |    8 |          1 |          0 |
-|        5 | tennis          |     2 |    2 |    3 |          0 |         10 |
-|        6 | tennis          |     2 |    6 |    7 |         10 |          0 |
-|        7 | tennis          |     2 |    1 |    4 |          0 |         10 |
-|        8 | tennis          |     2 |    5 |    8 |          1 |         10 |
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from player_recordz;
-#+END_SRC
-
-#+RESULTS:
-| player_id | wins | losses | draws | points | omw |
-|-----------+------+--------+-------+--------+-----|
-|         1 |    0 |      2 |     0 |      0 |   6 |
-|         2 |    1 |      1 |     0 |      3 |   6 |
-|         3 |    2 |      0 |     0 |      6 |   6 |
-|         4 |    1 |      1 |     0 |      3 |   6 |
-|         5 |    0 |      2 |     0 |      0 |   9 |
-|         6 |    2 |      0 |     0 |      6 |   3 |
-|         7 |    1 |      1 |     0 |      3 |   9 |
-|         8 |    1 |      1 |     0 |      3 |   3 |
-** player_tables
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from player_tables
-ORDER BY player_id;
-;
-#+END_SRC
-
-#+RESULTS:
-| player_id | player_name | wins | losses | draws | points | omw |
-|-----------+-------------+------+--------+-------+--------+-----|
-|         1 | a           |    0 |      2 |     0 |      0 |   6 |
-|         2 | b           |    1 |      1 |     0 |      3 |   6 |
-|         3 | c           |    2 |      0 |     0 |      6 |   0 |
-|         4 | d           |    1 |      1 |     0 |      3 |   0 |
-|         5 | e           |    0 |      2 |     0 |      0 |   0 |
-|         6 | f           |    2 |      0 |     0 |      6 |   0 |
-|         7 | g           |    1 |      1 |     0 |      3 |   0 |
-|         8 | h           |    1 |      1 |     0 |      3 |   0 |
-** view provisional pairings
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-SELECT a.player_id, a.OMW, a.wins, a.losses, a.draws, b.player_id, b.OMW, b.wins, b.losses, b.draws
-
-FROM player_recordz as a, player_recordz as b
-
-WHERE a.wins = b.wins AND a.losses = b.losses 
-
-AND a.player_id < b.player_id
-
-ORDER BY a.wins DESC, a.omw DESC;
-#+END_SRC  
-
-#+RESULTS:
-| player_id | omw | wins | losses | draws | player_id | omw | wins | losses | draws |
-|-----------+-----+------+--------+-------+-----------+-----+------+--------+-------|
-|         3 |   6 |    2 |      0 |     0 |         6 |   3 |    2 |      0 |     0 |
-|         7 |   9 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         7 |   9 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         4 |   6 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         4 |   6 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         4 |   6 |    1 |      1 |     0 |         7 |   9 |    1 |      1 |     0 |
-|         1 |   6 |    0 |      2 |     0 |         5 |   9 |    0 |      2 |     0 |
-* all Python
-** connecting, wrappers, deletion, and counting
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-import psycopg2
-
-def new_connect(dbname):
-    dbname_string = "dbname={}".format(dbname)
-    return psycopg2.connect(dbname_string)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_dbExecuteWrapper(query_string, dbname, extra=None):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    DB.close()    
-    return rows
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_deleteTable(dbname, table_name):
-    tb_name = table_name
-    sql_keywords = """DELETE FROM """
-    query = sql_keywords + tb_name
-    table_nm = (table_name,)
-    new_dbExecuteWrapper(query, dbname)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_countPlayers(dbname, table_name):
-    DB = new_connect(dbname)
-    c = DB.cursor()
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = "SELECT count(*)" + from_statement + ";"
-    c.execute(query)
-    row = c.fetchone()
-    row_item = list(row)
-    DB.close()
-    return int(row_item[0])
-
-
-#+END_SRC
-
-#+RESULTS:
-
-** SQL-PYTHON 'interop'
-**** make a general INSERT statement string generator
-#+BEGIN_SRC python :session *Python* :results value
-def insert_statement_string(table_name):
-    tb_name = table_name
-    sql_keywords = """INSERT INTO """
-    insert_statement = sql_keywords + tb_name
-#+END_SRC
-
-#+RESULTS:
-**** example of use
-#+BEGIN_SRC python :session *Python* :results value
-insert_statement_string("matchez")
-#+END_SRC
-
-#+RESULTS:
-
-**** make a general UPDATE statement string generator
-#+BEGIN_SRC python :session *Python* :results output
-def update_statement_string(table_name):
-    tb_name = table_name
-    sql_keywords = """UPDATE """
-    update_statement = sql_keywords + tb_name
-#+END_SRC
-
-#+RESULTS:
-
-**** make a general SQL KEYWORD + tablename statement string generator	
-**** def keyword_statement_string(table_name, sql_keyword):		:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def keyword_statement_string(table_name, sql_keyword):
-    tb_name = table_name
-    sql_keywords = sql_keyword + """ """
-    update_statement = sql_keywords + tb_name + """ """
-    return update_statement
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-keyword_statement_string("matchez", "FROM")
-#+END_SRC
-
-#+RESULTS:
-: 'FROM matchez '
-
-**** def new_registerPlayer(dbname, table_name, player_name):		:def:
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_registerPlayer(dbname, table_name, player_name):
-    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "(player_name, wins, matchez)" + 
-             "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
-
-#+END_SRC
-
-#+RESULTS:
-
-**** examples of use
-#+BEGIN_SRC python :session *Python* :results output
-new_registerPlayer("tourney_practice", "playerz", "AAAA")
-new_registerPlayer("tourney_practice", "playerz", "BBBB")
-new_registerPlayer("tourney_practice", "playerz", "CCCC")
-new_registerPlayer("tourney_practice", "playerz", "DDDD")
-#+END_SRC
-
-#+RESULTS:
-
-** major functions?
-*** standings, reportMatches and swissPairings
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_playerStandings(table_name):
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT id, player_name, wins, matchez " +
-             from_statement + "ORDER BY wins DESC;")
-    return new_dbExecuteRetrievalWrapper_allrows("tourney_practice", query)
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def new_reportMatch(dbname, table1, table2, winner, loser):
-    q1_insert = keyword_statement_string(table2, """INSERT INTO""")
-    q2_update = keyword_statement_string(table1, """UPDATE""")
-    q2_from = keyword_statement_string(table2, """FROM""")
-    query1 = (q1_insert + "VALUES (%s, %s) ;")
-    query2 = (q2_update + "SET wins = wins + 1" + 
-              q2_from + "WHERE playerz.id = (%s);")
-    query3 = (q2_update + "SET matchez = matchez + 1" + 
-              q2_from + "WHERE playerz.id = (%s) OR playerz.id = (%s);")
-    new_dbExecuteWrapper(query1, dbname, (winner, loser))
-    new_dbExecuteWrapper(query2, dbname, (winner,))
-    new_dbExecuteWrapper(query3, dbname, (winner, loser))
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output
-def swissPairings():
-    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
-             "FROM players as a, players as b "
-             "WHERE a.wins = b.wins "
-             "AND a.player_name != b.player_name "
-             "AND a.id < b.id")
-    return dbExecuteRetrievalWrapper_allrows(query)
-
-#+END_SRC
-
-#+RESULTS:
-* all Python in one block
+ #+END_SRC
+**** reporting matching (inserting and updating)
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_reportMatch("tourney_practice", 
+ #+END_SRC
+**** make pairings!!
+** all Python in one block
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
 
@@ -940,6 +101,10 @@ def new_playerStandings(table_name):
 
 
 def new_reportMatch(dbname, table1, table2, winner, loser):
+# why is table2 first in something named q1?
+# q1 inserts into log of match events
+# q2 is an updated that increment wins and match appearances
+
     q1_insert = keyword_statement_string(table2, """INSERT INTO""")
     q2_update = keyword_statement_string(table1, """UPDATE""")
     q2_from = keyword_statement_string(table2, """FROM""")
@@ -963,7 +128,8 @@ def swissPairings():
 
 #+END_SRC
 
-* all SQL 2nd--commented code
+#+RESULTS:
+* SQL
 ** all setup 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
@@ -1087,66 +253,18 @@ CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_pla
 		END as opposing_player
 FROM match_participants as a;
 $$ LANGUAGE SQL;
-#+END_SRC
-
-#+RESULTS:
-| DROP TABLE      |
-|-----------------|
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE VIEW     |
-| CREATE VIEW     |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
--- -- use the collection of all opponents of a given player to calculate that player's
--- -- OMW
--- CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
---        select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
---        ON opposing_player = player_id
---        WHERE opposing_player IS NOT NULL;
--- $$ LANGUAGE SQL;
-#+END_SRC
-** player_OMW
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 
 CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
        select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
        ON opposing_player = player_id
        WHERE opposing_player IS NOT NULL;
 $$ LANGUAGE SQL;
-#+END_SRC
 
-#+RESULTS:
-| CREATE FUNCTION |
-|-----------------|
-
-** set_omw
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 CREATE OR REPLACE FUNCTION set_omw (integer) RETURNS VOID AS $$
        UPDATE player_recordz SET omw = (select sum(opponent_OMW) FROM player_omw($1))
        WHERE player_id = $1;
 $$ LANGUAGE SQL;
-#+END_SRC
 
-#+RESULTS:
-| CREATE FUNCTION |
-|-----------------|
-** set_all_OMW
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
        select * from set_OMW(1);
        select * from set_OMW(2);
@@ -1169,24 +287,35 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
        SELECT update_points();
        $log_records$ LANGUAGE SQL;
 
---  define OMW functions
-CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
-       select 
-       	      CASE WHEN a.away = $1 THEN a.home
-	      	   WHEN a.home = $1 THEN a.away
-		   ELSE NULL
-		END as opposing_player
-FROM match_participants as a;
-$$ LANGUAGE SQL;
 #+END_SRC
 
 #+RESULTS:
-| CREATE FUNCTION |
+| DROP TABLE      |
 |-----------------|
+| DROP TABLE      |
+| DROP TABLE      |
+| DROP TABLE      |
+| DROP TABLE      |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE VIEW     |
+| CREATE VIEW     |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 
-** insert into matchez, playerz, and player_recordz
+** insert setup into matchez, playerz, and player_recordz
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 
 INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
@@ -1245,7 +374,7 @@ INSERT INTO player_recordz (player_id) VALUES (8);
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
-** tournament rounds
+** insert tournament rounds data
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO match_participants VALUES (1, 1, 2);
 INSERT INTO match_participants VALUES (2, 3, 4);
@@ -1329,46 +458,54 @@ select * from player_recordz;
 #+RESULTS:
 |  match_id | tournament_name |      round |       |        |     |
 |-----------+-----------------+------------+-------+--------+-----|
-|         1 | tennis          |          1 |       |        |     |
-|         2 | tennis          |          1 |       |        |     |
-|         3 | tennis          |          1 |       |        |     |
-|         4 | tennis          |          1 |       |        |     |
-|         5 | tennis          |          2 |       |        |     |
-|         6 | tennis          |          2 |       |        |     |
-|         7 | tennis          |          2 |       |        |     |
-|         8 | tennis          |          2 |       |        |     |
-| player_id | player_name     |            |       |        |     |
-|         1 | a               |            |       |        |     |
-|         2 | b               |            |       |        |     |
-|         3 | c               |            |       |        |     |
-|         4 | d               |            |       |        |     |
-|         5 | e               |            |       |        |     |
-|         6 | f               |            |       |        |     |
-|         7 | g               |            |       |        |     |
-|         8 | h               |            |       |        |     |
-|  match_id | home            |       away |       |        |     |
-|         1 | 1               |          2 |       |        |     |
-|         2 | 3               |          4 |       |        |     |
-|         3 | 5               |          6 |       |        |     |
-|         4 | 7               |          8 |       |        |     |
-|         5 | 2               |          3 |       |        |     |
-|         6 | 6               |          7 |       |        |     |
-|         7 | 1               |          4 |       |        |     |
-|         8 | 5               |          8 |       |        |     |
-|  match_id | home_score      | away_score |       |        |     |
-|         1 | 0               |          1 |       |        |     |
-|         2 | 1               |          0 |       |        |     |
-|         3 | 0               |          1 |       |        |     |
-|         4 | 1               |          0 |       |        |     |
-| player_id | wins            |     losses | draws | points | omw |
-|         1 | 0               |          1 |     0 |      0 |   3 |
-|         2 | 1               |          0 |     0 |      3 |   0 |
-|         3 | 1               |          0 |     0 |      3 |   0 |
-|         4 | 0               |          1 |     0 |      0 |   3 |
-|         5 | 0               |          1 |     0 |      0 |   3 |
-|         6 | 1               |          0 |     0 |      3 |   0 |
-|         7 | 1               |          0 |     0 |      3 |   0 |
-|         8 | 0               |          1 |     0 |      0 |   3 |
+|         1 |          tennis |          1 |       |        |     |
+|         2 |          tennis |          1 |       |        |     |
+|         3 |          tennis |          1 |       |        |     |
+|         4 |          tennis |          1 |       |        |     |
+|         5 |          tennis |          2 |       |        |     |
+|         6 |          tennis |          2 |       |        |     |
+|         7 |          tennis |          2 |       |        |     |
+|         8 |          tennis |          2 |       |        |     |
+| player_id |     player_name |            |       |        |     |
+|         1 |               a |            |       |        |     |
+|         2 |               b |            |       |        |     |
+|         3 |               c |            |       |        |     |
+|         4 |               d |            |       |        |     |
+|         5 |               e |            |       |        |     |
+|         6 |               f |            |       |        |     |
+|         7 |               g |            |       |        |     |
+|         8 |               h |            |       |        |     |
+|  match_id |            home |       away |       |        |     |
+|         1 |               1 |          2 |       |        |     |
+|         2 |               3 |          4 |       |        |     |
+|         3 |               5 |          6 |       |        |     |
+|         4 |               7 |          8 |       |        |     |
+|         5 |               2 |          3 |       |        |     |
+|         6 |               6 |          7 |       |        |     |
+|         7 |               1 |          4 |       |        |     |
+|         8 |               5 |          8 |       |        |     |
+|  match_id |      home_score | away_score |       |        |     |
+|         1 |               0 |          1 |       |        |     |
+|         2 |               1 |          0 |       |        |     |
+|         3 |               0 |          1 |       |        |     |
+|         4 |               1 |          0 |       |        |     |
+|         1 |               0 |          1 |       |        |     |
+|         2 |               1 |          0 |       |        |     |
+|         3 |               0 |          1 |       |        |     |
+|         4 |               1 |          0 |       |        |     |
+|         5 |               0 |         10 |       |        |     |
+|         6 |              10 |          0 |       |        |     |
+|         7 |               0 |         10 |       |        |     |
+|         8 |               1 |         10 |       |        |     |
+| player_id |            wins |     losses | draws | points | omw |
+|         1 |               0 |          2 |     0 |      0 |   6 |
+|         5 |               0 |          2 |     0 |      0 |   6 |
+|         2 |               1 |          1 |     0 |      3 |   6 |
+|         6 |               2 |          0 |     0 |      6 |   6 |
+|         7 |               1 |          1 |     0 |      3 |   6 |
+|         3 |               2 |          0 |     0 |      6 |   6 |
+|         4 |               1 |          1 |     0 |      3 |   6 |
+|         8 |               1 |          1 |     0 |      3 |   6 |
 
 ** two views
 *** tournament_matches and player_recordz
