@@ -1300,3 +1300,2547 @@ EXECUTE PROCEDURE log_records_on_insert_scores_first();
 #+RESULTS:
 | CREATE FUNCTION |
 |-----------------|
+
+** planning steps toward implementing OMW
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:27
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_CATEGORY: extra-credit-features
+   :END:
+*** 1. clear tourney practice of playerz and matchez tables 
+**** do this from org-babel
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz; DROP TABLE matchez;
+     #+END_SRC
+
+     #+RESULTS:
+     | DROP TABLE |
+     |------------|
+     | DROP TABLE |
+**** check that you have emptied
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz;
+     #+END_SRC
+
+     #+RESULTS:
+
+
+
+
+     | id | player_name | wins | matchez | omw |
+     |----+-------------+------+---------+-----|
+     |  1 | a           |    0 |       0 |   0 |
+     |  2 | b           |    0 |       0 |   0 |
+     |  3 | c           |    0 |       0 |   0 |
+     |  4 | d           |    0 |       0 |   0 |
+     |  5 | e           |    0 |       0 |   0 |
+     |  6 | f           |    0 |       0 |   0 |
+     |  7 | g           |    0 |       0 |   0 |
+     |  8 | h           |    0 |       0 |   0 |
+
+*** 2. setup tables
+**** simple version for basic credit
+     #+BEGIN_SRC sql
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer); CREATE TABLE matchez(winner integer, loser integer);
+     #+END_SRC
+**** extended version for extra credit
+***** sql
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); 
+     #+END_SRC
+
+     #+RESULTS:
+     | CREATE TABLE |
+     |--------------|
+     | CREATE TABLE |
+***** consider more than two tables
+ 1. use players for players stats
+ | player_id | player_name | wins | matches | omw |
+ 2. use matches to register 'result'
+    - include scores? in order to accomodate ties?
+ 3. use a winners table and a losers table
+ winners:
+ | match_id | player_id |
+
+ losers:
+ | match_id | player_id |
+*** 3. register some players
+**** original version where playerz have a 'name', wins and matches
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('a', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('b', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('c', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('d', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('e', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('f', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('g', 0, 0);
+INSERT INTO playerz (player_name, wins, matchez) VALUES ('h', 0, 0);
+     #+END_SRC
+**** INSERT players into playerz but provide an 'opponent matches wins' argument
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
+     #+END_SRC
+
+*** 4. make a query to update OMW when a Match is reported
+**** use update playerz 
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 from matchez where playerz.id = matchez.loser;
+     #+END_SRC
+*** 5. report some Matches to start building new functionality
+    - many sub steps to reporting Matches functionality
+    - ultimately will need an autoincrementing matchID column to
+      distinguish matches and rounds
+
+**** round 1 interactions
+***** reportMatches using SQL
+****** insert four round 1 matches
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 2);
+INSERT INTO matchez (winner, loser) VALUES (3, 4);
+INSERT INTO matchez (winner, loser) VALUES (5, 6);
+INSERT INTO matchez (winner, loser) VALUES (7, 8);
+       #+END_SRC
+
+       #+RESULTS:
+       | INSERT 0 1 |
+       |------------|
+       | INSERT 0 1 |
+       | INSERT 0 1 |
+       | INSERT 0 1 |
+
+****** after round1 all swissPairings will be:
+
+       #+RESULTS:
+       | id | player_name | id | player_name |
+       |----+-------------+----+-------------|
+       |  2 | b           |  8 | h           |
+       |  2 | b           |  4 | d           |
+       |  2 | b           |  6 | f           |
+       |  4 | d           |  8 | h           |
+       |  4 | d           |  6 | f           |
+       |  6 | f           |  8 | h           |
+       |  1 | a           |  3 | c           |
+       |  1 | a           |  5 | e           |
+       |  1 | a           |  7 | g           |
+       |  3 | c           |  5 | e           |
+       |  3 | c           |  7 | g           |
+       |  5 | e           |  7 | g           |
+***** update players wins after first round
+****** update just player 1 wins after first round
+       update the wins of players with an id in the 'winner' column
+
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+       #+END_SRC
+****** second round (match ids 5-9) update all winners
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 4 AND matchez.match_id < 9;
+       #+END_SRC
+
+       #+RESULTS:
+       | UPDATE 4 |
+       |----------|
+
+****** long, hard-coded approach in SQL
+       Is there a way in a query to not have to specify the exact player id,
+       but instead to use the id of anyone whose id appears in the winner column?
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 3;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 5;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 7;
+       #+END_SRC
+
+       #+RESULTS:
+       | UPDATE 1 |
+       |----------|
+       | UPDATE 1 |
+       | UPDATE 1 |
+
+       All at once
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 1;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 3;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 5;
+update playerz set wins = wins + 1 FROM matchez where playerz.id = 7;
+       #+END_SRC
+
+***** increment OMW for first round losers
+****** long, hard-coded approach in SQL
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 2;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 4;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 6;
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = 8;
+       #+END_SRC
+
+       #+RESULTS:
+       | UPDATE 1 |
+       |----------|
+       | UPDATE 1 |
+       | UPDATE 1 |
+       | UPDATE 1 |
+****** update OMW using match_ids
+       #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5;
+       #+END_SRC
+
+       #+RESULTS:
+       | UPDATE 4 |
+       |----------|
+****** rethink OMW
+******* views
+***** create view
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW player3_matches AS
+select * from matchez WHERE winner=3 or loser=3;
+      #+END_SRC
+
+      #+RESULTS:
+      | CREATE VIEW |
+      |-------------|
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player3_matches
+      #+END_SRC
+
+      #+RESULTS:
+      | match_id | winner | loser |
+      |----------+--------+-------|
+      |        2 |      3 |     4 |
+      |        5 |      1 |     3 |
+
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = sum(playerz.wins) FROM matchez where playerz.id = 
+      #+END_SRC
+
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select player_name
+      #+END_SRC
+      use new table for each player--opponents?
+***** add a match to everyplayer--use after a full set of matches reported
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+      #+END_SRC
+
+      #+RESULTS:
+      | UPDATE 8 |
+      |----------|
+
+**** after round 2
+***** insert round 2 results such that 'a' will play 'e' in the final
+      #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3);
+INSERT INTO matchez (winner, loser) VALUES (5, 7);
+INSERT INTO matchez (winner, loser) VALUES (2, 4);
+INSERT INTO matchez (winner, loser) VALUES (6, 8);
+      #+END_SRC
+
+      #+RESULTS:
+      | INSERT 0 1 |
+      |------------|
+      | INSERT 0 1 |
+      | INSERT 0 1 |
+      | INSERT 0 1 |
+
+      have to use results from swiss pairings
+*** select * playerz
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz;
+    #+END_SRC
+
+    #+RESULTS:
+    | id | player_name | wins | matchez | omw |
+    |----+-------------+------+---------+-----|
+    |  2 | b           |    0 |       0 |   0 |
+    |  4 | d           |    0 |       0 |   0 |
+    |  6 | f           |    0 |       0 |   0 |
+    |  8 | h           |    0 |       0 |   0 |
+    |  1 | a           |    1 |       0 |   0 |
+    |  3 | c           |    1 |       0 |   0 |
+    |  5 | e           |    1 |       0 |   0 |
+    |  7 | g           |    1 |       0 |   0 |
+
+*** select all matchez
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez
+    #+END_SRC
+
+    #+RESULTS:
+    | winner | loser |
+    |--------+-------|
+    |      1 |     2 |
+    |      3 |     4 |
+    |      5 |     6 |
+    |      7 |     8 |
+
+** old sequence of SQL commands
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:27
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_CATEGORY: extra-credit-features
+   :END:
+*** master list
+**** clear and setup and insert players
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz; DROP TABLE matchez; CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0); 
+     #+END_SRC
+ psql:/var/folders/0j/3x_y7ctd2n30r1ksp6k0rcvh0000gn/T/babel-1368vcw/sql-in-1368A7x:1: 
+ ERROR:  cannot drop table matchez because other objects depend on it
+ DETAIL:  view player3_matches depends on table matchez
+ HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+
+     #+RESULTS:
+     | DROP TABLE |
+     |------------|
+
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz; DROP TABLE matchez CASCADE; CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0); INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0); 
+     #+END_SRC
+
+     #+RESULTS:
+
+**** insert winner-loser pairs for first round; update wins, OMW, matches
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 2); INSERT INTO matchez (winner, loser) VALUES (3, 4); INSERT INTO matchez (winner, loser) VALUES (5, 6); INSERT INTO matchez (winner, loser) VALUES (7, 8); update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5; update playerz set matchez = matchez + 1;
+     #+END_SRC
+
+     #+RESULTS:
+     | INSERT 0 1 |
+     |------------|
+     | INSERT 0 1 |
+     | INSERT 0 1 |
+     | INSERT 0 1 |
+     | UPDATE 4   |
+     | UPDATE 4   |
+     | UPDATE 8   |
+**** insert second winner-loser pairs such that: 'a' will play 'e' in the final
+     #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3); INSERT INTO matchez (winner, loser) VALUES (5, 7); INSERT INTO matchez (winner, loser) VALUES (2, 4); INSERT INTO matchez (winner, loser) VALUES (6, 8);  update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 4 AND matchez.match_id < 9; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 4 AND matchez.match_id < 9; update playerz set matchez = matchez + 1;
+     #+END_SRC
+
+     #+RESULTS:
+     | INSERT 0 1 |
+     |------------|
+     | INSERT 0 1 |
+     | INSERT 0 1 |
+     | INSERT 0 1 |
+     | UPDATE 4   |
+     | UPDATE 4   |
+     | UPDATE 8   |
+
+*** 1. clear and setup tables again
+**** original
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz; DROP TABLE matchez;
+    #+END_SRC
+
+    #+RESULTS:
+    | DROP TABLE |
+    |------------|
+    | DROP TABLE |
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz(id serial PRIMARY KEY, player_name text not null, wins integer, matchez integer, OMW integer); CREATE TABLE matchez(match_id serial, winner integer, loser integer); update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5; update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5; update playerz set matchez = matchez + 1;
+    #+END_SRC
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3); INSERT INTO matchez (winner, loser) VALUES (5, 7); INSERT INTO matchez (winner, loser) VALUES (2, 4); INSERT INTO matchez (winner, loser) VALUES (6, 8); 
+
+    #+END_SRC
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+    #+END_SRC
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+**** rethinking table design
+
+*** 2. insert players into players table
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('a', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('b', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('c', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('d', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('e', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('f', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('g', 0, 0, 0);
+INSERT INTO playerz (player_name, wins, matchez, OMW) VALUES ('h', 0, 0, 0);
+    #+END_SRC
+
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+*** 3. insert first winner-loser pairs into matches table
+
+**** original
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 2);
+INSERT INTO matchez (winner, loser) VALUES (3, 4);
+INSERT INTO matchez (winner, loser) VALUES (5, 6);
+INSERT INTO matchez (winner, loser) VALUES (7, 8);
+    #+END_SRC
+
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+**** take the loser id and simply update matches for that player_id
+*** 4. update 'wins', 'OMW', and 'matches' for the affected players
+
+**** wins and matches
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id < 5;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 4 |
+    |----------|
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1;
+    #+END_SRC
+
+**** OMW requires a different query
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id < 5;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 4 |
+    |----------|
+
+*** 5. insert second winner-loser pairs into matches table
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3);
+INSERT INTO matchez (winner, loser) VALUES (5, 7);
+INSERT INTO matchez (winner, loser) VALUES (2, 4);
+INSERT INTO matchez (winner, loser) VALUES (6, 8);
+    #+END_SRC
+
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+*** 6. REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 4 and matchez.match_id < 9;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 3 |
+    |----------|
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 4 and matchez.match_id < 9;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 3 |
+    |----------|
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 8 |
+    |----------|
+
+*** 7. insert third winner-loser pairs, a-e championship
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 5); INSERT INTO matchez (winner, loser) VALUES (2, 6); INSERT INTO matchez (winner, loser) VALUES (3, 7); INSERT INTO matchez (winner, loser) VALUES (4, 8);
+    #+END_SRC
+
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+*** 9. REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 8 and matchez.match_id < 13;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 4 |
+    |----------|
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 8 and matchez.match_id < 13;
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 4 |
+    |----------|
+
+    #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+    #+END_SRC
+
+    #+RESULTS:
+    | UPDATE 8 |
+    |----------|
+
+** working on new
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:27
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_CATEGORY: extra-credit-features
+   :END:
+*** list (and learn) new table names
+ matchez
+ playerz
+ match_participants
+ score_results
+ player_recordz
+
+ views:
+ tournament_matches
+ player_tables
+
+*** view all tables, views, and column headers
+**** too many rows but
+ #+COMMENT: too many rows
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez, playerz, match_participants, score_results;
+ #+END_SRC
+
+ | match_id | tournament_name |
+ |----------+-----------------|
+ |          |                 |
+
+ | player_id | player_name |
+ |-----------+-------------|
+ |           |             |
+
+ | match_id | home | away |
+ |----------+------+------|
+ |          |      |      |
+
+ | match_id | home_score | away_score |
+ |----------+------------+------------|
+ |          |            |            |
+
+ | player_id | wins | losses | draws |
+ |-----------+------+--------+-------|
+**** tournament_matches view
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from tournament_matches
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | tournament_name | home | away | home_score | away_score |
+ |----------+-----------------+------+------+------------+------------|
+ |        1 | tennis          |    1 |    2 |         10 |          0 |
+ |        2 | tennis          |    3 |    4 |          0 |          0 |
+ |        3 | tennis          |    5 |    6 |          1 |          0 |
+ |        4 | tennis          |    7 |    8 |          0 |          1 |
+**** player_tables view
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_tables;
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | player_name | wins | losses | draws |
+ |-----------+-------------+------+--------+-------|
+ |         2 | b           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     1 |
+ |         4 | d           |    0 |      0 |     1 |
+ |         8 | h           |    0 |      1 |     0 |
+ |         1 | a           |    1 |      1 |     0 |
+ |         5 | e           |    1 |      1 |     0 |
+*** add values to tables
+**** insert into 'matchez' with tournament name
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (match_id, tournament_name) VALUES (1, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (2, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (3, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (4, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (5, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (6, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (7, 'tennis');
+INSERT INTO matchez (match_id, tournament_name) VALUES (8, 'tennis');
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+**** insert players into 'playerz' table
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name) VALUES ('a');
+INSERT INTO playerz (player_name) VALUES ('b');
+INSERT INTO playerz (player_name) VALUES ('c');
+INSERT INTO playerz (player_name) VALUES ('d');
+INSERT INTO playerz (player_name) VALUES ('e');
+INSERT INTO playerz (player_name) VALUES ('f');
+INSERT INTO playerz (player_name) VALUES ('g');
+INSERT INTO playerz (player_name) VALUES ('h');
+ #+END_SRC
+
+    #+RESULTS:
+    | INSERT 0 1 |
+    |------------|
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+    | INSERT 0 1 |
+
+ must follow...
+
+**** insert into 'player_recordz'
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO player_recordz (player_id) VALUES (1);
+INSERT INTO player_recordz (player_id) VALUES (2);
+INSERT INTO player_recordz (player_id) VALUES (3);
+INSERT INTO player_recordz (player_id) VALUES (4);
+INSERT INTO player_recordz (player_id) VALUES (5);
+INSERT INTO player_recordz (player_id) VALUES (6);
+INSERT INTO player_recordz (player_id) VALUES (7);
+INSERT INTO player_recordz (player_id) VALUES (8);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+
+
+ #+RESULTS:
+ | player_id | wins | losses | draws |
+ |-----------+------+--------+-------|
+ |         1 |    0 |      0 |     0 |
+
+**** insert into 'match_participants' with match ids and player ids
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO match_participants VALUES (1, 1, 2);
+INSERT INTO match_participants VALUES (2, 3, 4);
+INSERT INTO match_participants VALUES (3, 5, 6);
+INSERT INTO match_participants VALUES (4, 7, 8);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from match_participants;
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | home | away |
+ |----------+------+------|
+ |        1 |    1 |    2 |
+ |        2 |    3 |    4 |
+ |        3 |    5 |    6 |
+ |        4 |    7 |    8 |
+
+**** insert into score_results respective home-away scores for corresponding match_ids
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO score_results VALUES (1, 10, 0);
+INSERT INTO score_results VALUES (2, 0, 0);
+INSERT INTO score_results VALUES (3, 1, 0);
+INSERT INTO score_results VALUES (4, 0, 1);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from score_results;
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | home_score | away_score |
+ |----------+------------+------------|
+ |        1 |         10 |          0 |
+ |        2 |          0 |          0 |
+ |        3 |          1 |          0 |
+ |        4 |          0 |          1 |
+
+**** update player_recordz directly, still using tournament_matches view
+***** clear all
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET wins = 0, losses = 0, draws = 0;
+select * from player_tables;
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 8 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         1 | a           |    0 |      0 |     0 |
+ |         2 | b           |    0 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     0 |
+ |         4 | d           |    0 |      0 |     0 |
+ |         5 | e           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+
+***** away wins
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.home = player_id;
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 1 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         1 | a           |    0 |      0 |     0 |
+ |         2 | b           |    0 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     0 |
+ |         4 | d           |    0 |      0 |     0 |
+ |         5 | e           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+
+***** home wins
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET wins = wins + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.home = player_id;
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 2 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         2 | b           |    0 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     0 |
+ |         4 | d           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+ |         1 | a           |    1 |      0 |     0 |
+ |         5 | e           |    1 |      0 |     0 |
+
+***** draws
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET draws = draws + 1
+from tournament_matches as a 
+WHERE a.home_score = a.away_score
+AND (a.home = player_id OR a.away = player_id);
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 2 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         2 | b           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+ |         1 | a           |    1 |      0 |     0 |
+ |         5 | e           |    1 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     1 |
+ |         4 | d           |    0 |      0 |     1 |
+
+***** home losses
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score < a.away_score
+AND a.away = player_id;
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 1 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         2 | b           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+ |         1 | a           |    1 |      0 |     0 |
+ |         5 | e           |    1 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     1 |
+ |         4 | d           |    0 |      0 |     1 |
+ |         8 | h           |    0 |      1 |     0 |
+
+***** away losses
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET losses = losses + 1
+from tournament_matches as a 
+WHERE a.home_score > a.away_score
+AND a.home = player_id;
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 2 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         2 | b           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    1 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     1 |
+ |         4 | d           |    0 |      0 |     1 |
+ |         8 | h           |    0 |      1 |     0 |
+ |         1 | a           |    1 |      1 |     0 |
+ |         5 | e           |    1 |      1 |     0 |
+
+**** insert second winner-loser pairs into matches table
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 3);
+INSERT INTO matchez (winner, loser) VALUES (5, 7);
+INSERT INTO matchez (winner, loser) VALUES (2, 4);
+INSERT INTO matchez (winner, loser) VALUES (6, 8);
+ #+END_SRC
+
+   #+RESULTS:
+   | INSERT 0 1 |
+   |------------|
+   | INSERT 0 1 |
+   | INSERT 0 1 |
+   | INSERT 0 1 |
+
+**** REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+***** 
+  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 4 and matchez.match_id < 9;
+  #+END_SRC
+
+  #+RESULTS:
+  | UPDATE 3 |
+  |----------|
+
+  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 4 and matchez.match_id < 9;
+  #+END_SRC
+
+  #+RESULTS:
+  | UPDATE 3 |
+  |----------|
+
+  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+  #+END_SRC
+
+  #+RESULTS:
+  | UPDATE 8 |
+  |----------|
+
+***** insert third winner-loser pairs, a-e championship
+  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (winner, loser) VALUES (1, 5); INSERT INTO matchez (winner, loser) VALUES (2, 6); INSERT INTO matchez (winner, loser) VALUES (3, 7); INSERT INTO matchez (winner, loser) VALUES (4, 8);
+  #+END_SRC
+
+  #+RESULTS:
+  | INSERT 0 1 |
+  |------------|
+  | INSERT 0 1 |
+  | INSERT 0 1 |
+  | INSERT 0 1 |
+
+***** REPEAT 4--update 'wins', 'OMW', and 'matches' for the affected players
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set wins = wins + 1 FROM matchez where playerz.id = matchez.winner AND matchez.match_id > 8 and matchez.match_id < 13;
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 4 |
+ |----------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set OMW = OMW + 1 FROM matchez where playerz.id = matchez.loser AND matchez.match_id > 8 and matchez.match_id < 13;
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 4 |
+ |----------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+update playerz set matchez = matchez + 1
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 8 |
+ |----------|
+
+*** work on creating tables
+**** matches (are unique events)
+ matches--should have a column showing that there was a clear winner or not?
+ | match_id (primary) | tournament_name |
+ |--------------------+-----------------|
+ |                  1 | tennis          |
+ |                  2 | soccer          |
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE matchez(
+       match_id serial PRIMARY KEY,
+       tournament_name text not null); 
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+**** playerz
+ players
+ | player_id (primary key) | player_name |
+ |-------------------------+-------------|
+ |                       1 | 'a'         |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+**** match_participants
+ match participants
+ | match_id | home_participant | away_participant |
+ |----------+------------------+------------------|
+ |        1 |                1 |                2 |
+ |        2 |                3 |                4 |
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE match_participants(
+       match_id int REFERENCES matchez (match_id),
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id)
+);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+**** score_results
+ winners
+ | match_id (foreign key) | home_score | away_score |
+ |------------------------+------------+------------|
+ |                      1 |         10 |          0 |
+ |                      2 |          0 |          0 |
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE score_results (
+       match_id int REFERENCES matchez (match_id),
+       home_score int,
+       away_score int);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+
+
+ #+RESULTS:
+ | match_id | home_score | away_score |
+ |----------+------------+------------|
+ |        1 |         10 |          0 |
+ |        2 |          0 |          0 |
+ |        3 |          1 |          0 |
+ |        4 |          0 |          1 |
+
+**** player_recordz
+***** original (no OMW)
+ players match data
+ | player_id (foreign key) | wins | losses | draws |
+ |-------------------------+------+--------+-------|
+ |                       1 |    1 |      0 |     0 |
+ |                       2 |    0 |      0 |     1 |
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_recordz
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | wins | losses | draws |
+ |-----------+------+--------+-------|
+ |         2 |    0 |      0 |     0 |
+ |         3 |    0 |      0 |     0 |
+ |         4 |    0 |      0 |     0 |
+ |         6 |    0 |      0 |     0 |
+ |         7 |    0 |      0 |     0 |
+ |         8 |    0 |      0 |     0 |
+ |         1 |    2 |      0 |     0 |
+ |         5 |    2 |      0 |     0 |
+
+***** player_recordz with OMW
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OPW int DEFAULT);
+ #+END_SRC
+
+ #+RESULTS:
+
+**** create point totals
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_recordz;
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | wins | losses | draws |
+ |-----------+------+--------+-------|
+ |         1 |    2 |      0 |     0 |
+ |         2 |    1 |      1 |     0 |
+ |         4 |    1 |      0 |     1 |
+ |         5 |    1 |      1 |     0 |
+ |         6 |    0 |      2 |     0 |
+ |         8 |    1 |      1 |     0 |
+ |         7 |    0 |      1 |     1 |
+ |         3 |    0 |      0 |     2 |
+
+**** players faced?
+ | player_id (foreign) | opponent_player_id |
+ |---------------------+--------------------|
+ |                   1 | 2                  |
+*** work on using views for extended joins
+**** update views with a trigger--see created views
+***** simple update statements
+****** too simple--update player_tables
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_tables SET wins = wins + 1;
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 8 |
+ |----------|
+****** too complex--update player_tables
+ so, everytime you execute any "UPDATE player_tables", no matter what
+ clauses you call it with, you will actually execute the trigger
+ function you defined.
+
+ Compare this this statement with the one that follows it:
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_tables SET wins = wins + 1;
+ #+END_SRC
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_tables;
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | player_name | wins | losses | draws |
+ |-----------+-------------+------+--------+-------|
+ |         1 | a           |    0 |      0 |     0 |
+ |         2 | b           |    0 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     0 |
+ |         4 | d           |    0 |      0 |     0 |
+ |         5 | e           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+****** most straightforward--update (reset) player_recordz directly
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz SET wins = 0, losses = 0, draws = 0;
+select * from player_tables;
+ #+END_SRC
+
+ #+RESULTS:
+ |  UPDATE 8 |             |      |        |       |
+ |-----------+-------------+------+--------+-------|
+ | player_id | player_name | wins | losses | draws |
+ |         1 | a           |    0 |      0 |     0 |
+ |         2 | b           |    0 |      0 |     0 |
+ |         3 | c           |    0 |      0 |     1 |
+ |         4 | d           |    0 |      0 |     0 |
+ |         5 | e           |    0 |      0 |     0 |
+ |         6 | f           |    0 |      0 |     0 |
+ |         7 | g           |    0 |      0 |     0 |
+ |         8 | h           |    0 |      0 |     0 |
+****** use "away victories"
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_tables
+SET wins = wins + 1
+from tournament_matches as a
+WHERE a.home_score < a.away_score
+AND a.home = player_id;
+
+select * from player_tables
+ #+END_SRC
+
+ #+RESULTS:
+
+***** create view_update_row() function
+****** original
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION view_update_row() RETURNS trigger as $view_update_row$
+       BEGIN
+	UPDATE player_recordz
+	SET wins = wins + 1 from tournament_matches as a
+	WHERE a.home_score > a.away_score
+	AND a.home = player_id;
+	RETURN NEW;
+	END;
+	$view_update_row$ LANGUAGE plpgsql;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+****** refactor to do less in the trigger
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION view_update_row() RETURNS trigger as $view_update_row$
+       BEGIN
+	UPDATE player_recordz
+	SET wins = wins + 1;
+	RETURN NEW;
+	END;
+	$view_update_row$ LANGUAGE plpgsql;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+****** refactor to use conditional
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION view_update_row() RETURNS trigger as $view_update_row$
+       BEGIN
+       IF a.home_score < a.away_score FROM score_results as a THEN
+	UPDATE player_recordz
+	SET wins = wins + 1;
+	END IF;
+	RETURN NEW;
+	END;
+	$view_update_row$ LANGUAGE plpgsql;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+***** create trigger
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE trigger view_update
+INSTEAD OF UPDATE on player_tables
+FOR EACH ROW
+EXECUTE PROCEDURE view_update_row();
+
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TRIGGER |
+ |----------------|
+
+***** drop trigger (needed when tinkering with trigger)
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TRIGGER view_update on player_tables
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TRIGGER |
+ |--------------|
+
+**** actually to it all without fucking any triggers
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION view_update_row() RETURNS trigger as $view_update_row$
+       BEGIN
+	UPDATE player_recordz
+	SET wins = wins + 1 from tournament_matches as a
+	WHERE a.home_score > a.away_score
+	AND a.home = player_id;
+	RETURN NEW;
+	END;
+	$view_update_row$ LANGUAGE plpgsql;
+
+CREATE trigger view_update
+INSTEAD OF UPDATE on player_tables
+FOR EACH ROW
+EXECUTE PROCEDURE view_update_row();
+
+ #+END_SRC
+*** develop OMW
+**** second round matches and scores
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO match_participants VALUES (5, 1, 5);
+INSERT INTO match_participants VALUES (6, 2, 6);
+INSERT INTO match_participants VALUES (7, 3, 7);
+INSERT INTO match_participants VALUES (8, 4, 8);
+INSERT INTO score_results VALUES (5, 10, 0);
+INSERT INTO score_results VALUES (6, 10, 0);
+INSERT INTO score_results VALUES (7, 0, 0);
+INSERT INTO score_results VALUES (8, 1, 0);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+*** work on swissPairings
+**** original query
+**** original query
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT a.id, a.player_name, b.id, b.player_name
+
+FROM players as a, players as b
+
+WHERE a.wins = b.wins
+
+AND a.player_name != b.player_name
+
+AND a.id < b.id
+ #+END_SRC
+**** basic swissPairings query
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT a.player_id, b.player_id
+
+FROM player_recordz as a, player_recordz as b
+
+WHERE a.wins = b.wins AND a.losses = b.losses
+
+AND a.player_id < b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | player_id |
+ |-----------+-----------|
+ |         3 |         4 |
+ |         6 |         7 |
+ |         6 |         8 |
+ |         2 |         6 |
+ |         2 |         7 |
+ |         2 |         8 |
+ |         7 |         8 |
+ |         1 |         5 |
+
+** use one org-block
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:28
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_CATEGORY: extra-credit-features
+   :END:
+*** drop and create tables and views--add 'points' as standing criteria
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+ | DROP TABLE |
+ | DROP TABLE |
+ | DROP TABLE |
+ | DROP TABLE |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE matchez(
+       match_id serial PRIMARY KEY,
+       tournament_name text not null,
+       round int); 
+
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null);
+
+CREATE TABLE match_participants(
+       match_id int REFERENCES matchez (match_id),
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id));
+
+CREATE TABLE score_results (
+       match_id int REFERENCES matchez (match_id),
+       home_score int,
+       away_score int);
+
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OMW int DEFAULT 0);
+
+CREATE VIEW tournament_matches AS
+select a.match_id, a.tournament_name, a.round, b.home, b.away, c.home_score, c.away_score
+from matchez as a, match_participants as b, score_results as c
+where a.match_id = b.match_id
+AND b.match_id = c.match_id;
+
+CREATE VIEW player_tables AS
+select a.player_id, a.player_name, b.wins, b.losses, b.draws, b.points, b.OMW
+from playerz as a, player_recordz as b
+where a.player_id = b.player_id;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE VIEW  |
+ | CREATE VIEW  |
+
+*** initialize tables
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (2, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (3, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (4, 'tennis', 1);
+
+
+INSERT INTO playerz (player_name) VALUES ('a');
+INSERT INTO playerz (player_name) VALUES ('b');
+INSERT INTO playerz (player_name) VALUES ('c');
+INSERT INTO playerz (player_name) VALUES ('d');
+INSERT INTO playerz (player_name) VALUES ('e');
+INSERT INTO playerz (player_name) VALUES ('f');
+INSERT INTO playerz (player_name) VALUES ('g');
+INSERT INTO playerz (player_name) VALUES ('h');
+
+INSERT INTO player_recordz (player_id) VALUES (1);
+-- INSERT INTO player_recordz (player_id) VALUES IN [1, 2];
+INSERT INTO player_recordz (player_id) VALUES (2);
+INSERT INTO player_recordz (player_id) VALUES (3);
+INSERT INTO player_recordz (player_id) VALUES (4);
+INSERT INTO player_recordz (player_id) VALUES (5);
+INSERT INTO player_recordz (player_id) VALUES (6);
+INSERT INTO player_recordz (player_id) VALUES (7);
+INSERT INTO player_recordz (player_id) VALUES (8);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+*** record first round results
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO match_participants VALUES (1, 1, 2);
+INSERT INTO match_participants VALUES (2, 3, 4);
+INSERT INTO match_participants VALUES (3, 5, 6);
+INSERT INTO match_participants VALUES (4, 7, 8);
+
+INSERT INTO score_results VALUES (1, 10, 0);
+INSERT INTO score_results VALUES (2, 0, 0);
+INSERT INTO score_results VALUES (3, 1, 0);
+INSERT INTO score_results VALUES (4, 0, 1);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+*** log first round results into player records
+**** create SQL functions for encapsulation of logging updates
+***** log_home_losses
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE log_home_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+
+***** log_home_wins()
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE log_home_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+***** log_away_losses
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE log_away_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+***** log_away_wins
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE log_away_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+***** log_draws
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE log_draws(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+**** gather all logging functions in one block
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+
+**** use functions to log all first round stats
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT log_home_losses(1);
+SELECT log_home_wins(1);
+SELECT log_away_losses(1);
+SELECT log_away_wins(1);
+SELECT log_draws(1);
+ #+END_SRC
+
+ #+RESULTS:
+ | log_home_losses |
+ |-----------------|
+ |                 |
+ | log_home_wins   |
+ |                 |
+ | log_away_losses |
+ |                 |
+ | log_away_wins   |
+ |                 |
+ | log_draws       |
+ |                 |
+**** calculate points total for weighted wins + draws
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz 
+SET points = (wins * 3) + draws;
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 8 |
+ |----------|
+
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE player_recordz
+SET OMW = 
+ #+END_SRC
+ #+RESULTS:
+ | UPDATE 8 |
+ |----------|
+*** add second round data
+**** log all results and standings all at once
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (5, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (6, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (7, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (8, 'tennis', 2);
+INSERT INTO match_participants VALUES (5, 1, 5);
+INSERT INTO match_participants VALUES (6, 2, 6);
+INSERT INTO match_participants VALUES (7, 3, 7);
+INSERT INTO match_participants VALUES (8, 4, 8);
+INSERT INTO score_results VALUES (5, 10, 0);
+INSERT INTO score_results VALUES (6, 10, 0);
+INSERT INTO score_results VALUES (7, 0, 0);
+INSERT INTO score_results VALUES (8, 1, 0);
+
+SELECT log_home_losses(2);
+SELECT log_home_wins(2);
+SELECT log_away_losses(2);
+SELECT log_away_wins(2);
+SELECT log_draws(2);
+ #+END_SRC
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1      |
+ |-----------------|
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | INSERT 0 1      |
+ | log_home_losses |
+ |                 |
+ | log_home_wins   |
+ |                 |
+ | log_away_losses |
+ |                 |
+ | log_away_wins   |
+ |                 |
+ | log_draws       |
+ |                 |
+**** work on points and OMW functions and queries
+***** display points--INNER JOIN syntax
+ who played team 1 and how many points have achieved in the tournament?
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select DISTINCT a.away, b.points from match_participants as a INNER JOIN player_tables as b
+ON a.away = b.player_id 
+where home = 1 --OR away = 1
+--and a. away = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | away | points |
+ |------+--------|
+ |    2 |      0 |
+
+***** display points--implicity JOIN
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select DISTINCT a.away, b.points from match_participants as a, player_tables as b
+where (home = 1 OR away = 1) AND a.away = b.player_id 
+--and a. away = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | away | points |
+ |------+--------|
+ |    2 |      0 |
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.home, b.points from tournament_matches as a, player_tables as b
+where a.home = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | home | points |
+ |------+--------|
+ |    1 |      3 |
+ |    3 |      1 |
+ |    5 |      3 |
+ |    7 |      0 |
+ |    1 |      3 |
+ |    2 |      0 |
+ |    3 |      1 |
+ |    4 |      1 |
+
+
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.home, a.away, b.points from tournament_matches as a, player_tables as b
+where a.home = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | home | away | points |
+ |------+------+--------|
+ |    1 |    2 |      3 |
+ |    3 |    4 |      1 |
+ |    5 |    6 |      3 |
+ |    7 |    8 |      0 |
+ |    1 |    5 |      3 |
+ |    2 |    6 |      0 |
+ |    3 |    7 |      1 |
+ |    4 |    8 |      1 |
+
+***** (match_id, home and away ids and points) accumulated by team designated as home
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.match_id, a.home, a.away, b.points from tournament_matches as a, player_tables as b
+where a.home = b.player_id -- AND a.away = b.player_id
+ #+END_SRC
+
+
+ #+RESULTS:
+ | match_id | home | away | points |
+ |----------+------+------+--------|
+ |        1 |    1 |    2 |      6 |
+ |        2 |    3 |    4 |      2 |
+ |        3 |    5 |    6 |      3 |
+ |        4 |    7 |    8 |      1 |
+ |        5 |    1 |    5 |      6 |
+ |        6 |    2 |    6 |      3 |
+ |        7 |    3 |    7 |      2 |
+ |        8 |    4 |    8 |      4 |
+
+***** (match_id, home and away ids and points) accumulated by team designated as away
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.match_id, a.home, a.away, b.points from tournament_matches as a, player_tables as b
+where a.away = b.player_id -- AND a.away = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | home | away | points |
+ |----------+------+------+--------|
+ |        1 |    1 |    2 |      3 |
+ |        2 |    3 |    4 |      4 |
+ |        3 |    5 |    6 |      0 |
+ |        4 |    7 |    8 |      3 |
+ |        5 |    1 |    5 |      3 |
+ |        6 |    2 |    6 |      0 |
+ |        7 |    3 |    7 |      1 |
+ |        8 |    4 |    8 |      3 |
+
+***** points and wins for both teams by match
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.match_id, a.home, a.away, b.points as home_points, c.points as away_points, 
+b.wins as home_wins, c.wins as away_wins from tournament_matches as a, player_tables as b, player_tables as c
+where a.home = b.player_id AND a.away = c.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | home | away | home_points | away_points | home_wins | away_wins |
+ |----------+------+------+-------------+-------------+-----------+-----------|
+ |        1 |    1 |    2 |           6 |           3 |         2 |         1 |
+ |        2 |    3 |    4 |           2 |           4 |         0 |         1 |
+ |        3 |    5 |    6 |           3 |           0 |         1 |         0 |
+ |        4 |    7 |    8 |           1 |           3 |         0 |         1 |
+ |        5 |    1 |    5 |           6 |           3 |         2 |         1 |
+ |        6 |    2 |    6 |           3 |           0 |         1 |         0 |
+ |        7 |    3 |    7 |           2 |           1 |         0 |         0 |
+ |        8 |    4 |    8 |           4 |           3 |         1 |         1 |
+
+**** incremental development of OMW
+***** find match_id for any 'player two' game
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.match_id
+from tournament_matches as a
+where a.home = 2 OR a.away = 2
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id |
+ |----------|
+ |        1 |
+ |        6 |
+***** create function that finds match_ids for any player_id
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION player_matchids(integer) RETURNS TABLE (match_id int) AS $$
+       select a.match_id from match_participants as a
+       where home = $1 OR away = $1;
+       $$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_matchids(3)
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id |
+ |----------|
+ |        2 |
+ |        7 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP FUNCTION player_matchids(integer);
+ #+END_SRC
+***** create a view for player 2
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW player_2_matches AS
+select * from player_matchids(2);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE VIEW |
+ |-------------|
+***** use a CASE for finding player 2 matches
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select *,
+       CASE WHEN a.away = 2 THEN a.home
+       	    WHEN a.home = 2 THEN a.away
+	    ELSE NULL
+	END as opposing_player
+FROM match_participants as a;
+
+	    
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | home | away | opposing_player |
+ |----------+------+------+-----------------|
+ |        1 |    1 |    2 |               1 |
+ |        2 |    3 |    4 |                 |
+ |        3 |    5 |    6 |                 |
+ |        4 |    7 |    8 |                 |
+ |        5 |    1 |    5 |                 |
+ |        6 |    2 |    6 |               6 |
+ |        7 |    3 |    7 |                 |
+ |        8 |    4 |    8 |                 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT a,
+       CASE WHEN a=1 THEN 'one'
+            WHEN a=2 THEN 'two'
+            ELSE 'other'
+       END
+    FROM test;
+ #+END_SRC
+***** encapsulate player 2 opposition as a VIEW
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW player_2s_opposing_case as
+select *,
+       CASE WHEN (a.away = 2) THEN a.home
+       	    WHEN a.home = 2 THEN a.away
+	    ELSE NULL
+	END as opposing_player
+FROM match_participants as a;
+
+	    
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE VIEW |
+ |-------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW player_2s_opposing_short as
+select match_id, 
+       CASE WHEN (a.away = 2) THEN a.home
+       	    WHEN a.home = 2 THEN a.away
+	    ELSE NULL
+	END as opposing_player
+FROM match_participants as a;
+
+	    
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE VIEW |
+ |-------------|
+***** finally, player2's opposition's points
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select opposing_player, a.points FROM player_2s_opposing_short JOIN player_tables as A
+ON opposing_player = player_id
+WHERE opposing_player IS NOT NULL;
+ #+END_SRC
+
+ #+RESULTS:
+ | opposing_player | points |
+ |-----------------+--------|
+ |               1 |      6 |
+ |               6 |      0 |
+**** OMW work
+***** player4
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW player4_OMW as
+select opposing_player, a.points FROM players_matches(4) JOIN player_tables as A
+ON opposing_player = player_id
+WHERE opposing_player IS NOT NULL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE VIEW |
+ |-------------|
+
+
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * FROM player_OMW(1)
+ #+END_SRC
+
+ #+RESULTS:
+ | opponent | opponent_omw |
+ |----------+--------------|
+ |        2 |            3 |
+ |        5 |            3 |
+
+***** use coalesce with player_2 view
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select match_id, coalesce(opposing_player)
+FROM player_2s_opposing_case;
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | coalesce |
+ |----------+----------|
+ |        1 |        1 |
+ |        2 |          |
+ |        3 |          |
+ |        4 |          |
+ |        5 |          |
+ |        6 |        6 |
+ |        7 |          |
+ |        8 |          |
+***** long way to get something you already have
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.home, a.away from player_2_matches as b INNER JOIN match_participants as a 
+ON a.match_id = b.match_id;
+ #+END_SRC
+
+ #+RESULTS:
+ | home | away |
+ |------+------|
+ |    1 |    2 |
+ |    2 |    6 |
+***** find  such that != player_id for the match_id resulting from a "player 2" match result
+
+ #+RESULTS:
+ | match_id |
+ |----------|
+ |        1 |
+ |        5 |
+ | match_id |
+ |        1 |
+ |        6 |
+
+***** select home and away columns wherever player 2 is involved
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.home, a.away
+from tournament_matches as a, player_tables as b
+where (a.home = 2 OR a.away = 2) AND b.player_id = 2
+ #+END_SRC
+
+ #+RESULTS:
+ | home | away |
+ |------+------|
+ |    1 |    2 |
+ |    2 |    6 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select match_id, b.player_id, points
+from tournament_matches as a JOIN player_tables as b
+ON a.home = b.player_id OR a.away = b.player_id
+WHERE (a.home = 2 OR a.away = 2) -- AND b.player_id != 2
+ #+END_SRC
+
+ #+RESULTS:
+ | match_id | player_id | points |
+ |----------+-----------+--------|
+ |        1 |         2 |      3 |
+ |        1 |         1 |      6 |
+ |        6 |         6 |      0 |
+ |        6 |         2 |      3 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.home, a.away
+from tournament_matches as a, player_tables as b
+WHERE a.home = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | home | away |
+ |------+------|
+ |    1 |    2 |
+ |    3 |    4 |
+ |    5 |    6 |
+ |    7 |    8 |
+ |    1 |    5 |
+ |    2 |    6 |
+ |    3 |    7 |
+ |    4 |    8 |
+
+***** create sum_OMW function
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION sum_OMW(integer) RETURNS bigint AS $$
+       select sum(b.points) from match_participants as a, player_tables as b
+       where (home = $1 OR away = $1) AND a.away = b.player_id;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+***** use sum_OMW function
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select sum_OMW(1);
+select sum_OMW(2);
+ #+END_SRC
+
+ #+RESULTS:
+ | sum_omw |
+ |---------|
+ |       0 |
+ | sum_omw |
+ |       0 |
+***** drop sum_omw
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP FUNCTION sum_OMW(integer);
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP FUNCTION |
+ |---------------|
+***** create avg OMW function
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION avg_OMW(integer) RETURNS numeric AS $$
+       select round(avg(b.points), 2) from match_participants as a, player_tables as b
+       where (home = $1 OR away = $1) AND a.away = b.player_id;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+***** define avg_OMW functions for each player
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select avg_OMW(2);
+select avg_OMW(6);
+select avg_OMW(7);
+ #+END_SRC
+
+ #+RESULTS:
+ | avg_omw |
+ |---------|
+ |    0.00 |
+ | avg_omw |
+ |    0.00 |
+ | avg_omw |
+ |    3.00 |
+
+***** call avg_OMW
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.player_id, avg_OMW(1) FROM playerz as a
+WHERE a.player_id = 1;
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | avg_omw |
+ |-----------+---------|
+ |         1 |    0.00 |
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.player_id, avg_OMW(2) FROM playerz as a
+WHERE a.player_id = 2;
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | avg_omw |
+ |-----------+---------|
+ |         2 |    1.50 |
+**** OMW functions
+***** create function players_matches
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
+       select 
+       	      CASE WHEN a.away = $1 THEN a.home
+	      	   WHEN a.home = $1 THEN a.away
+		   ELSE NULL
+		END as opposing_player
+FROM match_participants as a;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * FROM players_matches(4);
+ #+END_SRC
+
+ #+RESULTS:
+ | opposing_player |
+ |-----------------|
+ |                 |
+ |               3 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |               8 |
+***** playerN_OMW
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
+ON opposing_player = player_id
+WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+ #+END_SRC
+***** 
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_OMW(1);
+select * from player_OMW(2);
+select * from player_OMW(3);
+select * from player_OMW(4);
+select * from player_OMW(5);
+select * from player_OMW(6);
+select * from player_OMW(7);
+select * from player_OMW(8);
+ #+END_SRC
+
+ #+RESULTS:
+ | opponent | opponent_omw |
+ |----------+--------------|
+ |        2 |            3 |
+ |        4 |            3 |
+ | opponent | opponent_omw |
+ |        1 |            0 |
+ |        3 |            6 |
+ | opponent | opponent_omw |
+ |        2 |            3 |
+ |        4 |            3 |
+ | opponent | opponent_omw |
+ |        1 |            0 |
+ |        3 |            6 |
+ | opponent | opponent_omw |
+ |        6 |            6 |
+ |        8 |            3 |
+ | opponent | opponent_omw |
+ |        5 |            0 |
+ |        7 |            3 |
+ | opponent | opponent_omw |
+ |        6 |            6 |
+ |        8 |            3 |
+ | opponent | opponent_omw |
+ |        5 |            0 |
+ |        7 |            3 |
+
+
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 1 |        2 |            3 |
+ |   |        5 |            3 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 2 |        1 |            6 |
+ |   |        6 |            0 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 3 |        4 |            4 |
+ |   |        7 |            1 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 4 |        8 |            3 |
+ |   |        3 |            2 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 5 |        1 |            6 |
+ |   |        6 |            0 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 6 |        2 |            3 |
+ |   |        5 |            3 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 7 |        8 |            3 |
+ |   |        3 |            2 |
+ |---+----------+--------------|
+ |   | opponent | opponent_omw |
+ |---+----------+--------------|
+ | 8 |        4 |            4 |
+ |   |        7 |            1 |
+
+**** call built-in SQL avg function; query for use by avg_OMW
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select a.player_id, round(avg(a.points), 2) from player_tables as a
+GROUP BY a.player_id
+ORDER BY a.player_id;
+--and a. away = b.player_id
+ #+END_SRC
+
+ #+RESULTS:
+ | player_id | round |
+ |-----------+-------|
+ |         1 |  3.00 |
+ |         2 |  0.00 |
+ |         3 |  1.00 |
+ |         4 |  1.00 |
+ |         5 |  3.00 |
+ |         6 |  0.00 |
+ |         7 |  0.00 |
+ |         8 |  3.00 |
+
+**** first avg_OMW function?
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION avg_OMW_with_player(x int, OUT player_id numeric, OUT avg_OMW numeric)
+       AS $$
+       select b.player_id, round(avg(b.points), 2)
+       from match_participants as a, player_tables as b
+       where (home = $1 OR away = $1) AND a.away = b.player_id;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+** use udacity 8-player setup
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-03-29 Tue 11:28
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/extra-credit-features.org
+   :ARCHIVE_CATEGORY: extra-credit-features
+   :END:
+*** all used functions and setups
+**** drop tables
+***** all at once
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+ | DROP TABLE |
+ | DROP TABLE |
+ | DROP TABLE |
+ | DROP TABLE |
+***** in series--for debugging
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE playerz CASCADE;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE matchez CASCADE; 
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE match_participants CASCADE; 
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE score_results;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TABLE player_recordz;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TABLE |
+ |------------|
+
+**** create tables and views
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE matchez(
+       match_id serial PRIMARY KEY,
+       tournament_name text not null,
+       round int); 
+
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null);
+
+CREATE TABLE match_participants(
+       match_id int REFERENCES matchez (match_id),
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id));
+
+CREATE TABLE score_results (
+       match_id int REFERENCES matchez (match_id),
+       home_score int,
+       away_score int);
+
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OMW int DEFAULT 0);
+
+CREATE VIEW tournament_matches AS
+select a.match_id, a.tournament_name, a.round, b.home, b.away, c.home_score, c.away_score
+from matchez as a, match_participants as b, score_results as c
+where a.match_id = b.match_id
+AND b.match_id = c.match_id;
+
+CREATE VIEW player_tables AS
+select a.player_id, a.player_name, b.wins, b.losses, b.draws, b.points, b.OMW
+from playerz as a, player_recordz as b
+where a.player_id = b.player_id;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE TABLE |
+ | CREATE VIEW  |
+ | CREATE VIEW  |
+
+**** create logging functions
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION update_points() RETURNS VOID AS $$
+       UPDATE player_recordz 
+       SET points = (wins * 3) + draws;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+ | CREATE FUNCTION |
+**** OMW functions
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
+       select 
+       	      CASE WHEN a.away = $1 THEN a.home
+	      	   WHEN a.home = $1 THEN a.away
+		   ELSE NULL
+		END as opposing_player
+FROM match_participants as a;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+       select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+ | CREATE FUNCTION |
+
+*** initialize tables
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (2, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (3, 'tennis', 1);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (4, 'tennis', 1);
+
+
+INSERT INTO playerz (player_name) VALUES ('a');
+INSERT INTO playerz (player_name) VALUES ('b');
+INSERT INTO playerz (player_name) VALUES ('c');
+INSERT INTO playerz (player_name) VALUES ('d');
+INSERT INTO playerz (player_name) VALUES ('e');
+INSERT INTO playerz (player_name) VALUES ('f');
+INSERT INTO playerz (player_name) VALUES ('g');
+INSERT INTO playerz (player_name) VALUES ('h');
+
+INSERT INTO player_recordz (player_id) VALUES (1);
+-- INSERT INTO player_recordz (player_id) VALUES IN [1, 2];
+INSERT INTO player_recordz (player_id) VALUES (2);
+INSERT INTO player_recordz (player_id) VALUES (3);
+INSERT INTO player_recordz (player_id) VALUES (4);
+INSERT INTO player_recordz (player_id) VALUES (5);
+INSERT INTO player_recordz (player_id) VALUES (6);
+INSERT INTO player_recordz (player_id) VALUES (7);
+INSERT INTO player_recordz (player_id) VALUES (8);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+*** log results into player_recordz
+**** use trigger
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_records_on_insert_scores() RETURNS trigger as $log_records_on_insert_scores$
+       BEGIN
+       SELECT log_home_losses(CAST (TG_ARGV[0] AS integer));
+       SELECT log_home_wins(TG_ARGV[0]);
+       SELECT log_away_losses(TG_ARGV[0]);
+       SELECT log_away_wins(TG_ARGV[0]);
+       SELECT log_draws(TG_ARGV[0]);
+       SELECT update_points();
+       RETURN NEW;
+       END;
+       $log_records_on_insert_scores$ LANGUAGE plpgsql;
+
+
+CREATE trigger log_records_first_round
+AFTER INSERT on score_results
+FOR EACH STATEMENT
+EXECUTE PROCEDURE log_records_on_insert_scores('1');
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE FUNCTION |
+ |-----------------|
+
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP TRIGGER log_records_first_round on score_results;
+ #+END_SRC
+
+ #+RESULTS:
+ | DROP TRIGGER |
+ |--------------|
+
+**** handle logging explicitly
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT log_home_losses(1);
+SELECT log_home_wins(1);
+SELECT log_away_losses(1);
+SELECT log_away_wins(1);
+SELECT log_draws(1);
+SELECT update_points();
+ #+END_SRC
+
+ #+RESULTS:
+ | UPDATE 8 |
+ |----------|
+
+*** record first round results
+ Make a trigger for inserting into score_results that use log_etc functions
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO match_participants VALUES (1, 1, 2);
+INSERT INTO match_participants VALUES (2, 3, 4);
+INSERT INTO match_participants VALUES (3, 5, 6);
+INSERT INTO match_participants VALUES (4, 7, 8);
+
+INSERT INTO score_results VALUES (1, 0, 1);
+INSERT INTO score_results VALUES (2, 1, 0);
+INSERT INTO score_results VALUES (3, 0, 1);
+INSERT INTO score_results VALUES (4, 1, 0);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+ | INSERT 0 1 |
+
+*** round two data
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (5, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (6, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (7, 'tennis', 2);
+INSERT INTO matchez (match_id, tournament_name, round) VALUES (8, 'tennis', 2);
+INSERT INTO match_participants VALUES (5, 2, 3);
+INSERT INTO match_participants VALUES (6, 6, 7);
+INSERT INTO match_participants VALUES (7, 1, 4);
+INSERT INTO match_participants VALUES (8, 5, 8);
+INSERT INTO score_results VALUES (5, 0, 10);
+INSERT INTO score_results VALUES (6, 10, 0);
+INSERT INTO score_results VALUES (7, 0, 10);
+INSERT INTO score_results VALUES (8, 1, 10);
+
+SELECT log_home_losses(2);
+SELECT log_home_wins(2);
+SELECT log_away_losses(2);
+SELECT log_away_wins(2);
+SELECT log_draws(2);
+ #+END_SRC
+
