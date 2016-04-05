@@ -833,3 +833,685 @@ def swissPairings():
     return dbExecuteRetrievalWrapper_allrows(query)
 
 #+END_SRC
+
+** work in development
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-04-05 Tue 17:34
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/merge-final-project-and-extra-credit.org
+   :ARCHIVE_CATEGORY: merge-final-project-and-extra-credit
+   :END:
+*** all Python definitions in one block
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+def new_connect(dbname):
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()    
+    return rows
+
+
+def new_deleteTable(dbname, table_name):
+    tb_name = table_name
+    sql_keywords = """DELETE FROM """
+    query = sql_keywords + tb_name
+    table_nm = (table_name,)
+    new_dbExecuteWrapper(query, dbname)
+
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+
+
+def insert_statement_string(table_name):
+    tb_name = table_name
+    sql_keywords = """INSERT INTO """
+    insert_statement = sql_keywords + tb_name
+
+def update_statement_string(table_name):
+    tb_name = table_name
+    sql_keywords = """UPDATE """
+    update_statement = sql_keywords + tb_name
+
+def keyword_statement_string(table_name, sql_keyword):
+    tb_name = table_name
+    sql_keywords = sql_keyword + """ """
+    update_statement = sql_keywords + tb_name + """ """
+    return update_statement
+
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name, wins, matchez)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
+
+# refactor to order by OMW for second column
+def new_playerStandings(table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT id, player_name, wins, matchez " +
+             from_statement + "ORDER BY wins DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows("tourney_practice", query)
+
+
+def new_reportMatch(dbname, table1, table2, winner, loser):
+# why is table2 first in something named q1?
+# q1 inserts into log of match events
+# q2 is an updated that increment wins and match appearances
+
+    q1_insert = keyword_statement_string(table2, """INSERT INTO""")
+    q2_update = keyword_statement_string(table1, """UPDATE""")
+    q2_from = keyword_statement_string(table2, """FROM""")
+    query1 = (q1_insert + "VALUES (%s, %s) ;")
+    query2 = (q2_update + "SET wins = wins + 1" + 
+              q2_from + "WHERE playerz.id = (%s);")
+    query3 = (q2_update + "SET matchez = matchez + 1" + 
+              q2_from + "WHERE playerz.id = (%s) OR playerz.id = (%s);")
+    new_dbExecuteWrapper(query1, dbname, (winner, loser))
+    new_dbExecuteWrapper(query2, dbname, (winner,))
+    new_dbExecuteWrapper(query3, dbname, (winner, loser))
+
+
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+ #+END_SRC
+
+ #+RESULTS:
+
+*** functions definitions by category
+**** wrappers and utilities
+***** db connection wrapper
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+def new_connect(dbname):
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+ #+END_SRC
+
+ #+RESULTS:
+
+***** cursor execute wrappers
+      :PROPERTIES:
+      :STAMPED:  [2016-03-30 Wed 11:02]
+      :STATUS:   current
+      :END:
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()    
+    return rows
+
+# def insert_statement_string(table_name):
+#     tb_name = table_name
+#     sql_keywords = """INSERT INTO """
+#     insert_statement = sql_keywords + tb_name
+
+ #+END_SRC
+
+ #+RESULTS:
+
+***** SQL keyword string wrappers
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def update_statement_string(table_name):
+    tb_name = table_name
+    sql_keywords = """UPDATE """
+    update_statement = sql_keywords + tb_name
+
+def keyword_statement_string(table_name, sql_keyword):
+    tb_name = table_name
+    sql_keywords = sql_keyword + """ """
+    update_statement = sql_keywords + tb_name + """ """
+    return update_statement
+ #+END_SRC
+
+ #+RESULTS:
+
+**** simple delete and aggregate count
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_deleteTable(dbname, table_name):
+    tb_name = table_name
+    sql_keywords = """DELETE FROM """
+    query = sql_keywords + tb_name
+    table_nm = (table_name,)
+    new_dbExecuteWrapper(query, dbname)
+
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+ #+END_SRC
+
+ #+RESULTS:
+
+**** registerPlayer, display playerStandings, reportMatch
+***** registerPlayer
+****** correct
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_name,))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'dddd');
+ #+END_SRC
+
+ #+RESULTS:
+****** also-initialize player record
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# refactor to allow substituting column names?
+def initialize_player_record(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+initialize_player_record("tourney_practice", "player_recordz", 1)
+ #+END_SRC
+
+****** new--fix column names for tourney_practice db
+       :PROPERTIES:
+       :STATUS:   current
+       :STAMPED:  [2016-03-30 Wed 11:02]
+       :END:
+ Is the problem with how dbExecuteWrapper handles single argument inserts??
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+ #+END_SRC
+
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_name))
+ #+END_SRC
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# don't forget your PARENS!!
+def new_registerPlayer_tourney(player_name):
+    query = """INSERT INTO playerz (player_name) VALUES (%s);"""
+    new_dbExecuteWrapper(query, "tourney_practice", (player_name,))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer_tourney('cccc',);
+ #+END_SRC
+
+ #+RESULTS:
+
+****** old
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name, wins, matchez)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
+ #+END_SRC
+
+***** playerStandings
+****** new--what are the columns we want? (assume points)
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def new_playerStandings(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT player_id, points " +
+             from_statement + "ORDER BY points DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+ #+END_SRC
+
+ #+RESULTS:
+
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_playerStandings("tourney_practice", "player_recordz")
+ #+END_SRC
+
+ #+RESULTS:
+ : []
+
+***** reportMatch
+****** old
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def new_reportMatch(dbname, table1, table2, winner, loser):
+# why is table2 first in something named q1?
+# q1 inserts into log of match events
+# q2 is an updated that increment wins and match appearances
+
+    q1_insert = keyword_statement_string(table2, """INSERT INTO""")
+    q2_update = keyword_statement_string(table1, """UPDATE""")
+    q2_from = keyword_statement_string(table2, """FROM""")
+    query1 = (q1_insert + "VALUES (%s, %s) ;")
+    query2 = (q2_update + "SET wins = wins + 1" + 
+              q2_from + "WHERE playerz.id = (%s);")
+    query3 = (q2_update + "SET matchez = matchez + 1" + 
+              q2_from + "WHERE playerz.id = (%s) OR playerz.id = (%s);")
+    new_dbExecuteWrapper(query1, dbname, (winner, loser))
+    new_dbExecuteWrapper(query2, dbname, (winner,))
+    new_dbExecuteWrapper(query3, dbname, (winner, loser))
+
+ #+END_SRC
+
+****** must be completely rewritten
+       :PROPERTIES:
+       :STAMPED:  [2016-04-04 Mon 15:23]
+       :END:
+******* report Match was (winner, loser)
+ Before, there simply was a function that took a winner and loser (with
+ player ids).
+
+ It must be said that this makes for an extremely limited design.
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+"""INSERT INTO""" table {...match_participants...} """VALUES""" {...match_id, player_id1, player_id2...};
+"""INSERT INTO""" table {...score_results...} """VALUES""" {...match_id, player1_score, player2_score...};
+ #+END_SRC
+
+
+ what happens when a match is reported now is:
+******* registerMatch--correct
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
+ #+END_SRC
+
+ #+RESULTS:
+ | INSERT 0 1 |
+ |------------|
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(match_id, tournament_name, round)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
+ #+END_SRC
+
+ #+RESULTS:
+
+******* registerMatchParticipants--correct
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- INSERT INTO match_participants VALUES (1, 1, 2);
+ #+END_SRC
+
+ should it take a matchID argument? It does in the original SQL, but
+ perhaps it should just autoupdate? This really requires a function
+ that registers Matches (into the salient table) first.
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
+ #+END_SRC
+
+ #+RESULTS:
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
+ #+END_SRC
+
+
+ #+RESULTS:
+
+******* registerScores--correct
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- INSERT INTO score_results VALUES (1, 0, 1);
+ #+END_SRC
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 1, 10, 10)
+ #+END_SRC
+
+ #+RESULTS:
+
+******* log_player_records--must also use tournament_name?
+    the round number
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT * FROM log_records(1);
+ #+END_SRC
+
+ #+RESULTS:
+ | log_records |
+ |-------------|
+ |             |
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+ #+END_SRC
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_player_simple(dbname, round_of_tournament):
+    query = "SELECT * FROM log_records(%s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_player_simple("tourney_practice", 1)
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_player_records(round_of_tournament):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT *" + from_statement + "(%s)";
+    new_dbExecuteWrapper(query, dbname, ())
+ #+END_SRC
+
+******* call set_all_omw
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT * FROM set_all_OMW();
+ #+END_SRC
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_all_omw(dbname):
+    query = "SELECT * FROM set_all_OMW();"
+    new_dbExecuteWrapper(query, dbname)
+ #+END_SRC
+
+ #+RESULTS:
+
+******** set_omw(player_id) for all player_ids
+********* UPDATE player_recordz SET omw =
+********** select sum(opponent_OMW) FROM player_omw(player_id)
+**** swissPairings
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+ #+END_SRC
+
+*** all Python functions grouped with examples
+**** using examples for playerz and matchez
+***** counting
+  #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_countPlayers("tourney_practice", "playerz")
+  #+END_SRC
+
+  #+RESULTS:
+  : 2
+***** deleting
+****** Player records can be deleted
+  #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_deleteTable("tourney_practice", "playerz")
+  #+END_SRC
+****** old matches can be deleted
+  #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_deleteTable("tourney_practice", "matchez")
+  #+END_SRC
+****** 
+**** examples that rely on hardcoded column names
+***** registering players and initializing record
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# new_registerPlayer("tourney_practice", "playerz", 'dddd');
+new_registerPlayer("tourney_practice", "playerz", 'eeee');
+ #+END_SRC
+
+ #+RESULTS:
+
+
+ #+begin_example
+File "<ipython-input-24-4ead6ba9fd22>", line 5, in new_registerPlayer
+    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
+  File "<ipython-input-16-80d9ed023749>", line 4, in new_dbExecuteWrapper
+    c.execute(query_string, extra)
+ProgrammingError: column "wins" of relation "playerz" does not exist
+LINE 1: INSERT INTO playerz (player_name, wins, matchez)VALUES ('ddd...
+                                          ^
+
+
+> <ipython-input-16-80d9ed023749>(4)new_dbExecuteWrapper()
+      3         c = DB.cursor()
+----> 4         c.execute(query_string, extra)
+      5         DB.commit()
+ #+end_example
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+initialize_player_record("tourney_practice", "player_recordz", 1)
+ #+END_SRC
+
+ #+RESULTS:
+
+***** determining player standings
+  #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_playerStandings("playerz")
+  #+END_SRC
+***** reporting matching (inserting and updating)
+  #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_reportMatch("tourney_practice", 
+  #+END_SRC
+***** make pairings!!
+*** using sql and python for interactive repl practice
+**** select all from tourney_practice database
+***** playerz
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("SELECT * FROM playerz;")
+cur.fetchall()
+ #+END_SRC
+
+**** inserting with parameters--USE A FUCKING COMMA when it's ONE value!!!
+***** insert player
+      :PROPERTIES:
+      :STAMPED:  [2016-04-04 Mon 10:41]
+      :END:
+****** insert player into playerz
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("bbbb",))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+ #+END_SRC
+
+****** insert more than one column value, unnecessarily
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_id, player_name) VALUES (%s, %s)", (101, "dipshit"))
+ #+END_SRC
+
+ #+RESULTS:
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_id, player_name) VALUES (%s, %s)", (103, "dipshits"))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+****** try to insert one column value
+******* doesn't work because of FUCKING lack of COMMA
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz"))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+ : 
+ : >>> Traceback (most recent call last):
+ :   File "<ipython-input-175-1a4ec0045ab2>", line 1, in <module>
+ :     cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz"))
+ : TypeError: not all arguments converted during string formatting
+ : 
+ : > <ipython-input-175-1a4ec0045ab2>(1)<module>()
+ : ----> 1 cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz"))
+******* /where/ do you put the comma?
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz,"))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+ : 
+ : >>> Traceback (most recent call last):
+ :   File "<ipython-input-27-96fe9870e019>", line 1, in <module>
+ :     cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz,"))
+ : TypeError: not all arguments converted during string formatting
+ : 
+ : > <ipython-input-27-96fe9870e019>(1)<module>()
+ : ----> 1 cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz,"))
+******* comma
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO playerz (player_name) VALUES (%s)", ("dipshitz",))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+
+****** create new table just for practicing inserting one column
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE TABLE fake_playerz (
+       player_name text not null);
+ #+END_SRC
+
+ #+RESULTS:
+ | CREATE TABLE |
+ |--------------|
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("INSERT INTO fake_playerz VALUES (%s)", ("dipshitz",))
+conn.commit()
+ #+END_SRC
+
+ #+RESULTS:
+
+***** select players
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+conn = psycopg2.connect("dbname=tourney_practice")
+cur = conn.cursor()
+cur.execute("SELECT * FROM playerz;")
+cur.fetchall()
+ #+END_SRC
+
+ #+RESULTS:
+ : 
+ : >>> >>> [(103, 'dipshits')]
+
+*** dealing with an open cursor
+**** commit changes
+ # Make the changes to the database persistent
+ conn.commit()
+ #+END_SRC
+**** close communication
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# Close communication with the database
+cur.close()
+conn.close()
+ #+END_SRC
+
+ #+RESULTS:
+
