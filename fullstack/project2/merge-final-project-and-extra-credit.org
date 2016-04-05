@@ -68,7 +68,7 @@ def new_registerPlayer(dbname, table_name, player_name):
              "VALUES (%s, %s, %s);")
     new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
 
-
+# refactor to order by OMW for second column
 def new_playerStandings(table_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
     query = ("SELECT id, player_name, wins, matchez " +
@@ -103,6 +103,9 @@ def swissPairings():
     return dbExecuteRetrievalWrapper_allrows(query)
 
 #+END_SRC
+
+#+RESULTS:
+
 ** functions definitions by category
 *** wrappers and utilities
 **** db connection wrapper
@@ -204,6 +207,22 @@ new_registerPlayer("tourney_practice", "playerz", 'dddd');
 #+END_SRC
 
 #+RESULTS:
+***** also-initialize player record
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# refactor to allow substituting column names?
+def initialize_player_record(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+initialize_player_record("tourney_practice", "player_recordz", 1)
+#+END_SRC
+
 ***** new--fix column names for tourney_practice db
       :PROPERTIES:
       :STATUS:   current
@@ -255,6 +274,7 @@ def new_registerPlayer(dbname, table_name, player_name):
              "VALUES (%s, %s, %s);")
     new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
 #+END_SRC
+
 **** playerStandings
 ***** new--what are the columns we want? (assume points)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -317,40 +337,136 @@ It must be said that this makes for an extremely limited design.
 
 
 what happens when a match is reported now is:
-****** before all else, a match for a given tournament should be registered
+****** registerMatch--correct
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
+-- INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
 #+END_SRC
-****** the participants in a match are registered (match_participants table)
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(match_id, tournament_name, round)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
+#+END_SRC
+
+#+RESULTS:
+
+****** registerMatchParticipants--correct
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO match_participants VALUES (1, 1, 2);
+-- INSERT INTO match_participants VALUES (1, 1, 2);
 #+END_SRC
 
 should it take a matchID argument? It does in the original SQL, but
 perhaps it should just autoupdate? This really requires a function
 that registers Matches (into the salient table) first.
+
+
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-def registerMatchParticipants(dbname, table, player_id1, player_id2)
+def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
 #+END_SRC
-****** a score is reported for the given match_id (score_results table)
+
+#+RESULTS:
+
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
+#+END_SRC
+
+
+#+RESULTS:
+
+****** registerScores--correct
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-INSERT INTO score_results VALUES (1, 0, 1);
+-- INSERT INTO score_results VALUES (1, 0, 1);
 #+END_SRC
-****** at the end of a round of reporting, in SQL call log_records with
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 1, 10, 10)
+#+END_SRC
+
+#+RESULTS:
+
+****** log_player_records--must also use tournament_name?
    the round number
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 SELECT * FROM log_records(1);
 #+END_SRC
-******* log_home_losses
-******* log_home_wins
-******* log_away_losses
-******* log_away_wins
-******* log_draws
-******* update_points
+
+#+RESULTS:
+| log_records |
+|-------------|
+|             |
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_player_simple(dbname, round_of_tournament):
+    query = "SELECT * FROM log_records(%s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_player_simple("tourney_practice", 1)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_player_records(round_of_tournament):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT *" + from_statement + "(%s)";
+    new_dbExecuteWrapper(query, dbname, ())
+#+END_SRC
+
 ****** call set_all_omw
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 SELECT * FROM set_all_OMW();
 #+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_all_omw(dbname):
+    query = "SELECT * FROM set_all_OMW();"
+    new_dbExecuteWrapper(query, dbname)
+#+END_SRC
+
+#+RESULTS:
+
 ******* set_omw(player_id) for all player_ids
 ******** UPDATE player_recordz SET omw =
 ********* select sum(opponent_OMW) FROM player_omw(player_id)
@@ -384,26 +500,38 @@ new_deleteTable("tourney_practice", "playerz")
  #+BEGIN_SRC python :session *Python* :results output :tangle yes
 new_deleteTable("tourney_practice", "matchez")
  #+END_SRC
-
+***** 
 *** examples that rely on hardcoded column names
-**** registering players
- #+BEGIN_SRC python :session *Python* :results output :tangle yes
-new_registerPlayer("tourney_practice", "playerz", "b")
- #+END_SRC
+**** registering players and initializing record
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# new_registerPlayer("tourney_practice", "playerz", 'dddd');
+new_registerPlayer("tourney_practice", "playerz", 'eeee');
+#+END_SRC
 
- #+RESULTS:
- #+begin_example
- File "<ipython-input-26-e98350003599>", line 5, in new_registerPlayer
-     new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
-   File "<ipython-input-7-80d9ed023749>", line 4, in new_dbExecuteWrapper
-     c.execute(query_string, extra)
- TypeError: not all arguments converted during string formatting
+#+RESULTS:
 
- > <ipython-input-7-80d9ed023749>(4)new_dbExecuteWrapper()
-       3         c = DB.cursor()
- ----> 4         c.execute(query_string, extra)
-       5         DB.commit()
+
+#+begin_example
+File "<ipython-input-24-4ead6ba9fd22>", line 5, in new_registerPlayer
+    new_dbExecuteWrapper(query, dbname, (player_name, 0, 0))
+  File "<ipython-input-16-80d9ed023749>", line 4, in new_dbExecuteWrapper
+    c.execute(query_string, extra)
+ProgrammingError: column "wins" of relation "playerz" does not exist
+LINE 1: INSERT INTO playerz (player_name, wins, matchez)VALUES ('ddd...
+                                          ^
+
+
+> <ipython-input-16-80d9ed023749>(4)new_dbExecuteWrapper()
+      3         c = DB.cursor()
+----> 4         c.execute(query_string, extra)
+      5         DB.commit()
 #+end_example
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+initialize_player_record("tourney_practice", "player_recordz", 1)
+#+END_SRC
+
+#+RESULTS:
 
 **** determining player standings
  #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -548,6 +676,153 @@ conn.close()
 #+END_SRC
 
 #+RESULTS:
+
+** work in development
+** drafts of finished functions
+*** definitions
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+def new_connect(dbname):
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()    
+    return rows
+
+def update_statement_string(table_name):
+    tb_name = table_name
+    sql_keywords = """UPDATE """
+    update_statement = sql_keywords + tb_name
+
+def keyword_statement_string(table_name, sql_keyword):
+    tb_name = table_name
+    sql_keywords = sql_keyword + """ """
+    update_statement = sql_keywords + tb_name + """ """
+    return update_statement
+
+def new_deleteTable(dbname, table_name):
+    tb_name = table_name
+    sql_keywords = """DELETE FROM """
+    query = sql_keywords + tb_name
+    table_nm = (table_name,)
+    new_dbExecuteWrapper(query, dbname)
+
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_name,))
+
+# refactor to allow substituting column names?
+def initialize_player_record(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+
+
+def new_playerStandings(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT player_id, points " +
+             from_statement + "ORDER BY points DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+
+def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(match_id, tournament_name, round)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+
+
+def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
+
+
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
+
+def log_player_simple(dbname, round_of_tournament):
+    query = "SELECT * FROM log_records(%s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
+#+END_SRC
+
+*** examples
+**** report-retrieve data
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_countPlayers("tourney_practice", "playerz")
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_playerStandings("tourney_practice", "player_recordz")
+#+END_SRC
+
+#+RESULTS:
+: [(3, 3), (1, 1), (2, 1), (4, 0)]
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_deleteTable("tourney_practice", "playerz")
+#+END_SRC
+
+**** insert data
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'aaaa');
+new_registerPlayer("tourney_practice", "playerz", 'bbbb');
+new_registerPlayer("tourney_practice", "playerz", 'cccc');
+new_registerPlayer("tourney_practice", "playerz", 'dddd');
+
+initialize_player_record("tourney_practice", "player_recordz", 1)
+initialize_player_record("tourney_practice", "player_recordz", 2)
+initialize_player_record("tourney_practice", "player_recordz", 3)
+initialize_player_record("tourney_practice", "player_recordz", 4)
+
+registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
+registerMatch("tourney_practice", "matchez", 2, "soccer", 1);
+
+registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", 2, 3, 4)
+
+registerScores("tourney_practice", "score_results", 1, 10, 10)
+registerScores("tourney_practice", "score_results", 2, 11, 9)
+
+log_player_simple("tourney_practice", 1)
+
+log_all_omw("tourney_practice")
+#+END_SRC
+
+**** 
 * SQL
   :LOGBOOK:
   CLOCK: [2016-04-04 Mon 15:33]
@@ -748,6 +1023,8 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 | CREATE FUNCTION |
+
+
 
 **** all insert and update functions
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
