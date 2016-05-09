@@ -100,10 +100,6 @@ def log_round_results(dbname, round_of_tournament):
     new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
 #+END_SRC
 
-#+RESULTS:
-: 
-: ipdb> *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
-: *** NameError: name 'dbname' is not defined
 ** refactor logging functions
 *** log_rounds and set OMWs
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -297,62 +293,60 @@ set_allll_OMW('tourney_practice')
 : >>> done
 
 
+*** two rounds for 8 player tournament with ties; each round results determine next round matches
 
-*** error messages
->>> registerScores("tourney_practice", "score_results", 2, 11, 9)
-  File "<ipython-input-80-f49600c391b6>", line 1
-    registerMatch("tourneyregisterMatch("tourneyregisterMatch("touregisterMatch("tourney_practice", "matchez", 6, "tennis", 2);
-                                                            ^
-SyntaxError: invalid syntax
+**** setup and first round
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'a');
+new_registerPlayer("tourney_practice", "playerz", 'b');
+new_registerPlayer("tourney_practice", "playerz", 'c');
+new_registerPlayer("tourney_practice", "playerz", 'd');
+new_registerPlayer("tourney_practice", "playerz", 'e');
+new_registerPlayer("tourney_practice", "playerz", 'f');
+new_registerPlayer("tourney_practice", "playerz", 'g');
+new_registerPlayer("tourney_practice", "playerz", 'h');
 
->>> registerScores("tourney_practice", "score_results", 3, 2, 1)
->>> registerScores("tourney_practice", "score_results", 4, 1, 9)
-Traceback (most recent call last):
-  File "<ipython-input-82-2414c644b280>", line 1, in <module>
-    registerMatch("tourney_practice", "matchez", 8, "tennis", 2);r
-NameError: name 'r' is not defined
+initialize_player_record("tourney_practice", "player_recordz", 1)
+initialize_player_record("tourney_practice", "player_recordz", 2)
+initialize_player_record("tourney_practice", "player_recordz", 3)
+initialize_player_record("tourney_practice", "player_recordz", 4)
+initialize_player_record("tourney_practice", "player_recordz", 5)
+initialize_player_record("tourney_practice", "player_recordz", 6)
+initialize_player_record("tourney_practice", "player_recordz", 7)
+initialize_player_record("tourney_practice", "player_recordz", 8)
 
-registerScores("tourney_practice", "score_results", 5, 1, 0)
-> <ipython-input-82-2414c644b280>(1)<module>()
-----> 1 registerMatch("tourney_practice", "matchez", 8, "tennis", 2);r
+registerMatch("tourney_practice", "matchez", 1, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 2, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 3, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 4, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 5, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 6, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 7, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 8, "tennis", 2);
 
-registerScores("tourney_practice", "score_results", 6, 11, 1)
-ipdb> registerScores("tourney_practice", "score_results", 7, 12, 10)
-ipdb> registerScores("tourney_practice", "score_results", 8, 0, 9)
-ipdb> 
-\*** SyntaxError: invalid syntax (<stdin>, line 1)
-log_player_simple("tourney_practice", 1)
-ipdb> log_player_simple("tourney_practice", 2)
-\*** IntegrityError: insert or update on table "match_participants" violates foreign key constraint "match_participants_match_id_fkey"
-DETAIL:  Key (match_id)=(5) is not present in table "matchez".
+registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", 2, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", 3, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", 4, 7, 8)
 
+registerScores("tourney_practice", "score_results", 1, 1, 10)
+registerScores("tourney_practice", "score_results", 2, 11, 9)
+registerScores("tourney_practice", "score_results", 3, 2, 1)
+registerScores("tourney_practice", "score_results", 4, 1, 9)
 
-ipdb> log_all_omw("tourney_practice")
-\*** IntegrityError: insert or update on table "match_participants" violates foreign key constraint "match_participants_match_id_fkey"
-DETAIL:  Key (match_id)=(6) is not present in table "matchez".
+log_round_results("tourney_practice", 1)
 
+set_allll_OMW('tourney_practice')
+#+END_SRC
 
-ipdb> 
-\*** SyntaxError: invalid syntax (<stdin>, line 1)
-
-ipdb> 'org_babel_python_eoe'
-\*** SyntaxError: invalid syntax (<stdin>, line 1)
-ipdb> *** IntegrityError: insert or update on table "score_results" violates foreign key constraint "score_results_match_id_fkey"
-DETAIL:  Key (match_id)=(5) is not present in table "matchez".
-
-ipdb> *** IntegrityError: insert or update on table "score_results" violates foreign key constraint "score_results_match_id_fkey"
-DETAIL:  Key (match_id)=(6) is not present in table "matchez".
-
-ipdb> *** NameError: name 'log_all_omw' is not defined
-
-
+**** how do you get second round to be setup and then run?
 * SQL steps
   :LOGBOOK:
   CLOCK: [2016-04-04 Mon 15:33]--[2016-04-06 Wed 17:50] => 50:17
   :END:
 ** single monolithic blocks
 *** all setups
-**** all 'tourney_practice' database CREATE definitions
+**** all 'tourney_practice' database CREATE definitions--schema
 defines a problematic set_all_OMW
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
@@ -540,7 +534,8 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 
-**** all insert and update functions--deprecate and prefer Python
+**** sample uses of SQL with tourney_practice
+***** insert and update functions--deprecate and prefer Python
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 
 INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
@@ -600,7 +595,8 @@ INSERT INTO player_recordz (player_id) VALUES (8);
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
-**** insert tournament rounds data (but don't log results!)
+
+***** insert tournament rounds data (but don't log results!)
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO match_participants VALUES (1, 1, 2);
 INSERT INTO match_participants VALUES (2, 3, 4);
@@ -1151,6 +1147,14 @@ select * from tournament_matches;
 #+RESULTS:
 | match_id | tournament_name | round | home | away | home_score | away_score |
 |----------+-----------------+-------+------+------+------------+------------|
+|        1 | tennis          |     1 |    1 |    2 |          1 |         10 |
+|        2 | tennis          |     1 |    3 |    4 |         11 |          9 |
+|        3 | tennis          |     1 |    5 |    6 |          2 |          1 |
+|        4 | tennis          |     1 |    7 |    8 |          1 |          9 |
+|        5 | tennis          |     2 |    1 |    3 |          1 |          0 |
+|        6 | tennis          |     2 |    2 |    4 |         11 |          1 |
+|        7 | tennis          |     2 |    5 |    7 |         12 |         10 |
+|        8 | tennis          |     2 |    6 |    8 |          0 |          9 |
 
 
 | match_id | tournament_name | round | home | away | home_score | away_score |
@@ -1179,12 +1183,21 @@ select * from tournament_matches;
 |         8 |    1 |      1 |     0 |      3 |   3 |
 *** player_tables--just adds player_id to player_recordz and that's all?
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from player_recordz;
+select * from player_recordz
+ORDER BY points DESC, omw DESC ;
 #+END_SRC
 
 #+RESULTS:
 | player_id | wins | losses | draws | points | omw |
 |-----------+------+--------+-------+--------+-----|
+|         2 |    2 |      0 |     0 |      6 |   3 |
+|         8 |    2 |      0 |     0 |      6 |   0 |
+|         5 |    2 |      0 |     0 |      6 |   0 |
+|         1 |    1 |      1 |     0 |      3 |   9 |
+|         3 |    1 |      1 |     0 |      3 |   3 |
+|         7 |    0 |      2 |     0 |      0 |  12 |
+|         6 |    0 |      2 |     0 |      0 |  12 |
+|         4 |    0 |      2 |     0 |      0 |   9 |
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from player_tables
@@ -1195,6 +1208,14 @@ ORDER BY player_id;
 #+RESULTS:
 | player_id | player_name | wins | losses | draws | points | omw |
 |-----------+-------------+------+--------+-------+--------+-----|
+|         1 | a           |    1 |      1 |     0 |      3 |   9 |
+|         2 | b           |    2 |      0 |     0 |      6 |   3 |
+|         3 | c           |    1 |      1 |     0 |      3 |   3 |
+|         4 | d           |    0 |      2 |     0 |      0 |   9 |
+|         5 | e           |    2 |      0 |     0 |      6 |   0 |
+|         6 | f           |    0 |      2 |     0 |      0 |  12 |
+|         7 | g           |    0 |      2 |     0 |      0 |  12 |
+|         8 | h           |    2 |      0 |     0 |      6 |   0 |
 
 
 | player_id | player_name | wins | losses | draws | points | omw |
@@ -1224,14 +1245,37 @@ ORDER BY a.wins DESC, a.omw DESC;
 #+RESULTS:
 | player_id | omw | wins | losses | draws | player_id | omw | wins | losses | draws |
 |-----------+-----+------+--------+-------+-----------+-----+------+--------+-------|
-|         3 |   6 |    2 |      0 |     0 |         6 |   3 |    2 |      0 |     0 |
-|         7 |   9 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         7 |   9 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         4 |   6 |    1 |      1 |     0 |
-|         2 |   6 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         4 |   6 |    1 |      1 |     0 |         8 |   3 |    1 |      1 |     0 |
-|         4 |   6 |    1 |      1 |     0 |         7 |   9 |    1 |      1 |     0 |
-|         1 |   6 |    0 |      2 |     0 |         5 |   9 |    0 |      2 |     0 |
+|         2 |   3 |    2 |      0 |     0 |         8 |   0 |    2 |      0 |     0 |
+|         2 |   3 |    2 |      0 |     0 |         5 |   0 |    2 |      0 |     0 |
+|         5 |   0 |    2 |      0 |     0 |         8 |   0 |    2 |      0 |     0 |
+|         1 |   9 |    1 |      1 |     0 |         3 |   3 |    1 |      1 |     0 |
+|         6 |  12 |    0 |      2 |     0 |         7 |  12 |    0 |      2 |     0 |
+|         4 |   9 |    0 |      2 |     0 |         7 |  12 |    0 |      2 |     0 |
+|         4 |   9 |    0 |      2 |     0 |         6 |  12 |    0 |      2 |     0 |
+*** select by points first
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT a.player_id, a.points, a.OMW, b.player_id, b.points, b.OMW
+
+FROM player_recordz as a, player_recordz as b
+
+WHERE a.wins = b.wins AND a.losses = b.losses 
+
+AND a.player_id < b.player_id
+
+ORDER BY a.wins DESC, a.omw DESC;
+#+END_SRC  
+
+#+RESULTS:
+| player_id | points | omw | player_id | points | omw |
+|-----------+--------+-----+-----------+--------+-----|
+|         2 |      6 |   3 |         8 |      6 |   0 |
+|         2 |      6 |   3 |         5 |      6 |   0 |
+|         5 |      6 |   0 |         8 |      6 |   0 |
+|         1 |      3 |   9 |         3 |      3 |   3 |
+|         6 |      0 |  12 |         7 |      0 |  12 |
+|         4 |      0 |   9 |         7 |      0 |  12 |
+|         4 |      0 |   9 |         6 |      0 |  12 |
+
 * steps
 ** orientation
 When coming back to this work, it can be tricky to quickly remember

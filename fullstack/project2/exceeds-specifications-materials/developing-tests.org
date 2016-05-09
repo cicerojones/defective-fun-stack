@@ -1,0 +1,516 @@
+* 
+** exisiting meets specifications code, schema and tests
+*** basic pythoncode
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+
+def connect():
+    """Connect to the PostgreSQL database.  Returns a database connection."""
+    return psycopg2.connect("dbname=tournament")
+
+
+# refactor to use connect() for final version
+def dbExecuteWrapper(query_string, extra=None):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    return rows
+    DB.close()
+
+
+# refactor all queries into a variable that is then passed to execute
+def deleteMatches():
+    query = """DELETE FROM matches;"""
+    dbExecuteWrapper(query)
+
+
+def deletePlayers():
+    query = """DELETE FROM players;"""
+    dbExecuteWrapper(query)
+
+
+def countPlayers():
+    DB = connect()
+    c = DB.cursor()
+    query = "SELECT count(*) FROM players;"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    return int(row_item[0])
+    DB.close()
+
+
+def registerPlayer(name):
+    query = ("INSERT INTO players (player_name, wins, matches)"
+             "VALUES (%s, %s, %s);")
+    dbExecuteWrapper(query, (name, 0, 0))
+
+
+# Some kind of problem using _allrows with multiline string formatting
+def playerStandings():
+    query = ("SELECT id, player_name, wins, matches "
+             "FROM players ORDER BY wins DESC;")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+
+def reportMatch(winner, loser):
+    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
+    query2 = ("UPDATE players SET wins = wins + 1"
+              "FROM matches WHERE players.id = (%s) ;")
+    query3 = ("UPDATE players SET matches = matches + 1"
+              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
+    dbExecuteWrapper(query1, (winner, loser))
+    dbExecuteWrapper(query2, (winner,))
+    dbExecuteWrapper(query3, (winner, loser))
+
+
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
+#+END_SRC
+*** define schema
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+
+-- Table definitions for the tournament project.
+--
+-- Put your SQL 'create table' statements in this file; also 'create view'
+-- statements if you choose to use it.
+--
+-- You can write comments in this file by starting them with two dashes, like
+-- these lines here.
+
+CREATE DATABASE tournament;
+
+\c tournament
+
+CREATE TABLE players(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer);
+
+CREATE TABLE matches(winner integer, loser integer);
+#+END_SRC
+*** create a test file for basic python code
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+#!/usr/bin/env python
+#
+# Test cases for tournament.py
+
+from final_project import *
+
+def testDeleteMatches():
+    deleteMatches()
+    print "1. Old matches can be deleted."
+
+
+def testDelete():
+    deleteMatches()
+    deletePlayers()
+    print "2. Player records can be deleted."
+
+
+def testCount():
+    deleteMatches()
+    deletePlayers()
+    c = countPlayers()
+    if c == '0':
+        raise TypeError(
+            "countPlayers() should return numeric zero, not string '0'.")
+    if c != 0:
+        raise ValueError("After deleting, countPlayers should return zero.")
+    print "3. After deleting, countPlayers() returns zero."
+
+
+def testRegister():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Chandra Nalaar")
+    c = countPlayers()
+    if c != 1:
+        raise ValueError(
+            "After one player registers, countPlayers() should be 1.")
+    print "4. After registering a player, countPlayers() returns 1."
+
+
+def testRegisterCountDelete():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Markov Chaney")
+    registerPlayer("Joe Malik")
+    registerPlayer("Mao Tsu-hsi")
+    registerPlayer("Atlanta Hope")
+    c = countPlayers()
+    if c != 4:
+        raise ValueError(
+            "After registering four players, countPlayers should be 4.")
+    deletePlayers()
+    c = countPlayers()
+    if c != 0:
+        raise ValueError("After deleting, countPlayers should return zero.")
+    print "5. Players can be registered and deleted."
+
+
+def testStandingsBeforeMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Melpomene Murray")
+    registerPlayer("Randy Schwartz")
+    standings = playerStandings()
+    if len(standings) < 2:
+        raise ValueError("Players should appear in playerStandings even before "
+                         "they have played any matches.")
+    elif len(standings) > 2:
+        raise ValueError("Only registered players should appear in standings.")
+    if len(standings[0]) != 4:
+        raise ValueError("Each playerStandings row should have four columns.")
+    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
+    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
+        raise ValueError(
+            "Newly registered players should have no matches or wins.")
+    if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
+        raise ValueError("Registered players' names should appear in standings, "
+                         "even if they have no matches played.")
+    print "6. Newly registered players appear in the standings with no matches."
+
+
+def testReportMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Bruno Walton")
+    registerPlayer("Boots O'Neal")
+    registerPlayer("Cathy Burton")
+    registerPlayer("Diane Grant")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    standings = playerStandings()
+    for (i, n, w, m) in standings:
+        if m != 1:
+            raise ValueError("Each player should have one match recorded.")
+        if i in (id1, id3) and w != 1:
+            raise ValueError("Each match winner should have one win recorded.")
+        elif i in (id2, id4) and w != 0:
+            raise ValueError("Each match loser should have zero wins recorded.")
+    print "7. After a match, players have updated standings."
+
+
+def testPairings():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Twilight Sparkle")
+    registerPlayer("Fluttershy")
+    registerPlayer("Applejack")
+    registerPlayer("Pinkie Pie")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    pairings = swissPairings()
+    if len(pairings) != 2:
+        raise ValueError(
+            "For four players, swissPairings should return two pairs.")
+    [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+    correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+    actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+    if correct_pairs != actual_pairs:
+        raise ValueError(
+            "After one match, players with one win should be paired.")
+    print "8. After one match, players with one win are paired."
+
+
+if __name__ == '__main__':
+    testDeleteMatches()
+    testDelete()
+    testCount()
+    testRegister()
+    testRegisterCountDelete()
+    testStandingsBeforeMatches()
+    testReportMatches()
+    testPairings()
+    print "Success!  All tests pass!"
+#+END_SRC
+* 
+** developing exceeds specifications
+*** SQL schema
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- only used for restarting with clean player ids
+DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
+
+-- matches have id number, a tournament name and a round number
+CREATE TABLE matchez(
+       match_id serial PRIMARY KEY,
+       tournament_name text not null,
+       round int); 
+
+-- players have an id number and a name; 
+-- theoretically can be in any tournaments? 
+-- (need to distinguish btwn different results in different tournaments)
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null);
+
+-- matches have participants, arbitrarily assigned to home and away categories
+CREATE TABLE match_participants(
+       match_id int REFERENCES matchez (match_id),
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id));
+
+-- results of matches have a score for the home and away players
+CREATE TABLE score_results (
+       match_id int REFERENCES matchez (match_id),
+       home_score int,
+       away_score int);
+
+-- players have an amount of wins, losses and draws,
+-- in cases where draws are possible, players also have points taking
+-- this possibility into account.
+-- finally, all players have an OMW score, which is the sum of the points
+-- of those players they have faced
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OMW int DEFAULT 0);
+
+-- a complete view of all tournaments shows any matches registered, 
+-- as well as the scores in those matches
+CREATE VIEW tournament_matches AS
+select a.match_id, a.tournament_name, a.round, b.home, b.away, c.home_score, c.away_score
+from matchez as a, match_participants as b, score_results as c
+where a.match_id = b.match_id
+AND b.match_id = c.match_id;
+
+-- a complete view of a player shows the id/name as well as the various 
+-- statistics already contained in player_recordz
+
+CREATE VIEW player_tables AS
+select a.player_id, a.player_name, b.wins, b.losses, b.draws, b.points, b.OMW
+from playerz as a, player_recordz as b
+where a.player_id = b.player_id;
+
+
+-- to be able to reflect the results of matches in player stats, 
+-- we need to distinguish the various kinds of wins, losses 
+-- (and any draws if the tournament allows them)
+
+-- the following update functions need to be called in the proper way 
+-- and at the proper time (i.e. at the end of rounds of a particular tournament)
+-- right now, there is the possibility of over-tabulating points if all matches 
+-- for any particular rounds have not been registered yet
+CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_wins(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_losses(integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1;
+$$ LANGUAGE SQL;
+
+-- at the end of each round we want to tabulate the number of points for all participants
+CREATE OR REPLACE FUNCTION update_points() RETURNS VOID AS $$
+       UPDATE player_recordz 
+       SET points = (wins * 3) + draws;
+$$ LANGUAGE SQL;
+
+
+-- we want to create tables collating all the opponents a given player has faced
+CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
+       select 
+       	      CASE WHEN a.away = $1 THEN a.home
+	      	   WHEN a.home = $1 THEN a.away
+		   ELSE NULL
+		END as opposing_player
+FROM match_participants as a;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+       select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION set_omw (integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET omw = (select sum(opponent_OMW) FROM player_omw($1))
+       WHERE player_id = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
+-- problematic to do this
+       select * from set_OMW(1);
+       select * from set_OMW(2);
+       select * from set_OMW(3);
+       select * from set_OMW(4);
+       select * from set_OMW(5);
+       select * from set_OMW(6);
+       select * from set_OMW(7);
+       select * from set_OMW(8);
+$$ LANGUAGE SQL;
+
+
+-- uses a $name$ syntax erroneously?
+CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_records$
+       SELECT log_home_losses($1);
+       SELECT log_home_wins($1);
+       SELECT log_away_losses($1);
+       SELECT log_away_wins($1);
+       SELECT log_draws($1);
+       SELECT update_points();
+       $log_records$ LANGUAGE SQL;
+
+#+END_SRC
+*** exceeds Python code
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+def new_connect(dbname):
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()    
+    return rows
+
+def update_statement_string(table_name):
+    tb_name = table_name
+    sql_keywords = """UPDATE """
+    update_statement = sql_keywords + tb_name
+
+def keyword_statement_string(table_name, sql_keyword):
+    tb_name = table_name
+    sql_keywords = sql_keyword + """ """
+    update_statement = sql_keywords + tb_name + """ """
+    return update_statement
+
+def new_deleteTable(dbname, table_name):
+    tb_name = table_name
+    sql_keywords = """DELETE FROM """
+    query = sql_keywords + tb_name
+    table_nm = (table_name,)
+    new_dbExecuteWrapper(query, dbname)
+
+def new_countPlayers(dbname, table_name):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT count(*)" + from_statement + ";"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    DB.close()
+    return int(row_item[0])
+
+# refactor to allow substituting column names?
+def new_registerPlayer(dbname, table_name, player_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_name,))
+
+# refactor to allow substituting column names?
+def initialize_player_record(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+
+
+def new_playerStandings(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT player_id, points " +
+             from_statement + "ORDER BY points DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+
+def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(match_id, tournament_name, round)" + 
+             "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+
+
+def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
+
+
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
+
+def log_round_results(dbname, round_of_tournament):
+    query = "SELECT * FROM log_records(%s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
+
+# a brittle way to obtain player ids?
+def how_many_players(dbname):
+    query = "select * from player_recordz;"
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+def set_OMW(dbname, player_id):
+    query = "SELECT * FROM set_omw(%s);"
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+
+def set_all_OMW(dbname):
+    data = how_many_players(dbname)
+    playaz = [n[0] for n in data]
+    [set_OMW(dbname, n) for n in playaz]
+    print("done")
+#+END_SRC
