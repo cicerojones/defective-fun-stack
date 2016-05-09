@@ -95,14 +95,17 @@ def registerScores(dbname, table_name, match_no, home_score, away_score):
     query = (insert_statement + "VALUES (%s, %s, %s);")
     new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
 
-def log_player_simple(dbname, round_of_tournament):
+def log_round_results(dbname, round_of_tournament):
     query = "SELECT * FROM log_records(%s)"
     new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
 #+END_SRC
 
 #+RESULTS:
+: 
+: ipdb> *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+: *** NameError: name 'dbname' is not defined
 ** refactor logging functions
-*** 
+*** log_rounds and set OMWs
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 # a brittle way to obtain player ids?
 def how_many_players(dbname):
@@ -112,9 +115,11 @@ def how_many_players(dbname):
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 # should really be called log_rounds?
-def log_player_records(dbname, round_no):
-    query = "select * from log_records(%s);"
-    return new_dbExecuteWrapper(query, dbname, (round_no,))
+# extraneous--already defined (and re-named as) log_round_results
+
+# def log_player_records(dbname, round_no):
+#     query = "select * from log_records(%s);"
+#     return new_dbExecuteWrapper(query, dbname, (round_no,))
 #+END_SRC
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -226,31 +231,120 @@ log_player_simple("tourney_practice", 1)
 log_all_omw("tourney_practice")
 #+END_SRC
 ** "tennis" tournament (no ties)
-*** first round data for simple 4 player tournament--ties allowed (identical?)
+*** two rounds data for simple 8 player tournament--ties allowed (identical?)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-new_registerPlayer("tourney_practice", "playerz", 'aaaa');
-new_registerPlayer("tourney_practice", "playerz", 'bbbb');
-new_registerPlayer("tourney_practice", "playerz", 'cccc');
-new_registerPlayer("tourney_practice", "playerz", 'dddd');
+new_registerPlayer("tourney_practice", "playerz", 'a');
+new_registerPlayer("tourney_practice", "playerz", 'b');
+new_registerPlayer("tourney_practice", "playerz", 'c');
+new_registerPlayer("tourney_practice", "playerz", 'd');
+new_registerPlayer("tourney_practice", "playerz", 'e');
+new_registerPlayer("tourney_practice", "playerz", 'f');
+new_registerPlayer("tourney_practice", "playerz", 'g');
+new_registerPlayer("tourney_practice", "playerz", 'h');
 
 initialize_player_record("tourney_practice", "player_recordz", 1)
 initialize_player_record("tourney_practice", "player_recordz", 2)
 initialize_player_record("tourney_practice", "player_recordz", 3)
 initialize_player_record("tourney_practice", "player_recordz", 4)
+initialize_player_record("tourney_practice", "player_recordz", 5)
+initialize_player_record("tourney_practice", "player_recordz", 6)
+initialize_player_record("tourney_practice", "player_recordz", 7)
+initialize_player_record("tourney_practice", "player_recordz", 8)
 
-registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
-registerMatch("tourney_practice", "matchez", 2, "soccer", 1);
+registerMatch("tourney_practice", "matchez", 1, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 2, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 3, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 4, "tennis", 1);
+registerMatch("tourney_practice", "matchez", 5, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 6, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 7, "tennis", 2);
+registerMatch("tourney_practice", "matchez", 8, "tennis", 2);
 
 registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
 registerMatchParticipants("tourney_practice", "match_participants", 2, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", 3, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", 4, 7, 8)
+registerMatchParticipants("tourney_practice", "match_participants", 5, 1, 3)
+registerMatchParticipants("tourney_practice", "match_participants", 6, 2, 4)
+registerMatchParticipants("tourney_practice", "match_participants", 7, 5, 7)
+registerMatchParticipants("tourney_practice", "match_participants", 8, 6, 8)
 
-registerScores("tourney_practice", "score_results", 1, 12, 10)
+registerScores("tourney_practice", "score_results", 1, 1, 10)
 registerScores("tourney_practice", "score_results", 2, 11, 9)
+registerScores("tourney_practice", "score_results", 3, 2, 1)
+registerScores("tourney_practice", "score_results", 4, 1, 9)
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 11, 1)
+registerScores("tourney_practice", "score_results", 7, 12, 10)
+registerScores("tourney_practice", "score_results", 8, 0, 9)
 
-log_player_simple("tourney_practice", 1)
+log_round_results("tourney_practice", 1)
+log_round_results("tourney_practice", 2)
 
-log_all_omw("tourney_practice")
+#log_all_omw("tourney_practice")
 #+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# log_player_record('tourney_practice', 1)
+
+set_allll_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> done
+
+
+
+*** error messages
+>>> registerScores("tourney_practice", "score_results", 2, 11, 9)
+  File "<ipython-input-80-f49600c391b6>", line 1
+    registerMatch("tourneyregisterMatch("tourneyregisterMatch("touregisterMatch("tourney_practice", "matchez", 6, "tennis", 2);
+                                                            ^
+SyntaxError: invalid syntax
+
+>>> registerScores("tourney_practice", "score_results", 3, 2, 1)
+>>> registerScores("tourney_practice", "score_results", 4, 1, 9)
+Traceback (most recent call last):
+  File "<ipython-input-82-2414c644b280>", line 1, in <module>
+    registerMatch("tourney_practice", "matchez", 8, "tennis", 2);r
+NameError: name 'r' is not defined
+
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+> <ipython-input-82-2414c644b280>(1)<module>()
+----> 1 registerMatch("tourney_practice", "matchez", 8, "tennis", 2);r
+
+registerScores("tourney_practice", "score_results", 6, 11, 1)
+ipdb> registerScores("tourney_practice", "score_results", 7, 12, 10)
+ipdb> registerScores("tourney_practice", "score_results", 8, 0, 9)
+ipdb> 
+\*** SyntaxError: invalid syntax (<stdin>, line 1)
+log_player_simple("tourney_practice", 1)
+ipdb> log_player_simple("tourney_practice", 2)
+\*** IntegrityError: insert or update on table "match_participants" violates foreign key constraint "match_participants_match_id_fkey"
+DETAIL:  Key (match_id)=(5) is not present in table "matchez".
+
+
+ipdb> log_all_omw("tourney_practice")
+\*** IntegrityError: insert or update on table "match_participants" violates foreign key constraint "match_participants_match_id_fkey"
+DETAIL:  Key (match_id)=(6) is not present in table "matchez".
+
+
+ipdb> 
+\*** SyntaxError: invalid syntax (<stdin>, line 1)
+
+ipdb> 'org_babel_python_eoe'
+\*** SyntaxError: invalid syntax (<stdin>, line 1)
+ipdb> *** IntegrityError: insert or update on table "score_results" violates foreign key constraint "score_results_match_id_fkey"
+DETAIL:  Key (match_id)=(5) is not present in table "matchez".
+
+ipdb> *** IntegrityError: insert or update on table "score_results" violates foreign key constraint "score_results_match_id_fkey"
+DETAIL:  Key (match_id)=(6) is not present in table "matchez".
+
+ipdb> *** NameError: name 'log_all_omw' is not defined
+
 
 * SQL steps
   :LOGBOOK:
@@ -446,7 +540,7 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 
-**** all insert and update functions
+**** all insert and update functions--deprecate and prefer Python
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 
 INSERT INTO matchez (match_id, tournament_name, round) VALUES (1, 'tennis', 1);
@@ -506,7 +600,7 @@ INSERT INTO player_recordz (player_id) VALUES (8);
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
-**** insert tournament rounds data--four matches between 8 players
+**** insert tournament rounds data (but don't log results!)
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO match_participants VALUES (1, 1, 2);
 INSERT INTO match_participants VALUES (2, 3, 4);
