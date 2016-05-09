@@ -1,0 +1,54 @@
+
+Archived entries from file /Users/a/Documents/working-directory/udacity-courses/fullstack/project2/exceeds-specifications-materials/testing-out-tournaments.org
+
+
+* Archived Tasks
+
+** develop new functions
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-05-09 Mon 17:34
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/exceeds-specifications-materials/testing-out-tournaments.org
+   :ARCHIVE_CATEGORY: testing-out-tournaments
+   :END:
+*** obviated by use of a single fucking trigger! thank you stackoverflow!
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'jeff');
+ #+END_SRC
+
+ #+RESULTS:
+
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# new_registerPlayer_complex("tourney_practice", "playerz", "player_recordz", 'steve', 1);
+ #+END_SRC
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# initialize_player_record("tourney_practice", "player_recordz", 1)
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer_complex("tourney_practice", "playerz", "player_recordz", 'aaaa', 1);
+new_registerPlayer_complex("tourney_practice", "playerz", "player_recordz", 'bbbb', 2);
+new_registerPlayer_complex("tourney_practice", "playerz", "player_recordz", 'cccc', 3);
+new_registerPlayer_complex("tourney_practice", "playerz", "player_recordz", 'dddd', 4);
+ #+END_SRC
+
+ #+RESULTS:
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+def new_registerPlayer_complex(dbname, player_table_name, player_record_table, player_name, player_id):
+    insert_statement1 = keyword_statement_string(player_table_name, """INSERT INTO""")
+    query1 = (insert_statement1 + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query1, dbname, (player_name,))
+    insert_statement2 = keyword_statement_string(player_record_table, """INSERT INTO""")
+    query2 = (insert_statement2 + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query2, dbname, (player_id,))
+
+ #+END_SRC
+
+ #+RESULTS:
+
