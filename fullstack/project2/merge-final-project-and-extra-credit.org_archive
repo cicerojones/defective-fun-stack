@@ -1515,3 +1515,153 @@ conn.close()
 
  #+RESULTS:
 
+** the bastard set_all_omw--needs logged results to work
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2016-05-09 Mon 09:53
+   :ARCHIVE_FILE: ~/Documents/working-directory/udacity-courses/fullstack/project2/merge-final-project-and-extra-credit.org
+   :ARCHIVE_OLPATH: python definitions (except SwissPairings)
+   :ARCHIVE_CATEGORY: merge-final-project-and-extra-credit
+   :END:
+depends heavily on player_recordz returning the desired stuff
+How does player_recordz work?
+*** the original (naughty) definition
+Whoops. Didn't want to archive this!
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_all_omw(dbname):
+    query = "SELECT * FROM set_all_OMW();"
+    new_dbExecuteWrapper(query, dbname)
+ #+END_SRC
+*** remember how using "retrievalWrapper" works
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+#     DB = new_connect(dbname)
+#     c = DB.cursor()
+#     c.execute(query_string)
+#     rows = c.fetchall()
+#     DB.close()    
+#     return rows
+
+
+# def new_playerStandings(dbname, table_name):
+#     from_statement = keyword_statement_string(table_name, """FROM""")
+#     query = ("SELECT player_id, points " +
+#              from_statement + "ORDER BY points DESC;")
+#     return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+#+END_SRC
+
+#+RESULTS:
+*** retrieve a select * call (how_many_players)
+    :PROPERTIES:
+    :ID:       A52FC1A6-0333-4B0F-B54F-2FAB13218B39
+    :END:
+use Python to call straight SQL retrieval queries (on player_recordz)
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def how_many_players(dbname):
+    query = "select * from player_recordz;"
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+how_many_players('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: [(1, 0, 2, 0, 0, 0), (5, 0, 2, 0, 0, 0), (2, 1, 1, 0, 3, 0), (6, 2, 0, 0, 6, 0), (7, 1, 1, 0, 3, 0), (3, 2, 0, 0, 6, 0), (4, 1, 1, 0, 3, 0), (8, 1, 1, 0, 3, 0)]
+*** create a log_player_record
+actually appears to log all records in one swoop even with just a
+single '1' argument?
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def log_player_records(dbname, round_no):
+    query = "select * from log_records(%s);"
+    return new_dbExecuteWrapper(query, dbname, (round_no,))
+#+END_SRC
+
+#+RESULTS:
+
+
+
+the model for log_player_record
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+## def initialize_player_record(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_player_record('tourney_practice', 1)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_player_record('tourney_practice', 2)
+#+END_SRC
+
+#+RESULTS:
+
+
+
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def set_allll_OMW(dbname):
+    data = how_many_players(dbname)
+    playaz = [n[0] for n in data]
+    [set_OMW(dbname, n) for n in playaz]
+    print("done")
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- SELECT * FROM log_records(1);
+-- must be called with a player who lost!
+-- select * from set_OMW(4);
+#+END_SRC
+*** get the definition of set_OMW right
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+data = how_many_players('tourney_practice')
+[n[0] for n in data]
+#+END_SRC
+
+#+RESULTS:
+: 
+: [1, 2, 3, 4, 5, 6, 7, 8]
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def set_OMW(dbname, player_id):
+    query = "SELECT * FROM set_omw(%s);"
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# call this function with a player that lost
+set_OMW('tourney_practice', 1)
+#+END_SRC
+
+#+RESULTS:
+
+*** create the replacement for set_all_OMW
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def set_allll_OMW(dbname):
+    data = how_many_players(dbname)
+    playaz = [n[0] for n in data]
+    [set_OMW(dbname, n) for n in playaz]
+    print("done")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+set_allll_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: done
+

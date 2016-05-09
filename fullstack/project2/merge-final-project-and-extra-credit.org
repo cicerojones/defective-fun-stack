@@ -1,6 +1,9 @@
 * drafts of finished functions
 * python definitions (except SwissPairings)
 ** functions don't assume a db or table (but do assume column names)
+   :PROPERTIES:
+   :ID:       767CBA32-990F-44B0-B1BE-0F51806648F9
+   :END:
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
 
@@ -98,54 +101,20 @@ def log_player_simple(dbname, round_of_tournament):
 #+END_SRC
 
 #+RESULTS:
-** the bastard set_all_omw--needs logged results to work
-*** the original (naughty) definition
-Whoops. Didn't want to archive this!
+** refactor logging functions
+*** 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-def log_all_omw(dbname):
-    query = "SELECT * FROM set_all_OMW();"
-    new_dbExecuteWrapper(query, dbname)
- #+END_SRC
-*** remember how using "retrievalWrapper" works
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-# def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
-#     DB = new_connect(dbname)
-#     c = DB.cursor()
-#     c.execute(query_string)
-#     rows = c.fetchall()
-#     DB.close()    
-#     return rows
-
-
-# def new_playerStandings(dbname, table_name):
-#     from_statement = keyword_statement_string(table_name, """FROM""")
-#     query = ("SELECT player_id, points " +
-#              from_statement + "ORDER BY points DESC;")
-#     return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
-
-#+END_SRC
-
-#+RESULTS:
-*** use Python to call straight SQL retrieval queries (on player_recordz)
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# a brittle way to obtain player ids?
 def how_many_players(dbname):
     query = "select * from player_recordz;"
     return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
 #+END_SRC
 
-#+RESULTS:
-
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-how_many_players('tourney_practice')
-#+END_SRC
-
-#+RESULTS:
-: [(1, 0, 0, 0, 0, 0), (2, 0, 0, 0, 0, 0), (3, 0, 0, 0, 0, 0), (4, 0, 0, 0, 0, 0), (5, 0, 0, 0, 0, 0), (6, 0, 0, 0, 0, 0), (7, 0, 0, 0, 0, 0), (8, 0, 0, 0, 0, 0)]
-
-*** get the definition of set_OMW right
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-data = how_many_players('tourney_practice')
-[n[0] for n in data]
+# should really be called log_rounds?
+def log_player_records(dbname, round_no):
+    query = "select * from log_records(%s);"
+    return new_dbExecuteWrapper(query, dbname, (round_no,))
 #+END_SRC
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -154,25 +123,6 @@ def set_OMW(dbname, player_id):
     new_dbExecuteWrapper(query, dbname, (player_id,))
 #+END_SRC
 
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-SELECT * FROM log_records(1);
--- must be called with a player who lost!
-select * from set_OMW(4);
-#+END_SRC
-
-#+RESULTS:
-| log_records |
-|-------------|
-|             |
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-# call this function with a player that lost
-set_OMW('tourney_practice', 1)
-#+END_SRC
-
-#+RESULTS:
-
-*** create the replacement for set_all_OMW
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def set_allll_OMW(dbname):
     data = how_many_players(dbname)
@@ -181,15 +131,14 @@ def set_allll_OMW(dbname):
     print("done")
 #+END_SRC
 
-#+RESULTS:
-
+*** call the logging functions
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 set_allll_OMW('tourney_practice')
 #+END_SRC
 
-#+RESULTS:
-: done
-
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_player_record('tourney_practice', 1)
+#+END_SRC
 * [#A] swissPairings definitions
 ** walk-through of what the function should
 *** swissPairings1 will not work for tournaments with ties
@@ -246,6 +195,9 @@ new_playerStandings("tourney_practice", "player_recordz")
 new_deleteTable("tourney_practice", "playerz")
 #+END_SRC
 * create example tournaments using only Python functions
+  :PROPERTIES:
+  :ID:       236D906F-20D1-499B-9E78-BD524C05A5D0
+  :END:
 ** "soccer" tournament (ties)
 *** first round data for simple 4 player tournament--ties allowed
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -307,7 +259,7 @@ log_all_omw("tourney_practice")
 ** single monolithic blocks
 *** all setups
 **** all 'tourney_practice' database CREATE definitions
-uses problematic set_all_OMW
+defines a problematic set_all_OMW
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
 DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
@@ -560,44 +512,15 @@ INSERT INTO match_participants VALUES (1, 1, 2);
 INSERT INTO match_participants VALUES (2, 3, 4);
 INSERT INTO match_participants VALUES (3, 5, 6);
 INSERT INTO match_participants VALUES (4, 7, 8);
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1 |
-|------------|
-| INSERT 0 1 |
-| INSERT 0 1 |
-| INSERT 0 1 |
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- uses problematic set_all_OMW
 INSERT INTO score_results VALUES (1, 0, 1);
 INSERT INTO score_results VALUES (2, 1, 0);
 INSERT INTO score_results VALUES (3, 0, 1);
 INSERT INTO score_results VALUES (4, 1, 0);
-SELECT * FROM log_records(1);
+-- SELECT * FROM log_records(1);
 
 -- this won't do anything without record logging
-SELECT * FROM set_all_OMW();
-#+END_SRC
-
-#+RESULTS:
-| INSERT 0 1  |
-|-------------|
-| INSERT 0 1  |
-| INSERT 0 1  |
-| INSERT 0 1  |
-| log_records |
-|             |
-| set_all_omw |
-|             |
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
-INSERT INTO match_participants VALUES (5, 2, 3);
-INSERT INTO match_participants VALUES (6, 6, 7);
-INSERT INTO match_participants VALUES (7, 1, 4);
-INSERT INTO match_participants VALUES (8, 5, 8);
+-- SELECT * FROM set_all_OMW();
 #+END_SRC
 
 #+RESULTS:
@@ -606,26 +529,35 @@ INSERT INTO match_participants VALUES (8, 5, 8);
 | INSERT 0 1 |
 | INSERT 0 1 |
 | INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO match_participants VALUES (5, 2, 3);
+INSERT INTO match_participants VALUES (6, 6, 7);
+INSERT INTO match_participants VALUES (7, 1, 4);
+INSERT INTO match_participants VALUES (8, 5, 8);
+
 INSERT INTO score_results VALUES (5, 0, 10);
 INSERT INTO score_results VALUES (6, 10, 0);
 INSERT INTO score_results VALUES (7, 0, 10);
 INSERT INTO score_results VALUES (8, 1, 10);
-select * from log_records(2);
-select * from set_all_omw();
+-- select * from log_records(2);
+-- select * from set_all_omw();
 #+END_SRC
 
 #+RESULTS:
-| INSERT 0 1  |
-|-------------|
-| INSERT 0 1  |
-| INSERT 0 1  |
-| INSERT 0 1  |
-| log_records |
-|             |
-| set_all_omw |
-|             |
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
 **** 'TOURNAMENT' (as opposed to 'tourney_practice')
 #+BEGIN_SRC sql :engine postgresql :database tournament
 -- CREATE DATABASE tournament;
@@ -930,6 +862,13 @@ INSERT INTO match_participants VALUES (3, 5, 6);
 INSERT INTO match_participants VALUES (4, 7, 8);
 #+END_SRC
 
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
 *** create a series of match scores
 **** insert score results (match id, home.score, away.score)
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
@@ -948,7 +887,6 @@ INSERT INTO score_results VALUES (4, 1, 0);
 *** repeat for round 2
 **** schedule of matches
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
 INSERT INTO match_participants VALUES (5, 2, 3);
 INSERT INTO match_participants VALUES (6, 6, 7);
 INSERT INTO match_participants VALUES (7, 1, 4);
@@ -968,6 +906,14 @@ INSERT INTO score_results VALUES (6, 10, 0);
 INSERT INTO score_results VALUES (7, 0, 10);
 INSERT INTO score_results VALUES (8, 1, 10);
 #+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| INSERT 0 1 |
+
 **** log player data
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from log_records(2);
@@ -1221,7 +1167,7 @@ to see if anything is running or in the database
 6. use SQL with orgmode for experiments
 and experiment with creating different tournament results to get
 different pairings 
-** can you remember how to make tournaments?
+** can you remember how to make tournaments (using SQL)?
 *** what tables do you need?
 see [[*all setups][all setups]], specifically 'tourney_practice' CREATE
 or [[*tourney setup broken up by statement][tourney setup broken up by statement]]
@@ -1356,3 +1302,11 @@ INSERT INTO player_recordz (player_id) VALUES (6);
 INSERT INTO player_recordz (player_id) VALUES (7);
 INSERT INTO player_recordz (player_id) VALUES (8);
 #+END_SRC
+** convert all database insertions to use python ONLY!
+*** do initialize tournaments in Python
+[[id:236D906F-20D1-499B-9E78-BD524C05A5D0][create example tournaments using only Python functions]]
+*** calculate records in python
+**** load the basic definitions of python functions
+[[id:767CBA32-990F-44B0-B1BE-0F51806648F9][functions don't assume a db or table (but do assume column names)]]
+**** find and load the in-development python code
+ [[id:A52FC1A6-0333-4B0F-B54F-2FAB13218B39][retrieve a select * call]]
