@@ -207,10 +207,10 @@ new_registerPlayer("tourney_practice", "playerz", 'bbbb');
 new_registerPlayer("tourney_practice", "playerz", 'cccc');
 new_registerPlayer("tourney_practice", "playerz", 'dddd');
 
-initialize_player_record("tourney_practice", "player_recordz", 1)
-initialize_player_record("tourney_practice", "player_recordz", 2)
-initialize_player_record("tourney_practice", "player_recordz", 3)
-initialize_player_record("tourney_practice", "player_recordz", 4)
+# initialize_player_record("tourney_practice", "player_recordz", 1)
+# initialize_player_record("tourney_practice", "player_recordz", 2)
+# initialize_player_record("tourney_practice", "player_recordz", 3)
+# initialize_player_record("tourney_practice", "player_recordz", 4)
 
 registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
 registerMatch("tourney_practice", "matchez", 2, "soccer", 1);
@@ -238,14 +238,14 @@ new_registerPlayer("tourney_practice", "playerz", 'f');
 new_registerPlayer("tourney_practice", "playerz", 'g');
 new_registerPlayer("tourney_practice", "playerz", 'h');
 
-initialize_player_record("tourney_practice", "player_recordz", 1)
-initialize_player_record("tourney_practice", "player_recordz", 2)
-initialize_player_record("tourney_practice", "player_recordz", 3)
-initialize_player_record("tourney_practice", "player_recordz", 4)
-initialize_player_record("tourney_practice", "player_recordz", 5)
-initialize_player_record("tourney_practice", "player_recordz", 6)
-initialize_player_record("tourney_practice", "player_recordz", 7)
-initialize_player_record("tourney_practice", "player_recordz", 8)
+# initialize_player_record("tourney_practice", "player_recordz", 1)
+# initialize_player_record("tourney_practice", "player_recordz", 2)
+# initialize_player_record("tourney_practice", "player_recordz", 3)
+# initialize_player_record("tourney_practice", "player_recordz", 4)
+# initialize_player_record("tourney_practice", "player_recordz", 5)
+# initialize_player_record("tourney_practice", "player_recordz", 6)
+# initialize_player_record("tourney_practice", "player_recordz", 7)
+# initialize_player_record("tourney_practice", "player_recordz", 8)
 
 registerMatch("tourney_practice", "matchez", 1, "tennis", 1);
 registerMatch("tourney_practice", "matchez", 2, "tennis", 1);
@@ -306,14 +306,14 @@ new_registerPlayer("tourney_practice", "playerz", 'f');
 new_registerPlayer("tourney_practice", "playerz", 'g');
 new_registerPlayer("tourney_practice", "playerz", 'h');
 
-initialize_player_record("tourney_practice", "player_recordz", 1)
-initialize_player_record("tourney_practice", "player_recordz", 2)
-initialize_player_record("tourney_practice", "player_recordz", 3)
-initialize_player_record("tourney_practice", "player_recordz", 4)
-initialize_player_record("tourney_practice", "player_recordz", 5)
-initialize_player_record("tourney_practice", "player_recordz", 6)
-initialize_player_record("tourney_practice", "player_recordz", 7)
-initialize_player_record("tourney_practice", "player_recordz", 8)
+# initialize_player_record("tourney_practice", "player_recordz", 1)
+# initialize_player_record("tourney_practice", "player_recordz", 2)
+# initialize_player_record("tourney_practice", "player_recordz", 3)
+# initialize_player_record("tourney_practice", "player_recordz", 4)
+# initialize_player_record("tourney_practice", "player_recordz", 5)
+# initialize_player_record("tourney_practice", "player_recordz", 6)
+# initialize_player_record("tourney_practice", "player_recordz", 7)
+# initialize_player_record("tourney_practice", "player_recordz", 8)
 
 registerMatch("tourney_practice", "matchez", 1, "tennis", 1);
 registerMatch("tourney_practice", "matchez", 2, "tennis", 1);
@@ -349,6 +349,7 @@ set_allll_OMW('tourney_practice')
 **** all 'tourney_practice' database CREATE definitions--schema
 defines a problematic set_all_OMW
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+
 -- only used for restarting with clean player ids
 DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
 
@@ -410,6 +411,22 @@ where a.player_id = b.player_id;
 -- to be able to reflect the results of matches in player stats, 
 -- we need to distinguish the various kinds of wins, losses 
 -- (and any draws if the tournament allows them)
+
+CREATE OR REPLACE FUNCTION initialize_player_rec() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO player_recordz (player_id) VALUES (NEW.player_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_player_rec
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+
+-- CREATE OR REPLACE FUNCTION initialize_player_rec(integer) RETURNS VOID AS $$
+--        INSERT INTO player_recordz (player_id) VALUES ($1)
+-- $$ LANGUAGE SQL;
+
 
 -- the following update functions need to be called in the proper way 
 -- and at the proper time (i.e. at the end of rounds of a particular tournament)
@@ -522,6 +539,8 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 | CREATE TABLE    |
 | CREATE VIEW     |
 | CREATE VIEW     |
+| CREATE FUNCTION |
+| CREATE TRIGGER  |
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 | CREATE FUNCTION |
@@ -942,6 +961,14 @@ INSERT INTO player_recordz (player_id) VALUES (8);
 | INSERT 0 1 |
 | INSERT 0 1 |
 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO player_recordz (player_id) VALUES (4);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
 ** make up some actual games (insert tournament rounds data broken up by category)
 *** create a schedule of matches
 **** insert match participants (match id, home.id, away.id)
@@ -1020,6 +1047,33 @@ select * from set_all_omw();
 |             |
 | set_all_omw |
 |             |
+
+** develop a real trigger
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION initialize_player_rec() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO player_recordz (player_id) VALUES (NEW.player_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_player_rec
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+#+END_SRC
+
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
+| CREATE TRIGGER  |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name) VALUES ('a');
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
 
 * display contents of tables and views
 ** plain tables--(matchez, playerz, match_participants, score_results, player_recordz)
@@ -1448,3 +1502,5 @@ INSERT INTO player_recordz (player_id) VALUES (8);
 [[id:767CBA32-990F-44B0-B1BE-0F51806648F9][functions don't assume a db or table (but do assume column names)]]
 **** find and load the in-development python code
  [[id:A52FC1A6-0333-4B0F-B54F-2FAB13218B39][retrieve a select * call]]
+* simple steps
+[[*all setups][all setups]]

@@ -1,4 +1,4 @@
-* 
+* old
 ** exisiting meets specifications code, schema and tests
 *** basic pythoncode
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -241,7 +241,7 @@ if __name__ == '__main__':
     testPairings()
     print "Success!  All tests pass!"
 #+END_SRC
-* 
+* new
 ** developing exceeds specifications
 *** SQL schema
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
@@ -311,6 +311,17 @@ where a.player_id = b.player_id;
 -- and at the proper time (i.e. at the end of rounds of a particular tournament)
 -- right now, there is the possibility of over-tabulating points if all matches 
 -- for any particular rounds have not been registered yet
+CREATE OR REPLACE FUNCTION initialize_player_rec() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO player_recordz (player_id) VALUES (NEW.player_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_player_rec
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+
 CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
        UPDATE player_recordz SET draws = draws + 1
        from tournament_matches as a 
@@ -407,6 +418,7 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
 
+## db interaction plumbing
 def new_connect(dbname):
     dbname_string = "dbname={}".format(dbname)
     return psycopg2.connect(dbname_string)
@@ -426,6 +438,7 @@ def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
     DB.close()    
     return rows
 
+## SQL 'dsl' helpers
 def update_statement_string(table_name):
     tb_name = table_name
     sql_keywords = """UPDATE """
@@ -437,6 +450,7 @@ def keyword_statement_string(table_name, sql_keyword):
     update_statement = sql_keywords + tb_name + """ """
     return update_statement
 
+## deletion
 def new_deleteTable(dbname, table_name):
     tb_name = table_name
     sql_keywords = """DELETE FROM """
@@ -444,6 +458,14 @@ def new_deleteTable(dbname, table_name):
     table_nm = (table_name,)
     new_dbExecuteWrapper(query, dbname)
 
+
+def deletePlayers():
+    new_deleteTable("tourney_practice", "playerz")
+
+def deleteMatches():
+    new_deleteTable("tourney_practice", "matchez")
+
+## original Python db interaction
 def new_countPlayers(dbname, table_name):
     DB = new_connect(dbname)
     c = DB.cursor()
@@ -462,6 +484,16 @@ def new_registerPlayer(dbname, table_name, player_name):
              "VALUES (%s);")
     new_dbExecuteWrapper(query, dbname, (player_name,))
 
+def new_registerPlayer_complex(dbname, player_table_name, player_record_table, player_name, player_id):
+    insert_statement1 = keyword_statement_string(player_table_name, """INSERT INTO""")
+    query1 = (insert_statement1 + "(player_name)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query1, dbname, (player_name,))
+    insert_statement2 = keyword_statement_string(player_record_table, """INSERT INTO""")
+    query2 = (insert_statement2 + "(player_id)" + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query2, dbname, (player_id,))
+
 # refactor to allow substituting column names?
 def initialize_player_record(dbname, table_name, player_id):
     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
@@ -469,12 +501,30 @@ def initialize_player_record(dbname, table_name, player_id):
              "VALUES (%s);")
     new_dbExecuteWrapper(query, dbname, (player_id,))
 
+def initialize_player_record_alt(dbname, table_name, player_id):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + 
+             "VALUES (%s);")
+    new_dbExecuteWrapper(query, dbname, (player_id,))
 
+
+# ### IMPORTANT: which table/view and which columns??
 def new_playerStandings(dbname, table_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
     query = ("SELECT player_id, points " +
              from_statement + "ORDER BY points DESC;")
     return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+
+### IMPORTANT: which table/view and which columns??
+def new_playerStandings_alt(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT * " +
+             from_statement + "ORDER BY points DESC, omw DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+def playerTables():
+    new_playerStandings_alt("tourney_practice", "player_tables")
 
 
 def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
@@ -514,3 +564,9 @@ def set_all_OMW(dbname):
     [set_OMW(dbname, n) for n in playaz]
     print("done")
 #+END_SRC
+
+#+RESULTS:
+: 
+: ipdb> *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+: *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
+
