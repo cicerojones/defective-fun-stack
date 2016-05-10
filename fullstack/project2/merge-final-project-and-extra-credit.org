@@ -526,32 +526,9 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 #+END_SRC
 
 #+RESULTS:
-| DROP TABLE      |
-|-----------------|
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| DROP TABLE      |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE TABLE    |
-| CREATE VIEW     |
-| CREATE VIEW     |
-| CREATE FUNCTION |
-| CREATE TRIGGER  |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
-| CREATE FUNCTION |
+| DROP TABLE |
+|------------|
+| DROP TABLE |
 
 **** sample uses of SQL with tourney_practice
 ***** insert and update functions--deprecate and prefer Python

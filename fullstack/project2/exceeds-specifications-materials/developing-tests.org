@@ -101,7 +101,7 @@ CREATE TABLE players(id serial PRIMARY KEY, player_name text not null, wins inte
 
 CREATE TABLE matches(winner integer, loser integer);
 #+END_SRC
-*** create a test file for basic python code
+*** original test file for basic python code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 #!/usr/bin/env python
 #
@@ -243,17 +243,26 @@ if __name__ == '__main__':
 #+END_SRC
 * new
 ** developing exceeds specifications
-*** SQL schema
+*** SQL schema (with opening DROPS)
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
-DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
+DROP TABLE playerz CASCADE; 
+DROP TABLE match_participants CASCADE; 
+DROP TABLE matchez CASCADE;
+DROP TABLE score_results; 
+DROP TABLE player_recordz CASCADE;
+#+END_SRC
 
+#+RESULTS:
+| DROP TABLE |
+|------------|
+| DROP TABLE |
+| DROP TABLE |
+| DROP TABLE |
+| DROP TABLE |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- matches have id number, a tournament name and a round number
-CREATE TABLE matchez(
-       match_id serial PRIMARY KEY,
-       tournament_name text not null,
-       round int); 
-
 -- players have an id number and a name; 
 -- theoretically can be in any tournaments? 
 -- (need to distinguish btwn different results in different tournaments)
@@ -262,14 +271,22 @@ CREATE TABLE playerz (
        player_name text not null);
 
 -- matches have participants, arbitrarily assigned to home and away categories
-CREATE TABLE match_participants(
-       match_id int REFERENCES matchez (match_id),
+CREATE TABLE match_participants (
+--     match_id int REFERENCES matchez (match_id),
+       match_id serial PRIMARY KEY,
        home int REFERENCES playerz (player_id),
        away int REFERENCES playerz (player_id));
 
+CREATE TABLE matchez(
+--       match_id serial PRIMARY KEY,
+       match_id int REFERENCES match_participants (match_id),
+--       tournament_name text not null,
+       tournament_name text DEFAULT 'none',
+       round int); 
+
 -- results of matches have a score for the home and away players
 CREATE TABLE score_results (
-       match_id int REFERENCES matchez (match_id),
+       match_id int REFERENCES match_participants (match_id),
        home_score int,
        away_score int);
 
@@ -321,6 +338,17 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER initialize_player_rec
        AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
        initialize_player_rec();
+
+CREATE OR REPLACE FUNCTION initialize_matchez() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO matchez (match_id) VALUES (NEW.match_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_match_participants
+       AFTER INSERT ON match_participants FOR EACH row EXECUTE PROCEDURE
+       initialize_matchez();
 
 CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
        UPDATE player_recordz SET draws = draws + 1
@@ -414,6 +442,61 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
        $log_records$ LANGUAGE SQL;
 
 #+END_SRC
+
+#+RESULTS:
+| CREATE TABLE    |
+|-----------------|
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE VIEW     |
+| CREATE VIEW     |
+| CREATE FUNCTION |
+| CREATE TRIGGER  |
+| CREATE FUNCTION |
+| CREATE TRIGGER  |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+
+*** 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | round |
+|----------+-----------------+-------|
+|          | tennis          |     1 |
+|          | tennis          |     1 |
+|          | tennis          |     1 |
+|          | tennis          |     1 |
+|        1 | tennis          |     1 |
+|        2 | tennis          |     1 |
+|        3 | tennis          |     1 |
+|        4 | tennis          |     1 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+UPDATE matchez
+SET tournament_name = 'tennis', round = 1
+WHERE tournament_name = 'none'
+
+
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 4 |
+|----------|
+
 *** exceeds Python code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
@@ -484,30 +567,6 @@ def new_registerPlayer(dbname, table_name, player_name):
              "VALUES (%s);")
     new_dbExecuteWrapper(query, dbname, (player_name,))
 
-def new_registerPlayer_complex(dbname, player_table_name, player_record_table, player_name, player_id):
-    insert_statement1 = keyword_statement_string(player_table_name, """INSERT INTO""")
-    query1 = (insert_statement1 + "(player_name)" + 
-             "VALUES (%s);")
-    new_dbExecuteWrapper(query1, dbname, (player_name,))
-    insert_statement2 = keyword_statement_string(player_record_table, """INSERT INTO""")
-    query2 = (insert_statement2 + "(player_id)" + 
-             "VALUES (%s);")
-    new_dbExecuteWrapper(query2, dbname, (player_id,))
-
-# refactor to allow substituting column names?
-def initialize_player_record(dbname, table_name, player_id):
-    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "(player_id)" + 
-             "VALUES (%s);")
-    new_dbExecuteWrapper(query, dbname, (player_id,))
-
-def initialize_player_record_alt(dbname, table_name, player_id):
-    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + 
-             "VALUES (%s);")
-    new_dbExecuteWrapper(query, dbname, (player_id,))
-
-
 # ### IMPORTANT: which table/view and which columns??
 def new_playerStandings(dbname, table_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
@@ -517,6 +576,8 @@ def new_playerStandings(dbname, table_name):
 
 
 ### IMPORTANT: which table/view and which columns??
+#Return a table ordered first by points and then OMW (to break ties?)
+
 def new_playerStandings_alt(dbname, table_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
     query = ("SELECT * " +
@@ -527,17 +588,33 @@ def playerTables():
     new_playerStandings_alt("tourney_practice", "player_tables")
 
 
-def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+# def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
+#     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+#     query = (insert_statement + "(match_id, tournament_name, round)" + 
+#              "VALUES (%s, %s, %s);")
+#     new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+
+def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "(match_id, tournament_name, round)" + 
-             "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, dbname, (match_no, tournament_name, round_of_tournament))
+    query = (insert_statement + "(tournament_name, round)" + 
+             "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query, dbname, (tournament_name, round_of_tournament))
 
 
-def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
-    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "VALUES (%s, %s, %s);")
-    new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
+# def registerMatchParticipants(dbname, table_name, match_no, player_id1, player_id2):
+#     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+#     query = (insert_statement + "VALUES (%s, %s, %s);")
+#     new_dbExecuteWrapper(query, dbname, (match_no, player_id1, player_id2))
+
+# use update_statement_string(table_name)???
+def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
+    participant_insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query2 = (participant_insert_statement + "(home, away)" + "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query2, dbname, (player_id1, player_id2))
+    match_update_statement = keyword_statement_string("""matchez""", """UPDATE""")
+    query1 = (match_update_statement + 
+              "SET tournament_name= (%s), round = (%s) WHERE tournament_name= 'none';")
+    new_dbExecuteWrapper(query1, dbname, (sport, round_no))
 
 
 def registerScores(dbname, table_name, match_no, home_score, away_score):
@@ -566,7 +643,4 @@ def set_all_OMW(dbname):
 #+END_SRC
 
 #+RESULTS:
-: 
-: ipdb> *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
-: *** SyntaxError: unexpected EOF while parsing (<stdin>, line 1)
 
