@@ -38,7 +38,6 @@ log_player_simple("tourney_practice", 1)
 set_all_OMW("tourney_practice")
 #+END_SRC
 
-
 ** "tennis" tournament (no ties)
 *** two rounds data for simple 8 player tournament--ties allowed (identical?)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -303,7 +302,6 @@ set_all_OMW('tourney_practice')
 : 
 : done
 
-
 * prepare to pass tests
 ** original pass-test statements plus
 print "1. Old matches can be deleted."
@@ -475,14 +473,22 @@ ORDER BY points DESC, omw DESC ;
 #+RESULTS:
 | player_id | wins | losses | draws | points | omw |
 |-----------+------+--------+-------+--------+-----|
-|         8 |    1 |      0 |     0 |      3 |   0 |
-|         3 |    1 |      0 |     0 |      3 |   0 |
-|         5 |    1 |      0 |     0 |      3 |   0 |
-|         1 |    0 |      0 |     1 |      1 |   1 |
-|         2 |    0 |      0 |     1 |      1 |   1 |
-|         6 |    0 |      1 |     0 |      0 |   3 |
-|         4 |    0 |      1 |     0 |      0 |   3 |
-|         7 |    0 |      1 |     0 |      0 |   3 |
+|         1 |    3 |      0 |     0 |      9 |  15 |
+|         8 |    2 |      1 |     0 |      6 |  15 |
+|         4 |    2 |      1 |     0 |      6 |  12 |
+|         2 |    2 |      1 |     0 |      6 |  12 |
+|         5 |    1 |      2 |     0 |      3 |  18 |
+|         6 |    1 |      2 |     0 |      3 |  12 |
+|         3 |    1 |      2 |     0 |      3 |   9 |
+|         7 |    0 |      3 |     0 |      0 |  15 |
+|        15 |    0 |      0 |     0 |      0 |   0 |
+|        14 |    0 |      0 |     0 |      0 |   0 |
+|        13 |    0 |      0 |     0 |      0 |   0 |
+|        12 |    0 |      0 |     0 |      0 |   0 |
+|        11 |    0 |      0 |     0 |      0 |   0 |
+|        10 |    0 |      0 |     0 |      0 |   0 |
+|        16 |    0 |      0 |     0 |      0 |   0 |
+|         9 |    0 |      0 |     0 |      0 |   0 |
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from player_tables
@@ -500,3 +506,137 @@ ORDER BY points DESC, omw DESC ;
 |         7 | g           |    0 |      2 |     0 |      0 |  12 |
 |         6 | f           |    0 |      2 |     0 |      0 |  12 |
 |         4 | d           |    0 |      2 |     0 |      0 |   9 |
+* prepare final test of bcomplete rounds with multiple tournaments, ties and omw
+** register 8 players and set them up into one round of four matches
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'a');
+new_registerPlayer("tourney_practice", "playerz", 'b');
+new_registerPlayer("tourney_practice", "playerz", 'c');
+new_registerPlayer("tourney_practice", "playerz", 'd');
+new_registerPlayer("tourney_practice", "playerz", 'e');
+new_registerPlayer("tourney_practice", "playerz", 'f');
+new_registerPlayer("tourney_practice", "playerz", 'g');
+new_registerPlayer("tourney_practice", "playerz", 'h');
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+#+END_SRC
+
+#+RESULTS:
+
+** log activity from the first round
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: done
+
+
+
+** setup second round
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+naive_swissPairings(2, "tennis")
+#+END_SRC
+
+#+RESULTS:
+
+** log activity from second round
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 0, 1)
+registerScores("tourney_practice", "score_results", 7, 1, 0)
+registerScores("tourney_practice", "score_results", 8, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 2)
+
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> done
+
+** third round setup
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+naive_swissPairings(3, "tennis")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 9, 1, 0)
+registerScores("tourney_practice", "score_results", 10, 0, 1)
+registerScores("tourney_practice", "score_results", 11, 1, 0)
+registerScores("tourney_practice", "score_results", 12, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 3)
+
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> done
+
+** new tournament
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'allen');
+new_registerPlayer("tourney_practice", "playerz", 'beverly');
+new_registerPlayer("tourney_practice", "playerz", 'cleanth');
+new_registerPlayer("tourney_practice", "playerz", 'devon');
+new_registerPlayer("tourney_practice", "playerz", 'eldridge');
+new_registerPlayer("tourney_practice", "playerz", 'fatool');
+new_registerPlayer("tourney_practice", "playerz", 'g-money');
+new_registerPlayer("tourney_practice", "playerz", 'harold');
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+registerScores("tourney_practice", "score_results", 13, 1, 0)
+registerScores("tourney_practice", "score_results", 14, 0, 1)
+registerScores("tourney_practice", "score_results", 15, 1, 0)
+registerScores("tourney_practice", "score_results", 16, 0, 1)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: done
+

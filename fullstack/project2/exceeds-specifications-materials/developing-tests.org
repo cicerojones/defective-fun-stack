@@ -1,246 +1,3 @@
-* old
-** exisiting meets specifications code, schema and tests
-*** basic pythoncode
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-import psycopg2
-
-
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
-
-
-# refactor to use connect() for final version
-def dbExecuteWrapper(query_string, extra=None):
-    DB = connect()
-    c = DB.cursor()
-    c.execute(query_string, extra)
-    DB.commit()
-    DB.close()
-
-
-def dbExecuteRetrievalWrapper_allrows(query_string):
-    DB = connect()
-    c = DB.cursor()
-    c.execute(query_string)
-    rows = c.fetchall()
-    return rows
-    DB.close()
-
-
-# refactor all queries into a variable that is then passed to execute
-def deleteMatches():
-    query = """DELETE FROM matches;"""
-    dbExecuteWrapper(query)
-
-
-def deletePlayers():
-    query = """DELETE FROM players;"""
-    dbExecuteWrapper(query)
-
-
-def countPlayers():
-    DB = connect()
-    c = DB.cursor()
-    query = "SELECT count(*) FROM players;"
-    c.execute(query)
-    row = c.fetchone()
-    row_item = list(row)
-    return int(row_item[0])
-    DB.close()
-
-
-def registerPlayer(name):
-    query = ("INSERT INTO players (player_name, wins, matches)"
-             "VALUES (%s, %s, %s);")
-    dbExecuteWrapper(query, (name, 0, 0))
-
-
-# Some kind of problem using _allrows with multiline string formatting
-def playerStandings():
-    query = ("SELECT id, player_name, wins, matches "
-             "FROM players ORDER BY wins DESC;")
-    return dbExecuteRetrievalWrapper_allrows(query)
-
-
-def reportMatch(winner, loser):
-    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
-    query2 = ("UPDATE players SET wins = wins + 1"
-              "FROM matches WHERE players.id = (%s) ;")
-    query3 = ("UPDATE players SET matches = matches + 1"
-              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
-    dbExecuteWrapper(query1, (winner, loser))
-    dbExecuteWrapper(query2, (winner,))
-    dbExecuteWrapper(query3, (winner, loser))
-
-
-def swissPairings():
-    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
-             "FROM players as a, players as b "
-             "WHERE a.wins = b.wins "
-             "AND a.player_name != b.player_name "
-             "AND a.id < b.id")
-    return dbExecuteRetrievalWrapper_allrows(query)
-#+END_SRC
-*** define schema
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-
--- Table definitions for the tournament project.
---
--- Put your SQL 'create table' statements in this file; also 'create view'
--- statements if you choose to use it.
---
--- You can write comments in this file by starting them with two dashes, like
--- these lines here.
-
-CREATE DATABASE tournament;
-
-\c tournament
-
-CREATE TABLE players(id serial PRIMARY KEY, player_name text not null, wins integer, matches integer);
-
-CREATE TABLE matches(winner integer, loser integer);
-#+END_SRC
-*** original test file for basic python code
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-#!/usr/bin/env python
-#
-# Test cases for tournament.py
-
-from final_project import *
-
-def testDeleteMatches():
-    deleteMatches()
-    print "1. Old matches can be deleted."
-
-
-def testDelete():
-    deleteMatches()
-    deletePlayers()
-    print "2. Player records can be deleted."
-
-
-def testCount():
-    deleteMatches()
-    deletePlayers()
-    c = countPlayers()
-    if c == '0':
-        raise TypeError(
-            "countPlayers() should return numeric zero, not string '0'.")
-    if c != 0:
-        raise ValueError("After deleting, countPlayers should return zero.")
-    print "3. After deleting, countPlayers() returns zero."
-
-
-def testRegister():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Chandra Nalaar")
-    c = countPlayers()
-    if c != 1:
-        raise ValueError(
-            "After one player registers, countPlayers() should be 1.")
-    print "4. After registering a player, countPlayers() returns 1."
-
-
-def testRegisterCountDelete():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Markov Chaney")
-    registerPlayer("Joe Malik")
-    registerPlayer("Mao Tsu-hsi")
-    registerPlayer("Atlanta Hope")
-    c = countPlayers()
-    if c != 4:
-        raise ValueError(
-            "After registering four players, countPlayers should be 4.")
-    deletePlayers()
-    c = countPlayers()
-    if c != 0:
-        raise ValueError("After deleting, countPlayers should return zero.")
-    print "5. Players can be registered and deleted."
-
-
-def testStandingsBeforeMatches():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Melpomene Murray")
-    registerPlayer("Randy Schwartz")
-    standings = playerStandings()
-    if len(standings) < 2:
-        raise ValueError("Players should appear in playerStandings even before "
-                         "they have played any matches.")
-    elif len(standings) > 2:
-        raise ValueError("Only registered players should appear in standings.")
-    if len(standings[0]) != 4:
-        raise ValueError("Each playerStandings row should have four columns.")
-    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
-    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
-        raise ValueError(
-            "Newly registered players should have no matches or wins.")
-    if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
-        raise ValueError("Registered players' names should appear in standings, "
-                         "even if they have no matches played.")
-    print "6. Newly registered players appear in the standings with no matches."
-
-
-def testReportMatches():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Bruno Walton")
-    registerPlayer("Boots O'Neal")
-    registerPlayer("Cathy Burton")
-    registerPlayer("Diane Grant")
-    standings = playerStandings()
-    [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
-    standings = playerStandings()
-    for (i, n, w, m) in standings:
-        if m != 1:
-            raise ValueError("Each player should have one match recorded.")
-        if i in (id1, id3) and w != 1:
-            raise ValueError("Each match winner should have one win recorded.")
-        elif i in (id2, id4) and w != 0:
-            raise ValueError("Each match loser should have zero wins recorded.")
-    print "7. After a match, players have updated standings."
-
-
-def testPairings():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Twilight Sparkle")
-    registerPlayer("Fluttershy")
-    registerPlayer("Applejack")
-    registerPlayer("Pinkie Pie")
-    standings = playerStandings()
-    [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
-    pairings = swissPairings()
-    if len(pairings) != 2:
-        raise ValueError(
-            "For four players, swissPairings should return two pairs.")
-    [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
-    correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
-    actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
-    if correct_pairs != actual_pairs:
-        raise ValueError(
-            "After one match, players with one win should be paired.")
-    print "8. After one match, players with one win are paired."
-
-
-if __name__ == '__main__':
-    testDeleteMatches()
-    testDelete()
-    testCount()
-    testRegister()
-    testRegisterCountDelete()
-    testStandingsBeforeMatches()
-    testReportMatches()
-    testPairings()
-    print "Success!  All tests pass!"
-#+END_SRC
 * new
 ** developing exceeds specifications
 *** SQL schema (with opening DROPS)
@@ -350,44 +107,52 @@ CREATE TRIGGER initialize_match_participants
        AFTER INSERT ON match_participants FOR EACH row EXECUTE PROCEDURE
        initialize_matchez();
 
-CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+-- CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+--        UPDATE player_recordz SET draws = draws + 1
+--        from tournament_matches as a 
+--        WHERE a.home_score = a.away_score
+--        AND (a.home = player_id OR a.away = player_id)
+--        AND a.round = $1;
+-- $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_draws(round_no integer, tournament_name text) RETURNS VOID AS $$
        UPDATE player_recordz SET draws = draws + 1
        from tournament_matches as a 
        WHERE a.home_score = a.away_score
        AND (a.home = player_id OR a.away = player_id)
-       AND a.round = $1;
+       AND a.round = $1 AND a.tournament_name = $2
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION log_away_wins(integer) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION log_away_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
        UPDATE player_recordz SET wins = wins + 1
        from tournament_matches as a 
        WHERE a.home_score < a.away_score
        AND a.away = player_id
-       AND a.round = $1;
+       AND a.round = $1 AND a.tournament_name = $2
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION log_away_losses(integer) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION log_away_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
        UPDATE player_recordz SET losses = losses + 1
        from tournament_matches as a 
        WHERE a.home_score > a.away_score
        AND a.away = player_id
-       AND a.round = $1;
+       AND a.round = $1 AND a.tournament_name = $2
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION log_home_wins(integer) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION log_home_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
        UPDATE player_recordz SET wins = wins + 1
        from tournament_matches as a 
        WHERE a.home_score > a.away_score
        AND a.home = player_id
-       AND a.round = $1;
+       AND a.round = $1 AND a.tournament_name = $2
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION log_home_losses(integer) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION log_home_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
        UPDATE player_recordz SET losses = losses + 1
        from tournament_matches as a 
        WHERE a.home_score < a.away_score
        AND a.home = player_id
-       AND a.round = $1;
+       AND a.round = $1 AND a.tournament_name = $2
 $$ LANGUAGE SQL;
 
 -- at the end of each round we want to tabulate the number of points for all participants
@@ -431,15 +196,38 @@ CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
 $$ LANGUAGE SQL;
 
 
+-- CREATE OR REPLACE FUNCTION log__records(round integer, tournament_name text) RETURNS VOID AS $$
+--        SELECT log_named_draws($1, $2);
+--        -- SELECT log_home_losses($1);
+--        -- SELECT log_home_wins($1);
+--        -- SELECT log_away_losses($1);
+--        -- SELECT log_away_wins($1);
+--        -- SELECT log_draws($1);
+--        SELECT update_points();
+-- $$ LANGUAGE SQL;
+
+
+
+-- -- uses a $name$ syntax erroneously?
+-- CREATE OR REPLACE FUNCTION log_records(round round_no integer, tournament_name text) RETURNS VOID as $log_records$
+--        SELECT log_home_losses($1, $2);
+--        SELECT log_home_wins($1, $2);
+--        SELECT log_away_losses($1, $2);
+--        SELECT log_away_wins($1, $2);
+--        SELECT log_draws($1, $2);
+--        SELECT update_points();
+--        $log_records$ LANGUAGE SQL;
+
 -- uses a $name$ syntax erroneously?
-CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_records$
-       SELECT log_home_losses($1);
-       SELECT log_home_wins($1);
-       SELECT log_away_losses($1);
-       SELECT log_away_wins($1);
-       SELECT log_draws($1);
+CREATE OR REPLACE FUNCTION log_records(round_no integer, tournament_name text) RETURNS VOID as $$
+       SELECT log_home_losses($1, $2);
+       SELECT log_home_wins($1, $2);
+       SELECT log_away_losses($1, $2);
+       SELECT log_away_wins($1, $2);
+       SELECT log_draws($1, $2);
        SELECT update_points();
-       $log_records$ LANGUAGE SQL;
+$$ LANGUAGE SQL;
+
 
 #+END_SRC
 
@@ -467,8 +255,8 @@ CREATE OR REPLACE FUNCTION log_records(round integer) RETURNS VOID as $log_recor
 | CREATE FUNCTION |
 | CREATE FUNCTION |
 | CREATE FUNCTION |
-
-*** 
+*** 'still developing using SQL' dedicated section
+**** SQL update statement syntax
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from matchez
 #+END_SRC
@@ -496,6 +284,195 @@ WHERE tournament_name = 'none'
 #+RESULTS:
 | UPDATE 4 |
 |----------|
+**** practice giving extra arguments to function
+The following steps serve to spell out the activities for the smallest
+tournament
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- register a player with a "named"
+-- also autoupdates player_recordz via a trigger
+INSERT INTO playerz (player_name) VALUES ('a');
+INSERT INTO playerz (player_name) VALUES ('b');
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- register a match between two players
+-- also autoupdates match_id and tournament_name (with 'none') in matchez via a trigger
+INSERT INTO match_participants (home, away) VALUES (1, 2);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- set the name and the round number of the tournament that
+-- that this match belongs to
+UPDATE matchez SET tournament_name='tennis', round = 1 WHERE tournament_name= 'none';
+#+END_SRC
+
+#+RESULTS:
+| UPDATE 0 |
+|----------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- report a result for the given match id
+INSERT INTO score_results VALUES (1, 1, 1);
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_named_draws(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- ensure that we have a good definition for log_named_draws
+-- which should just serve to...test out that we can give a tournament name
+-- when trying to record a draw
+select * from log_named_draws(1, 'tennis')
+#+END_SRC
+
+#+RESULTS:
+| log_named_draws |
+|-----------------|
+|                 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT update_points();
+#+END_SRC
+
+#+RESULTS:
+| update_points |
+|---------------|
+|               |
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_some_records(round integer, tournament_name text) RETURNS VOID AS $$
+       SELECT log_named_draws($1, $2);
+       -- SELECT log_home_losses($1);
+       -- SELECT log_home_wins($1);
+       -- SELECT log_away_losses($1);
+       -- SELECT log_away_wins($1);
+       -- SELECT log_draws($1);
+       SELECT update_points();
+$$ LANGUAGE SQL;
+
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION log_some_records(round integer, tournament_name text) RETURNS VOID as $log_some_records$
+       SELECT log_named_draws($1, $2);
+       -- SELECT log_home_losses($1);
+       -- SELECT log_home_wins($1);
+       -- SELECT log_away_losses($1);
+       -- SELECT log_away_wins($1);
+       -- SELECT log_draws($1);
+       SELECT update_points();
+       $log_some_records$ LANGUAGE SQL;
+
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
+
+**** full code sequence 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+INSERT INTO playerz (player_name) VALUES ('a');
+INSERT INTO playerz (player_name) VALUES ('b');
+INSERT INTO match_participants (home, away) VALUES (1, 2);
+UPDATE matchez SET tournament_name='tennis', round = 1 WHERE tournament_name= 'none';
+INSERT INTO score_results VALUES (1, 1, 1);
+
+-- CREATE OR REPLACE FUNCTION log_named_draws(round_no integer, tournament_name text) RETURNS VOID AS $$
+--        UPDATE player_recordz SET draws = draws + 1
+--        from tournament_matches as a 
+--        WHERE a.home_score = a.away_score
+--        AND (a.home = player_id OR a.away = player_id)
+--        AND a.round = $1 AND a.tournament_name = $2
+-- $$ LANGUAGE SQL;
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+| INSERT 0 1 |
+| INSERT 0 1 |
+| UPDATE 1   |
+| INSERT 0 1 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from log_named_draws(1, 'tennis')
+SELECT update_points();
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- CREATE OR REPLACE FUNCTION log_some_records(round integer, tournament_name text) RETURNS VOID as $log_some_records$
+--        SELECT log_named_draws($1, $2);
+--        -- SELECT log_home_losses($1);
+--        -- SELECT log_home_wins($1);
+--        -- SELECT log_away_losses($1);
+--        -- SELECT log_away_wins($1);
+--        -- SELECT log_draws($1);
+--        SELECT update_points();
+--        $log_some_records$ LANGUAGE SQL;
+select * FROM log_some_records(1, 'tennis')
+#+END_SRC
+
+#+RESULTS:
+| log_some_records |
+|------------------|
+|                  |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from tournament_matches;
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | round | home | away | home_score | away_score |
+|----------+-----------------+-------+------+------+------------+------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_tables
+ORDER BY player_id;
+#+END_SRC
+
+#+RESULTS:
+| player_id | player_name | wins | losses | draws | points | omw |
+|-----------+-------------+------+--------+-------+--------+-----|
+|         1 | a           |    3 |      0 |     0 |      9 |  15 |
+|         2 | b           |    2 |      1 |     0 |      6 |  12 |
+|         3 | c           |    1 |      2 |     0 |      3 |   9 |
+|         4 | d           |    2 |      1 |     0 |      6 |  12 |
+|         5 | e           |    1 |      2 |     0 |      3 |  18 |
+|         6 | f           |    1 |      2 |     0 |      3 |  12 |
+|         7 | g           |    0 |      3 |     0 |      0 |  15 |
+|         8 | h           |    2 |      1 |     0 |      6 |  15 |
+|         9 | allen       |    0 |      0 |     0 |      0 |   0 |
+|        10 | beverly     |    0 |      0 |     0 |      0 |   0 |
+|        11 | cleanth     |    0 |      0 |     0 |      0 |   0 |
+|        12 | devon       |    0 |      0 |     0 |      0 |   0 |
+|        13 | eldridge    |    0 |      0 |     0 |      0 |   0 |
+|        14 | fatool      |    0 |      0 |     0 |      0 |   0 |
+|        15 | g-money     |    0 |      0 |     0 |      0 |   0 |
+|        16 | harold      |    0 |      0 |     0 |      0 |   0 |
 
 *** exceeds Python code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -622,9 +599,9 @@ def registerScores(dbname, table_name, match_no, home_score, away_score):
     query = (insert_statement + "VALUES (%s, %s, %s);")
     new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
 
-def log_round_results(dbname, round_of_tournament):
-    query = "SELECT * FROM log_records(%s)"
-    new_dbExecuteWrapper(query, dbname, (round_of_tournament,))
+def log_round_results(dbname, tournament_name, round_of_tournament):
+    query = "SELECT * FROM log_records(%s, %s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament, tournament_name))
 
 # a brittle way to obtain player ids?
 def how_many_players(dbname):
@@ -640,7 +617,26 @@ def set_all_OMW(dbname):
     playaz = [n[0] for n in data]
     [set_OMW(dbname, n) for n in playaz]
     print("done")
+
+def new_playerStandings_alt(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT * " + from_statement + "ORDER BY points DESC, omw DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+def naive_pairings():
+    pairings = []
+    tables = new_playerStandings_alt("tourney_practice", "player_recordz")
+    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
+    pairings = [(id1, id2), (id3, id4), (id5, id6), (id7, id8)]
+    return pairings
+
+def naive_swissPairings(round_no, tournament_name):
+    next_round = naive_pairings()
+    for pair in next_round:
+        registerMatchParticipants("tourney_practice", "match_participants", tournament_name, round_no, pair[0], pair[1])
+   
 #+END_SRC
 
 #+RESULTS:
+
 
