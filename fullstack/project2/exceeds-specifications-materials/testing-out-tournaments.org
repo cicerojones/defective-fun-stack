@@ -1,307 +1,4 @@
 #+STARTUP: indent
-* create example tournaments using only Python functions
-  :PROPERTIES:
-  :ID:       236D906F-20D1-499B-9E78-BD524C05A5D0
-  :END:
-** "soccer" tournament (ties)
-*** first round data for simple 4 player tournament--ties allowed
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-new_registerPlayer("tourney_practice", "playerz", 'aaaa');
-new_registerPlayer("tourney_practice", "playerz", 'bbbb');
-new_registerPlayer("tourney_practice", "playerz", 'cccc');
-new_registerPlayer("tourney_practice", "playerz", 'dddd');
-
-# initialize_player_record("tourney_practice", "player_recordz", 1)
-# initialize_player_record("tourney_practice", "player_recordz", 2)
-# initialize_player_record("tourney_practice", "player_recordz", 3)
-# initialize_player_record("tourney_practice", "player_recordz", 4)
-
-# # doesn't this use an autoincrement column?
-# initialize_player_record("tourney_practice", "player_recordz")
-# initialize_player_record("tourney_practice", "player_recordz")
-# initialize_player_record("tourney_practice", "player_recordz")
-# initialize_player_record("tourney_practice", "player_recordz")
-
-
-registerMatch("tourney_practice", "matchez", 1, "soccer", 1);
-registerMatch("tourney_practice", "matchez", 2, "soccer", 1);
-
-registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
-registerMatchParticipants("tourney_practice", "match_participants", 2, 3, 4)
-
-registerScores("tourney_practice", "score_results", 1, 10, 10)
-registerScores("tourney_practice", "score_results", 2, 11, 9)
-
-log_player_simple("tourney_practice", 1)
-
-# uh, where is this defined??
-set_all_OMW("tourney_practice")
-#+END_SRC
-
-** "tennis" tournament (no ties)
-*** two rounds data for simple 8 player tournament--ties allowed (identical?)
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-new_registerPlayer("tourney_practice", "playerz", 'a');
-new_registerPlayer("tourney_practice", "playerz", 'b');
-new_registerPlayer("tourney_practice", "playerz", 'c');
-new_registerPlayer("tourney_practice", "playerz", 'd');
-new_registerPlayer("tourney_practice", "playerz", 'e');
-new_registerPlayer("tourney_practice", "playerz", 'f');
-new_registerPlayer("tourney_practice", "playerz", 'g');
-new_registerPlayer("tourney_practice", "playerz", 'h');
-
-# initialize_player_record("tourney_practice", "player_recordz", 1)
-# initialize_player_record("tourney_practice", "player_recordz", 2)
-# initialize_player_record("tourney_practice", "player_recordz", 3)
-# initialize_player_record("tourney_practice", "player_recordz", 4)
-# initialize_player_record("tourney_practice", "player_recordz", 5)
-# initialize_player_record("tourney_practice", "player_recordz", 6)
-# initialize_player_record("tourney_practice", "player_recordz", 7)
-# initialize_player_record("tourney_practice", "player_recordz", 8)
-
-registerMatch("tourney_practice", "matchez", 1, "tennis", 1);
-registerMatch("tourney_practice", "matchez", 2, "tennis", 1);
-registerMatch("tourney_practice", "matchez", 3, "tennis", 1);
-registerMatch("tourney_practice", "matchez", 4, "tennis", 1);
-registerMatch("tourney_practice", "matchez", 5, "tennis", 2);
-registerMatch("tourney_practice", "matchez", 6, "tennis", 2);
-registerMatch("tourney_practice", "matchez", 7, "tennis", 2);
-registerMatch("tourney_practice", "matchez", 8, "tennis", 2);
-
-registerMatchParticipants("tourney_practice", "match_participants", 1, 1, 2)
-registerMatchParticipants("tourney_practice", "match_participants", 2, 3, 4)
-registerMatchParticipants("tourney_practice", "match_participants", 3, 5, 6)
-registerMatchParticipants("tourney_practice", "match_participants", 4, 7, 8)
-registerMatchParticipants("tourney_practice", "match_participants", 5, 1, 3)
-registerMatchParticipants("tourney_practice", "match_participants", 6, 2, 4)
-registerMatchParticipants("tourney_practice", "match_participants", 7, 5, 7)
-registerMatchParticipants("tourney_practice", "match_participants", 8, 6, 8)
-
-registerScores("tourney_practice", "score_results", 1, 1, 10)
-registerScores("tourney_practice", "score_results", 2, 11, 9)
-registerScores("tourney_practice", "score_results", 3, 2, 1)
-registerScores("tourney_practice", "score_results", 4, 1, 9)
-registerScores("tourney_practice", "score_results", 5, 1, 0)
-registerScores("tourney_practice", "score_results", 6, 11, 1)
-registerScores("tourney_practice", "score_results", 7, 12, 10)
-registerScores("tourney_practice", "score_results", 8, 0, 9)
-
-log_round_results("tourney_practice", 1)
-log_round_results("tourney_practice", 2)
-
-#log_all_omw("tourney_practice")
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-# log_player_record('tourney_practice', 1)
-
-set_allll_OMW('tourney_practice')
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> done
-
-*** [#A] two rounds for 8 player tournament with ties; each round results determine next round matches
-**** setup and first round
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-# registering a player also inserts a row for that player's record
-new_registerPlayer("tourney_practice", "playerz", 'a');
-new_registerPlayer("tourney_practice", "playerz", 'b');
-new_registerPlayer("tourney_practice", "playerz", 'c');
-new_registerPlayer("tourney_practice", "playerz", 'd');
-new_registerPlayer("tourney_practice", "playerz", 'e');
-new_registerPlayer("tourney_practice", "playerz", 'f');
-new_registerPlayer("tourney_practice", "playerz", 'g');
-new_registerPlayer("tourney_practice", "playerz", 'h');
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-## registering a match should also insert an entry in the match master table
-## this will necessitate changing the PID structure in the schema
-
-registerScores("tourney_practice", "score_results", 1, 1, 0)
-registerScores("tourney_practice", "score_results", 2, 0, 1)
-registerScores("tourney_practice", "score_results", 3, 1, 0)
-registerScores("tourney_practice", "score_results", 4, 0, 1)
-#+END_SRC
-
-#+RESULTS:
-
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-log_round_results("tourney_practice", 1)
-
-set_all_OMW('tourney_practice')
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> done
-
-**** how do you get second round to be setup and then run?
-***** use playerStandings function to get current results
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-#Return a table ordered first by points and then OMW (to break ties?)
-def new_playerStandings_alt(dbname, table_name):
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT * " + from_statement + "ORDER BY points DESC, omw DESC;")
-    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
-
-def playerTables():
-    new_playerStandings_alt("tourney_practice", "player_tables")
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-new_playerStandings_alt("tourney_practice", "player_tables")
-#+END_SRC
-
-#+RESULTS:
-: [(1, 'a', 1, 0, 0, 3, 0), (5, 'e', 1, 0, 0, 3, 0), (4, 'd', 1, 0, 0, 3, 0), (8, 'h', 1, 0, 0, 3, 0), (2, 'b', 0, 1, 0, 0, 3), (7, 'g', 0, 1, 0, 0, 3), (3, 'c', 0, 1, 0, 0, 3), (6, 'f', 0, 1, 0, 0, 3)]
-
-
-: [(1, 'a', 0, 0, 0, 0, 0), (2, 'b', 0, 0, 0, 0, 0), (3, 'c', 0, 0, 0, 0, 0), (4, 'd', 0, 0, 0, 0, 0), (5, 'e', 0, 0, 0, 0, 0), (6, 'f', 0, 0, 0, 0, 0), (7, 'g', 0, 0, 0, 0, 0), (8, 'h', 0, 0, 0, 0, 0)]
-
-
-: [(8, 'h', 1, 0, 0, 3, 0), (3, 'c', 1, 0, 0, 3, 0), (5, 'e', 1, 0, 0, 3, 0), (1, 'a', 0, 0, 1, 1, 1), (2, 'b', 0, 0, 1, 1, 1), (6, 'f', 0, 1, 0, 0, 3), (4, 'd', 0, 1, 0, 0, 3), (7, 'g', 0, 1, 0, 0, 3)]
-
-****** explore list comprehension
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-[len(row) for row in tables]
-#+END_SRC
-
-#+RESULTS:
-: [7, 7, 7, 7, 7, 7, 7, 7]
-
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-for row in tables:
-    print row
-#+END_SRC
-
-#+RESULTS:
-: 
-: ... (8, 'h', 1, 0, 0, 3, 0)
-: (3, 'c', 1, 0, 0, 3, 0)
-: (5, 'e', 1, 0, 0, 3, 0)
-: (1, 'a', 0, 0, 1, 1, 1)
-: (2, 'b', 0, 0, 1, 1, 1)
-: (6, 'f', 0, 1, 0, 0, 3)
-: (4, 'd', 0, 1, 0, 0, 3)
-: (7, 'g', 0, 1, 0, 0, 3)
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-for row in tables:
-    print row[0], row[5]
-#+END_SRC
-
-#+RESULTS:
-: 
-: ... 8 3
-: 3 3
-: 5 3
-: 1 1
-: 2 1
-: 6 0
-: 4 0
-: 7 0
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-players_list = [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
-points_list = [pid1, pid2, pid3, pid4, pid5, pid6, pid7, pid8] = [row[5] for row in tables]
-
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-[id1, pid1]
-#+END_SRC
-
-#+RESULTS:
-: [8, 3]
-
-**** define new function to return pairings
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-def naive_pairings():
-    pairings = []
-    tables = new_playerStandings_alt("tourney_practice", "player_recordz")
-    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
-    pairings = [(id1, id2), (id3, id4), (id5, id6), (id7, id8)]
-    return pairings
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-naive_pairings()
-#+END_SRC
-
-#+RESULTS:
-: [(1, 5), (4, 8), (2, 7), (3, 6)]
-
-
-
-**** use results of new function for next round
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-next_round = naive_pairings()
-for pair in next_round:
-    print pair
-#+END_SRC
-
-#+RESULTS:
-: 
-: ... ... (1, 5)
-: (4, 8)
-: (2, 7)
-: (3, 6)
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-next_round = naive_pairings()
-for pair in next_round:
-    registerMatchParticipants("tourney_practice", "match_participants", "tennis", 2, pair[0], pair[1])
-   
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
-registerScores("tourney_practice", "score_results", 5, 1, 0)
-registerScores("tourney_practice", "score_results", 6, 0, 1)
-registerScores("tourney_practice", "score_results", 7, 1, 0)
-registerScores("tourney_practice", "score_results", 8, 0, 1)
-
-log_round_results("tourney_practice", 2)
-
-set_all_OMW('tourney_practice')
-#+END_SRC
-#+RESULTS:
-: 
-: done
-
 * prepare to pass tests
 ** original pass-test statements plus
 print "1. Old matches can be deleted."
@@ -403,240 +100,785 @@ pairings = swissPairings()
 correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
 actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
 #+END_SRC
-* overview of tables and views
-** all tables
-#+RESULTS:
-|  match_id | tournament_name |      round |       |        |     |
-|-----------+-----------------+------------+-------+--------+-----|
-|         1 |          tennis |          1 |       |        |     |
-|         2 |          tennis |          1 |       |        |     |
-|         3 |          tennis |          1 |       |        |     |
-|         4 |          tennis |          1 |       |        |     |
-|         5 |          tennis |          2 |       |        |     |
-|         6 |          tennis |          2 |       |        |     |
-|         7 |          tennis |          2 |       |        |     |
-|         8 |          tennis |          2 |       |        |     |
-| player_id |     player_name |            |       |        |     |
-|         1 |               a |            |       |        |     |
-|         2 |               b |            |       |        |     |
-|         3 |               c |            |       |        |     |
-|         4 |               d |            |       |        |     |
-|         5 |               e |            |       |        |     |
-|         6 |               f |            |       |        |     |
-|         7 |               g |            |       |        |     |
-|         8 |               h |            |       |        |     |
-|  match_id |            home |       away |       |        |     |
-|         1 |               1 |          2 |       |        |     |
-|         2 |               3 |          4 |       |        |     |
-|         3 |               5 |          6 |       |        |     |
-|         4 |               7 |          8 |       |        |     |
-|         5 |               1 |          3 |       |        |     |
-|         6 |               2 |          4 |       |        |     |
-|         7 |               5 |          7 |       |        |     |
-|         8 |               6 |          8 |       |        |     |
-|  match_id |      home_score | away_score |       |        |     |
-|         1 |               1 |         10 |       |        |     |
-|         2 |              11 |          9 |       |        |     |
-|         3 |               2 |          1 |       |        |     |
-|         4 |               1 |          9 |       |        |     |
-|         5 |               1 |          0 |       |        |     |
-|         6 |              11 |          1 |       |        |     |
-|         7 |              12 |         10 |       |        |     |
-|         8 |               0 |          9 |       |        |     |
-| player_id |            wins |     losses | draws | points | omw |
-|         6 |               0 |          2 |     0 |      0 |  12 |
-|         1 |               1 |          1 |     0 |      3 |   9 |
-|         5 |               2 |          0 |     0 |      6 |   0 |
-|         2 |               2 |          0 |     0 |      6 |   3 |
-|         7 |               0 |          2 |     0 |      0 |  12 |
-|         3 |               1 |          1 |     0 |      3 |   3 |
-|         4 |               0 |          2 |     0 |      0 |   9 |
-|         8 |               2 |          0 |     0 |      6 |   0 |
-** match view
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from tournament_matches;
-#+END_SRC
-
-#+RESULTS:
-| match_id | tournament_name | round | home | away | home_score | away_score |
-|----------+-----------------+-------+------+------+------------+------------|
-|        1 | tennis          |     1 |    1 |    2 |         10 |         10 |
-|        2 | tennis          |     1 |    3 |    4 |         11 |          9 |
-|        3 | tennis          |     1 |    5 |    6 |          2 |          1 |
-|        4 | tennis          |     1 |    7 |    8 |          1 |          9 |
-** player views
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from player_recordz 
-ORDER BY points DESC, omw DESC ;
-#+END_SRC
-
-#+RESULTS:
-| player_id | wins | losses | draws | points | omw |
-|-----------+------+--------+-------+--------+-----|
-|         1 |    3 |      0 |     0 |      9 |  15 |
-|         8 |    2 |      1 |     0 |      6 |  15 |
-|         4 |    2 |      1 |     0 |      6 |  12 |
-|         2 |    2 |      1 |     0 |      6 |  12 |
-|         5 |    1 |      2 |     0 |      3 |  18 |
-|         6 |    1 |      2 |     0 |      3 |  12 |
-|         3 |    1 |      2 |     0 |      3 |   9 |
-|         7 |    0 |      3 |     0 |      0 |  15 |
-|        15 |    0 |      0 |     0 |      0 |   0 |
-|        14 |    0 |      0 |     0 |      0 |   0 |
-|        13 |    0 |      0 |     0 |      0 |   0 |
-|        12 |    0 |      0 |     0 |      0 |   0 |
-|        11 |    0 |      0 |     0 |      0 |   0 |
-|        10 |    0 |      0 |     0 |      0 |   0 |
-|        16 |    0 |      0 |     0 |      0 |   0 |
-|         9 |    0 |      0 |     0 |      0 |   0 |
-
-#+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from player_tables
-ORDER BY points DESC, omw DESC ;
-#+END_SRC
-
-#+RESULTS:
-| player_id | player_name | wins | losses | draws | points | omw |
-|-----------+-------------+------+--------+-------+--------+-----|
-|         2 | b           |    2 |      0 |     0 |      6 |   3 |
-|         8 | h           |    2 |      0 |     0 |      6 |   0 |
-|         5 | e           |    2 |      0 |     0 |      6 |   0 |
-|         1 | a           |    1 |      1 |     0 |      3 |   9 |
-|         3 | c           |    1 |      1 |     0 |      3 |   3 |
-|         7 | g           |    0 |      2 |     0 |      0 |  12 |
-|         6 | f           |    0 |      2 |     0 |      0 |  12 |
-|         4 | d           |    0 |      2 |     0 |      0 |   9 |
-* prepare final test of bcomplete rounds with multiple tournaments, ties and omw
-** register 8 players and set them up into one round of four matches
+* all-in-one (broken up) three rounds plus one round second tournament
+** all this works when called in sequence
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
+
 # registering a player also inserts a row for that player's record
-new_registerPlayer("tourney_practice", "playerz", 'a');
-new_registerPlayer("tourney_practice", "playerz", 'b');
-new_registerPlayer("tourney_practice", "playerz", 'c');
-new_registerPlayer("tourney_practice", "playerz", 'd');
-new_registerPlayer("tourney_practice", "playerz", 'e');
-new_registerPlayer("tourney_practice", "playerz", 'f');
-new_registerPlayer("tourney_practice", "playerz", 'g');
-new_registerPlayer("tourney_practice", "playerz", 'h');
-#+END_SRC
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
 
-#+RESULTS:
 
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# must register the participants of the first match.
+# after that, the pairings of players will be determined by 
+# running naive_swissPairings, the results of which will
+# be used when reporting the next match results between those players
 registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
 registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
 registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
 registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
-#+END_SRC
 
-#+RESULTS:
-
-** log activity from the first round
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# scores are reported for a match number and for the notion of
+# home vs. away players
 registerScores("tourney_practice", "score_results", 1, 1, 0)
 registerScores("tourney_practice", "score_results", 2, 0, 1)
 registerScores("tourney_practice", "score_results", 3, 1, 0)
 registerScores("tourney_practice", "score_results", 4, 0, 1)
-#+END_SRC
 
-#+RESULTS:
-
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# calculate the stats for the given tournament
 log_round_results("tourney_practice", "tennis", 1)
 set_all_OMW('tourney_practice')
-#+END_SRC
 
-#+RESULTS:
-: 
-: done
-
-
-
-** setup second round
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# determine the pairings for the next round of the given tournament,
+# both of which (the round number and the tournament name) are given
+# as arguments
 naive_swissPairings(2, "tennis")
 #+END_SRC
 
 #+RESULTS:
+: 
+: ... >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
 
-** log activity from second round
+
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# enter results for round two
+# must just get the match_id number right
 registerScores("tourney_practice", "score_results", 5, 1, 0)
 registerScores("tourney_practice", "score_results", 6, 0, 1)
 registerScores("tourney_practice", "score_results", 7, 1, 0)
 registerScores("tourney_practice", "score_results", 8, 0, 1)
 
 log_round_results("tourney_practice", "tennis", 2)
-
 set_all_OMW('tourney_practice')
-#+END_SRC
 
-#+RESULTS:
-: 
-: >>> >>> >>> >>> >>> >>> done
-
-** third round setup
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
 naive_swissPairings(3, "tennis")
 #+END_SRC
 
 #+RESULTS:
+: 
+: >>> >>> >>> >>> >>> done
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# enter results for round three
 registerScores("tourney_practice", "score_results", 9, 1, 0)
 registerScores("tourney_practice", "score_results", 10, 0, 1)
 registerScores("tourney_practice", "score_results", 11, 1, 0)
 registerScores("tourney_practice", "score_results", 12, 0, 1)
 
 log_round_results("tourney_practice", "tennis", 3)
-
 set_all_OMW('tourney_practice')
 #+END_SRC
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> >>> done
+: >>> >>> >>> >>> >>> done
 
-** new tournament
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-# registering a player also inserts a row for that player's record
-new_registerPlayer("tourney_practice", "playerz", 'allen');
-new_registerPlayer("tourney_practice", "playerz", 'beverly');
-new_registerPlayer("tourney_practice", "playerz", 'cleanth');
-new_registerPlayer("tourney_practice", "playerz", 'devon');
-new_registerPlayer("tourney_practice", "playerz", 'eldridge');
-new_registerPlayer("tourney_practice", "playerz", 'fatool');
-new_registerPlayer("tourney_practice", "playerz", 'g-money');
-new_registerPlayer("tourney_practice", "playerz", 'harold');
+# register players for a new tournament but using the same database
+new_registerPlayer("tourney_practice", "playerz", 'allen', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'beverly', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'cleanth', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'devon', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'eldridge', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer");
 #+END_SRC
 
 #+RESULTS:
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
+# setup the first round with predetermined matches
 registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
 registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
 registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
 registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
-#+END_SRC
 
-#+RESULTS:
-
-#+BEGIN_SRC python :session *Python* :results output :tangle yes
 registerScores("tourney_practice", "score_results", 13, 1, 0)
 registerScores("tourney_practice", "score_results", 14, 0, 1)
 registerScores("tourney_practice", "score_results", 15, 1, 0)
 registerScores("tourney_practice", "score_results", 16, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+
+
 #+END_SRC
 
+** will subsequent round in the soccer tournament work as well
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+naive_swissPairings(2, "soccer")
+
+# include a tie and see what happens
+registerScores("tourney_practice", "score_results", 17, 1, 1)
+registerScores("tourney_practice", "score_results", 18, 0, 1)
+registerScores("tourney_practice", "score_results", 19, 1, 0)
+registerScores("tourney_practice", "score_results", 20, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 2)
+set_all_OMW('tourney_practice')
+#+END_SRC
 #+RESULTS:
+: 
+: >>> ... >>> >>> done
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-log_round_results("tourney_practice", "soccer", 1)
+naive_swissPairings(3, "soccer")
+
+registerScores("tourney_practice", "score_results", 21, 1, 0)
+registerScores("tourney_practice", "score_results", 22, 0, 1)
+registerScores("tourney_practice", "score_results", 23, 1, 0)
+registerScores("tourney_practice", "score_results", 24, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 3)
 set_all_OMW('tourney_practice')
 #+END_SRC
 
 #+RESULTS:
 : 
+: >>> >>> >>> done
+
+* all-in-one three rounds plus one round second tournament
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
+
+
+
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+
+
+
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+
+
+
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "tennis")
+
+
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 0, 1)
+registerScores("tourney_practice", "score_results", 7, 1, 0)
+registerScores("tourney_practice", "score_results", 8, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "tennis")
+
+registerScores("tourney_practice", "score_results", 9, 1, 0)
+registerScores("tourney_practice", "score_results", 10, 0, 1)
+registerScores("tourney_practice", "score_results", 11, 1, 0)
+registerScores("tourney_practice", "score_results", 12, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 3)
+set_all_OMW('tourney_practice')
+
+### register players for soccer tournament
+new_registerPlayer("tourney_practice", "playerz", 'allen', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'beverly', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'cleanth', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'devon', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'eldridge', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer");
+
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+
+## watch out for ties in the first round
+registerScores("tourney_practice", "score_results", 13, 1, 0)
+registerScores("tourney_practice", "score_results", 14, 0, 1)
+registerScores("tourney_practice", "score_results", 15, 1, 0)
+registerScores("tourney_practice", "score_results", 16, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "soccer")
+
+## 
+registerScores("tourney_practice", "score_results", 17, 1, 1)
+registerScores("tourney_practice", "score_results", 18, 0, 1)
+registerScores("tourney_practice", "score_results", 19, 1, 0)
+registerScores("tourney_practice", "score_results", 20, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "soccer")
+
+registerScores("tourney_practice", "score_results", 21, 1, 0)
+registerScores("tourney_practice", "score_results", 22, 0, 1)
+registerScores("tourney_practice", "score_results", 23, 1, 0)
+registerScores("tourney_practice", "score_results", 24, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 3)
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+... >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in naive_swissPairings
+  File "<stdin>", line 5, in naive_pairings
+ValueError: too many values to unpack
+>>> >>> >>> >>> >>> done
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in naive_swissPairings
+  File "<stdin>", line 5, in naive_pairings
+ValueError: too many values to unpack
+>>> >>> >>> >>> done
+... >>> >>>   File "<stdin>", line 1
+    new_registerPlayer("tourney_practice"new_registerPlayer("tourney_pra;
+                                                          ^
+SyntaxError: invalid syntax
+File "<stdin>", line 1
+    new_registerPlayer("tourney_practice", "playerz", 'eldridge', "new_registnew_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
+                                                                                                                ^
+SyntaxError: invalid syntax
+>>>   File "<stdin>", line 1
+    new_registerPlayer("tourney_pranew_registerPlayer("tourney_pranew_regis
+                                                                          ^
+SyntaxError: invalid syntax
+File "<stdin>", line 1
+    registerMatchParticipants("tourney_practiceregisterMatchParticipants("tourr",registerMatregisterMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+                                                                              ^
+SyntaxError: invalid syntax
+>>>   File "<stdin>", line 1
+    registerMatchParticipants("tourney_practice", "match_particregisterMatchParticipants("tou
+                                                                                            ^
+SyntaxError: invalid syntax
+... ...   File "<stdin>", line 3
+    registerScores("tourney_practice", "score_results", 15, 1, 0)
+                 ^
+SyntaxError: invalid syntax
+>>> >>> >>> done
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in naive_swissPairings
+  File "<stdin>", line 5, in naive_pairings
+ValueError: too many values to unpack
+... >>> >>> >>> >>> >>> >>> done
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in naive_swissPairings
+  File "<stdin>", line 5, in naive_pairings
+ValueError: too many values to unpack
+done
+#+end_example
+
+* in two pieces (will work as one Python module, tho)
+** Players, Matches, Scores, for 3 rounds; new Players
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis")
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis")
+
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "tennis")
+
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 0, 1)
+registerScores("tourney_practice", "score_results", 7, 1, 0)
+registerScores("tourney_practice", "score_results", 8, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "tennis")
+
+registerScores("tourney_practice", "score_results", 9, 1, 0)
+registerScores("tourney_practice", "score_results", 10, 0, 1)
+registerScores("tourney_practice", "score_results", 11, 1, 0)
+registerScores("tourney_practice", "score_results", 12, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 3)
+set_all_OMW('tourney_practice')
+
+
+# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
+: >>> >>> >>> >>> >>> >>> >>> >>> done
 : done
+** 
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'allen', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'beverly', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'cleanth', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'devon', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'eldridge', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer")
+new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer")
+
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+
+registerScores("tourney_practice", "score_results", 13, 1, 0)
+registerScores("tourney_practice", "score_results", 14, 0, 1)
+registerScores("tourney_practice", "score_results", 15, 1, 0)
+registerScores("tourney_practice", "score_results", 16, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "soccer")
+
+## 
+registerScores("tourney_practice", "score_results", 17, 1, 1)
+registerScores("tourney_practice", "score_results", 18, 0, 1)
+registerScores("tourney_practice", "score_results", 19, 1, 0)
+registerScores("tourney_practice", "score_results", 20, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "soccer")
+
+registerScores("tourney_practice", "score_results", 21, 1, 0)
+registerScores("tourney_practice", "score_results", 22, 0, 1)
+registerScores("tourney_practice", "score_results", 23, 1, 0)
+registerScores("tourney_practice", "score_results", 24, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 3)
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
+: >>> >>> >>> ... >>> done
+: done
+
+* run the sql
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- only used for restarting with clean player ids
+DROP TABLE playerz CASCADE; 
+DROP TABLE match_participants CASCADE; 
+DROP TABLE matchez CASCADE;
+DROP TABLE score_results; 
+DROP TABLE player_recordz CASCADE;
+
+-- matches have id number, a tournament name and a round number
+-- players have an id number and a name; 
+-- theoretically can be in any tournaments? 
+-- (need to distinguish btwn different results in different tournaments, 
+-- so must add tournament name when registering)
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null,
+       tournament_name text 
+);
+
+-- matches have participants, arbitrarily assigned to home and away categories
+CREATE TABLE match_participants (
+--     match_id int REFERENCES matchez (match_id),
+       match_id serial PRIMARY KEY,
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id));
+
+CREATE TABLE matchez(
+--       match_id serial PRIMARY KEY,
+       match_id int REFERENCES match_participants (match_id),
+--       tournament_name text not null,
+       tournament_name text DEFAULT 'none',
+       round int); 
+
+-- results of matches have a score for the home and away players
+CREATE TABLE score_results (
+       match_id int REFERENCES match_participants (match_id),
+       home_score int,
+       away_score int);
+
+-- players have an amount of wins, losses and draws,
+-- in cases where draws are possible, players also have points taking
+-- this possibility into account.
+-- finally, all players have an OMW score, which is the sum of the points
+-- of those players they have faced
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+       tournament_name text,
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OMW int DEFAULT 0);
+
+-- a complete view of all tournaments shows any matches registered, 
+-- as well as the scores in those matches
+CREATE VIEW tournament_matches AS
+select a.match_id, a.tournament_name, a.round, b.home, b.away, c.home_score, c.away_score
+from matchez as a, match_participants as b, score_results as c
+where a.match_id = b.match_id
+AND b.match_id = c.match_id;
+
+-- a complete view of a player shows the id/name as well as the various 
+-- statistics already contained in player_recordz
+
+CREATE VIEW player_tables AS
+select a.player_id, a.player_name, a.tournament_name, b.wins, b.losses, b.draws, b.points, b.OMW
+from playerz as a, player_recordz as b
+where a.player_id = b.player_id;
+
+-- to be able to reflect the results of matches in player stats, 
+-- we need to distinguish the various kinds of wins, losses 
+-- (and any draws if the tournament allows them)
+
+-- the following update functions need to be called in the proper way 
+-- and at the proper time (i.e. at the end of rounds of a particular tournament)
+-- right now, there is the possibility of over-tabulating points if all matches 
+-- for any particular rounds have not been registered yet
+CREATE OR REPLACE FUNCTION initialize_player_rec() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO player_recordz (player_id) VALUES (NEW.player_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_player_rec
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+
+CREATE OR REPLACE FUNCTION initialize_matchez() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO matchez (match_id) VALUES (NEW.match_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER initialize_match_participants
+       AFTER INSERT ON match_participants FOR EACH row EXECUTE PROCEDURE
+       initialize_matchez();
+
+-- CREATE OR REPLACE FUNCTION log_draws(integer) RETURNS VOID AS $$
+--        UPDATE player_recordz SET draws = draws + 1
+--        from tournament_matches as a 
+--        WHERE a.home_score = a.away_score
+--        AND (a.home = player_id OR a.away = player_id)
+--        AND a.round = $1;
+-- $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_draws(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+-- at the end of each round we want to tabulate the number of points for all participants
+CREATE OR REPLACE FUNCTION update_points() RETURNS VOID AS $$
+       UPDATE player_recordz 
+       SET points = (wins * 3) + draws;
+$$ LANGUAGE SQL;
+
+
+-- we want to create tables collating all the opponents a given player has faced
+CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
+       select 
+       	      CASE WHEN a.away = $1 THEN a.home
+	      	   WHEN a.home = $1 THEN a.away
+		   ELSE NULL
+		END as opposing_player
+FROM match_participants as a;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+       select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION set_omw (integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET omw = (select sum(opponent_OMW) FROM player_omw($1))
+       WHERE player_id = $1;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
+-- problematic to do this
+       select * from set_OMW(1);
+       select * from set_OMW(2);
+       select * from set_OMW(3);
+       select * from set_OMW(4);
+       select * from set_OMW(5);
+       select * from set_OMW(6);
+       select * from set_OMW(7);
+       select * from set_OMW(8);
+$$ LANGUAGE SQL;
+
+
+-- CREATE OR REPLACE FUNCTION log__records(round integer, tournament_name text) RETURNS VOID AS $$
+--        SELECT log_named_draws($1, $2);
+--        -- SELECT log_home_losses($1);
+--        -- SELECT log_home_wins($1);
+--        -- SELECT log_away_losses($1);
+--        -- SELECT log_away_wins($1);
+--        -- SELECT log_draws($1);
+--        SELECT update_points();
+-- $$ LANGUAGE SQL;
+
+
+
+-- -- uses a $name$ syntax erroneously?
+-- CREATE OR REPLACE FUNCTION log_records(round round_no integer, tournament_name text) RETURNS VOID as $log_records
+--        SELECT log_home_losses($1, $2);
+--        SELECT log_home_wins($1, $2);
+--        SELECT log_away_losses($1, $2);
+--        SELECT log_away_wins($1, $2);
+--        SELECT log_draws($1, $2);
+--        SELECT update_points();
+--        $log_records$ LANGUAGE SQL;
+
+-- uses a $name$ syntax erroneously?
+CREATE OR REPLACE FUNCTION log_records(round_no integer, tournament_name text) RETURNS VOID as $$
+       SELECT log_home_losses($1, $2);
+       SELECT log_home_wins($1, $2);
+       SELECT log_away_losses($1, $2);
+       SELECT log_away_wins($1, $2);
+       SELECT log_draws($1, $2);
+       SELECT update_points();
+$$ LANGUAGE SQL;
+
+
+#+END_SRC
+
+#+RESULTS:
+| DROP TABLE      |
+|-----------------|
+| DROP TABLE      |
+| DROP TABLE      |
+| DROP TABLE      |
+| DROP TABLE      |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE TABLE    |
+| CREATE VIEW     |
+| CREATE VIEW     |
+| CREATE FUNCTION |
+| CREATE TRIGGER  |
+| CREATE FUNCTION |
+| CREATE TRIGGER  |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+| CREATE FUNCTION |
+
+* view the tables
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez;
+select * from playerz;
+select * from match_participants;
+select * from score_results;
+select * from player_tables ORDER BY tournament_name, points DESC, omw DESC;
+#+END_SRC
+
+#+RESULTS:
+|  match_id | tournament_name |           round |      |        |       |        |     |
+|-----------+-----------------+-----------------+------+--------+-------+--------+-----|
+|         1 | tennis          |               1 |      |        |       |        |     |
+|         2 | tennis          |               1 |      |        |       |        |     |
+|         3 | tennis          |               1 |      |        |       |        |     |
+|         4 | tennis          |               1 |      |        |       |        |     |
+|         5 | tennis          |               2 |      |        |       |        |     |
+|         6 | tennis          |               2 |      |        |       |        |     |
+|         7 | tennis          |               2 |      |        |       |        |     |
+|         8 | tennis          |               2 |      |        |       |        |     |
+|         9 | tennis          |               3 |      |        |       |        |     |
+|        10 | tennis          |               3 |      |        |       |        |     |
+|        11 | tennis          |               3 |      |        |       |        |     |
+|        12 | tennis          |               3 |      |        |       |        |     |
+|        13 | soccer          |               1 |      |        |       |        |     |
+|        14 | soccer          |               1 |      |        |       |        |     |
+|        15 | soccer          |               1 |      |        |       |        |     |
+|        16 | soccer          |               1 |      |        |       |        |     |
+|        17 | soccer          |               2 |      |        |       |        |     |
+|        18 | soccer          |               2 |      |        |       |        |     |
+|        19 | soccer          |               2 |      |        |       |        |     |
+|        20 | soccer          |               2 |      |        |       |        |     |
+|        21 | soccer          |               3 |      |        |       |        |     |
+|        22 | soccer          |               3 |      |        |       |        |     |
+|        23 | soccer          |               3 |      |        |       |        |     |
+|        24 | soccer          |               3 |      |        |       |        |     |
+| player_id | player_name     | tournament_name |      |        |       |        |     |
+|         1 | a               |          tennis |      |        |       |        |     |
+|         2 | b               |          tennis |      |        |       |        |     |
+|         3 | c               |          tennis |      |        |       |        |     |
+|         4 | d               |          tennis |      |        |       |        |     |
+|         5 | e               |          tennis |      |        |       |        |     |
+|         6 | f               |          tennis |      |        |       |        |     |
+|         7 | g               |          tennis |      |        |       |        |     |
+|         8 | h               |          tennis |      |        |       |        |     |
+|         9 | allen           |          soccer |      |        |       |        |     |
+|        10 | beverly         |          soccer |      |        |       |        |     |
+|        11 | cleanth         |          soccer |      |        |       |        |     |
+|        12 | devon           |          soccer |      |        |       |        |     |
+|        13 | eldridge        |          soccer |      |        |       |        |     |
+|        14 | fatool          |          soccer |      |        |       |        |     |
+|        15 | g-money         |          soccer |      |        |       |        |     |
+|        16 | harold          |          soccer |      |        |       |        |     |
+|  match_id | home            |            away |      |        |       |        |     |
+|         1 | 1               |               2 |      |        |       |        |     |
+|         2 | 3               |               4 |      |        |       |        |     |
+|         3 | 5               |               6 |      |        |       |        |     |
+|         4 | 7               |               8 |      |        |       |        |     |
+|         5 | 1               |               5 |      |        |       |        |     |
+|         6 | 4               |               8 |      |        |       |        |     |
+|         7 | 2               |               7 |      |        |       |        |     |
+|         8 | 3               |               6 |      |        |       |        |     |
+|         9 | 1               |               8 |      |        |       |        |     |
+|        10 | 5               |               4 |      |        |       |        |     |
+|        11 | 2               |               6 |      |        |       |        |     |
+|        12 | 7               |               3 |      |        |       |        |     |
+|        13 | 9               |              10 |      |        |       |        |     |
+|        14 | 11              |              12 |      |        |       |        |     |
+|        15 | 13              |              14 |      |        |       |        |     |
+|        16 | 15              |              16 |      |        |       |        |     |
+|        17 | 9               |              13 |      |        |       |        |     |
+|        18 | 12              |              16 |      |        |       |        |     |
+|        19 | 10              |              15 |      |        |       |        |     |
+|        20 | 11              |              14 |      |        |       |        |     |
+|        21 | 16              |               9 |      |        |       |        |     |
+|        22 | 13              |              12 |      |        |       |        |     |
+|        23 | 14              |              10 |      |        |       |        |     |
+|        24 | 15              |              11 |      |        |       |        |     |
+|  match_id | home_score      |      away_score |      |        |       |        |     |
+|         1 | 1               |               0 |      |        |       |        |     |
+|         2 | 0               |               1 |      |        |       |        |     |
+|         3 | 1               |               0 |      |        |       |        |     |
+|         4 | 0               |               1 |      |        |       |        |     |
+|         5 | 1               |               0 |      |        |       |        |     |
+|         6 | 0               |               1 |      |        |       |        |     |
+|         7 | 1               |               0 |      |        |       |        |     |
+|         8 | 0               |               1 |      |        |       |        |     |
+|         9 | 1               |               0 |      |        |       |        |     |
+|        10 | 0               |               1 |      |        |       |        |     |
+|        11 | 1               |               0 |      |        |       |        |     |
+|        12 | 0               |               1 |      |        |       |        |     |
+|        13 | 1               |               0 |      |        |       |        |     |
+|        14 | 0               |               1 |      |        |       |        |     |
+|        15 | 1               |               0 |      |        |       |        |     |
+|        16 | 0               |               1 |      |        |       |        |     |
+|        17 | 1               |               1 |      |        |       |        |     |
+|        18 | 0               |               1 |      |        |       |        |     |
+|        19 | 1               |               0 |      |        |       |        |     |
+|        20 | 0               |               1 |      |        |       |        |     |
+|        21 | 1               |               0 |      |        |       |        |     |
+|        22 | 0               |               1 |      |        |       |        |     |
+|        23 | 1               |               0 |      |        |       |        |     |
+|        24 | 0               |               1 |      |        |       |        |     |
+| player_id | player_name     | tournament_name | wins | losses | draws | points | omw |
+|        16 | harold          |          soccer |    3 |      0 |     0 |      9 |  10 |
+|        12 | devon           |          soccer |    2 |      1 |     0 |      6 |  16 |
+|        14 | fatool          |          soccer |    2 |      1 |     0 |      6 |  10 |
+|         9 | allen           |          soccer |    1 |      1 |     1 |      4 |  16 |
+|        13 | eldridge        |          soccer |    1 |      1 |     1 |      4 |  16 |
+|        11 | cleanth         |          soccer |    1 |      2 |     0 |      3 |  12 |
+|        10 | beverly         |          soccer |    1 |      2 |     0 |      3 |  10 |
+|        15 | g-money         |          soccer |    0 |      3 |     0 |      0 |  15 |
+|         1 | a               |          tennis |    3 |      0 |     0 |      9 |  15 |
+|         8 | h               |          tennis |    2 |      1 |     0 |      6 |  15 |
+|         2 | b               |          tennis |    2 |      1 |     0 |      6 |  12 |
+|         4 | d               |          tennis |    2 |      1 |     0 |      6 |  12 |
+|         5 | e               |          tennis |    1 |      2 |     0 |      3 |  18 |
+|         6 | f               |          tennis |    1 |      2 |     0 |      3 |  12 |
+|         3 | c               |          tennis |    1 |      2 |     0 |      3 |   9 |
+|         7 | g               |          tennis |    0 |      3 |     0 |      0 |  15 |
 

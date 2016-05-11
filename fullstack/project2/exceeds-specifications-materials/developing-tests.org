@@ -22,10 +22,13 @@ DROP TABLE player_recordz CASCADE;
 -- matches have id number, a tournament name and a round number
 -- players have an id number and a name; 
 -- theoretically can be in any tournaments? 
--- (need to distinguish btwn different results in different tournaments)
+-- (need to distinguish btwn different results in different tournaments, 
+-- so must add tournament name when registering)
 CREATE TABLE playerz (
        player_id serial PRIMARY KEY,
-       player_name text not null);
+       player_name text not null,
+       tournament_name text 
+);
 
 -- matches have participants, arbitrarily assigned to home and away categories
 CREATE TABLE match_participants (
@@ -54,6 +57,7 @@ CREATE TABLE score_results (
 -- of those players they have faced
 CREATE TABLE player_recordz (
        player_id int REFERENCES playerz (player_id),
+       tournament_name text,
        wins int DEFAULT 0,
        losses int DEFAULT 0,
        draws int DEFAULT 0,
@@ -72,10 +76,9 @@ AND b.match_id = c.match_id;
 -- statistics already contained in player_recordz
 
 CREATE VIEW player_tables AS
-select a.player_id, a.player_name, b.wins, b.losses, b.draws, b.points, b.OMW
+select a.player_id, a.player_name, a.tournament_name, b.wins, b.losses, b.draws, b.points, b.OMW
 from playerz as a, player_recordz as b
 where a.player_id = b.player_id;
-
 
 -- to be able to reflect the results of matches in player stats, 
 -- we need to distinguish the various kinds of wins, losses 
@@ -209,7 +212,7 @@ $$ LANGUAGE SQL;
 
 
 -- -- uses a $name$ syntax erroneously?
--- CREATE OR REPLACE FUNCTION log_records(round round_no integer, tournament_name text) RETURNS VOID as $log_records$
+-- CREATE OR REPLACE FUNCTION log_records(round round_no integer, tournament_name text) RETURNS VOID as $log_records
 --        SELECT log_home_losses($1, $2);
 --        SELECT log_home_wins($1, $2);
 --        SELECT log_away_losses($1, $2);
@@ -474,6 +477,106 @@ ORDER BY player_id;
 |        15 | g-money     |    0 |      0 |     0 |      0 |   0 |
 |        16 | harold      |    0 |      0 |     0 |      0 |   0 |
 
+**** dealing with standings given multiple sport tournaments
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE VIEW tournament_players AS
+select a.match_id, a.tournament_name, b.home, b.away, c.points
+from matchez as a, match_participants as b, player_recordz as c
+where a.match_id = b.match_id AND (b.home = c.player_id OR b.away = c.player_id)
+
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE VIEW |
+|-------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+ select opposing_player, a.points FROM players_matches(1) JOIN player_tables as A
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+#+END_SRC
+
+#+RESULTS:
+| opposing_player | points |
+|-----------------+--------|
+|               2 |      6 |
+|               5 |      3 |
+|               8 |      6 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+SELECT * from player_recordz WHERE tournament_name = 'tennis' ORDER BY points DESC, omw DESC;
+#+END_SRC
+
+#+RESULTS:
+| player_id | tournament_name | wins | losses | draws | points | omw |
+|-----------+-----------------+------+--------+-------+--------+-----|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+
+select * from tournament_players
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | home | away | points |
+|----------+-----------------+------+------+--------|
+|        1 | tennis          |    1 |    2 |      9 |
+|        1 | tennis          |    1 |    2 |      6 |
+|        2 | tennis          |    3 |    4 |      3 |
+|        2 | tennis          |    3 |    4 |      6 |
+|        3 | tennis          |    5 |    6 |      3 |
+|        3 | tennis          |    5 |    6 |      3 |
+|        4 | tennis          |    7 |    8 |      0 |
+|        4 | tennis          |    7 |    8 |      6 |
+|        5 | tennis          |    1 |    5 |      3 |
+|        5 | tennis          |    1 |    5 |      9 |
+|        6 | tennis          |    4 |    8 |      6 |
+|        6 | tennis          |    4 |    8 |      6 |
+|        7 | tennis          |    2 |    7 |      0 |
+|        7 | tennis          |    2 |    7 |      6 |
+|        8 | tennis          |    3 |    6 |      3 |
+|        8 | tennis          |    3 |    6 |      3 |
+|        9 | tennis          |    1 |    8 |      9 |
+|        9 | tennis          |    1 |    8 |      6 |
+|       10 | tennis          |    5 |    4 |      3 |
+|       10 | tennis          |    5 |    4 |      6 |
+|       11 | tennis          |    2 |    6 |      6 |
+|       11 | tennis          |    2 |    6 |      3 |
+|       12 | tennis          |    7 |    3 |      0 |
+|       12 | tennis          |    7 |    3 |      3 |
+|       13 | soccer          |    9 |   10 |      3 |
+|       13 | soccer          |    9 |   10 |      0 |
+|       14 | soccer          |   11 |   12 |      0 |
+|       14 | soccer          |   11 |   12 |      3 |
+|       15 | soccer          |   13 |   14 |      3 |
+|       15 | soccer          |   13 |   14 |      0 |
+|       16 | soccer          |   15 |   16 |      0 |
+|       16 | soccer          |   15 |   16 |      3 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from tournament_playerz
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | home | points |
+|----------+-----------------+------+--------|
+|        1 | tennis          |    1 |      9 |
+|        2 | tennis          |    3 |      3 |
+|        3 | tennis          |    5 |      3 |
+|        4 | tennis          |    7 |      0 |
+|        5 | tennis          |    1 |      9 |
+|        6 | tennis          |    4 |      6 |
+|        7 | tennis          |    2 |      6 |
+|        8 | tennis          |    3 |      3 |
+|        9 | tennis          |    1 |      9 |
+|       10 | tennis          |    5 |      3 |
+|       11 | tennis          |    2 |      6 |
+|       12 | tennis          |    7 |      0 |
+|       13 | soccer          |    9 |      3 |
+|       14 | soccer          |   11 |      0 |
+|       15 | soccer          |   13 |      3 |
+|       16 | soccer          |   15 |      0 |
+
 *** exceeds Python code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 import psycopg2
@@ -538,11 +641,11 @@ def new_countPlayers(dbname, table_name):
     return int(row_item[0])
 
 # refactor to allow substituting column names?
-def new_registerPlayer(dbname, table_name, player_name):
+def new_registerPlayer(dbname, table_name, player_name, tournament_name):
     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
-    query = (insert_statement + "(player_name)" + 
-             "VALUES (%s);")
-    new_dbExecuteWrapper(query, dbname, (player_name,))
+    query = (insert_statement + "(player_name, tournament_name)" + 
+             "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query, dbname, (player_name, tournament_name))
 
 # ### IMPORTANT: which table/view and which columns??
 def new_playerStandings(dbname, table_name):
@@ -555,15 +658,11 @@ def new_playerStandings(dbname, table_name):
 ### IMPORTANT: which table/view and which columns??
 #Return a table ordered first by points and then OMW (to break ties?)
 
-def new_playerStandings_alt(dbname, table_name):
-    from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT * " +
-             from_statement + "ORDER BY points DESC, omw DESC;")
-    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
-
-def playerTables():
-    new_playerStandings_alt("tourney_practice", "player_tables")
-
+# def new_playerStandings_alt(dbname, table_name):
+#     from_statement = keyword_statement_string(table_name, """FROM""")
+#     query = ("SELECT * " +
+#              from_statement + "ORDER BY points DESC, omw DESC;")
+#     return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
 
 # def registerMatch(dbname, table_name, match_no, tournament_name, round_of_tournament):
 #     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
@@ -618,20 +717,28 @@ def set_all_OMW(dbname):
     [set_OMW(dbname, n) for n in playaz]
     print("done")
 
-def new_playerStandings_alt(dbname, table_name):
+def new_playerStandings_alt(dbname, table_name, tournament_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
-    query = ("SELECT * " + from_statement + "ORDER BY points DESC, omw DESC;")
-    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+    query = "SELECT * " + from_statement + "WHERE tournament_name = (%s) ORDER BY points DESC, omw DESC;"
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query, (tournament_name,))
+    rows = c.fetchall()
+    DB.close()    
+    return rows
+#    return new_dbExecuteRetrievalWrapper_allrows(dbname, query, tournament_name)
 
-def naive_pairings():
+# conatins hard-coded db and table (the wrong table originally!)
+def naive_pairings(tournament_name):
     pairings = []
-    tables = new_playerStandings_alt("tourney_practice", "player_recordz")
+    tables = new_playerStandings_alt("tourney_practice", "player_tables", tournament_name)
     [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
     pairings = [(id1, id2), (id3, id4), (id5, id6), (id7, id8)]
     return pairings
 
+# uses the hard-coding naive_pairings
 def naive_swissPairings(round_no, tournament_name):
-    next_round = naive_pairings()
+    next_round = naive_pairings(tournament_name)
     for pair in next_round:
         registerMatchParticipants("tourney_practice", "match_participants", tournament_name, round_no, pair[0], pair[1])
    
