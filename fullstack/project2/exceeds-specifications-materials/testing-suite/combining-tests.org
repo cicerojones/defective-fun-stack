@@ -1,5 +1,5 @@
-* original
-** one block
+* testing the original code base
+** [#A] original (Udacity) tests in one block (replicate print messages)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 #!/usr/bin/env python
 #
@@ -140,6 +140,89 @@ if __name__ == '__main__':
     print "Success!  All tests pass!"
 
 
+
+#+END_SRC
+** original code base (WFO solutions) in one block
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+import psycopg2
+
+
+def connect():
+    """Connect to the PostgreSQL database.  Returns a database connection."""
+    return psycopg2.connect("dbname=tournament")
+
+
+# refactor to use connect() for final version
+def dbExecuteWrapper(query_string, extra=None):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+
+
+def dbExecuteRetrievalWrapper_allrows(query_string):
+    DB = connect()
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    return rows
+    DB.close()
+
+
+# refactor all queries into a variable that is then passed to execute
+def deleteMatches():
+    query = """DELETE FROM matches;"""
+    dbExecuteWrapper(query)
+
+
+def deletePlayers():
+    query = """DELETE FROM players;"""
+    dbExecuteWrapper(query)
+
+
+def countPlayers():
+    DB = connect()
+    c = DB.cursor()
+    query = "SELECT count(*) FROM players;"
+    c.execute(query)
+    row = c.fetchone()
+    row_item = list(row)
+    return int(row_item[0])
+    DB.close()
+
+
+def registerPlayer(name):
+    query = ("INSERT INTO players (player_name, wins, matches)"
+             "VALUES (%s, %s, %s);")
+    dbExecuteWrapper(query, (name, 0, 0))
+
+
+# Some kind of problem using _allrows with multiline string formatting
+def playerStandings():
+    query = ("SELECT id, player_name, wins, matches "
+             "FROM players ORDER BY wins DESC;")
+    return dbExecuteRetrievalWrapper_allrows(query)
+
+
+def reportMatch(winner, loser):
+    query1 = ("INSERT INTO matches VALUES (%s, %s) ;")
+    query2 = ("UPDATE players SET wins = wins + 1"
+              "FROM matches WHERE players.id = (%s) ;")
+    query3 = ("UPDATE players SET matches = matches + 1"
+              "FROM matches WHERE players.id = (%s) OR players.id = (%s);")
+    dbExecuteWrapper(query1, (winner, loser))
+    dbExecuteWrapper(query2, (winner,))
+    dbExecuteWrapper(query3, (winner, loser))
+
+
+def swissPairings():
+    query = ("SELECT a.id, a.player_name, b.id, b.player_name "
+             "FROM players as a, players as b "
+             "WHERE a.wins = b.wins "
+             "AND a.player_name != b.player_name "
+             "AND a.id < b.id")
+    return dbExecuteRetrievalWrapper_allrows(query)
 
 #+END_SRC
 * exceeds-sequence
@@ -304,7 +387,7 @@ def keyword_statement_string(table_name, sql_keyword):
     update_statement = sql_keywords + tb_name + """ """
     return update_statement
 #+END_SRC
-*** functions needed strictly for original tests
+*** functions needed strictly for original tests--hardcoded tables
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def deletePlayers():
     new_deleteTable("tourney_practice", "playerz")
@@ -312,8 +395,9 @@ def deletePlayers():
 
 def deleteMatches():
     new_deleteTable("tourney_practice", "matchez")
-
-
+#+END_SRC
+*** modify new_countPlayers to take a "tournament" argument
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 # original Python db interaction
 def new_countPlayers(dbname, table_name):
     DB = new_connect(dbname)
@@ -326,13 +410,23 @@ def new_countPlayers(dbname, table_name):
     DB.close()
     return int(row_item[0])
 #+END_SRC
-** old test stubs plus specs for new functionality
-*** register player for specific tournament--new_registerPlayer
+** tests 1-7 plus specs for new functionality
+   :PROPERTIES:
+   :ID:       71CADD6E-CE8C-4033-BDE3-CE50A1B38549
+   :END:
+*** 1. 2. and 3. are no longer needed
+deleteMatches, deletePlayers, and countPlayers after deletePlayers
+*** 4. register player for specific tournament--new_registerPlayer
 **** potential issues or documentation
 - what happens if more than one player registers with the same name?
+  - players must have knowledge of their id
 - can a player register for more than one tournament?
+  - conceivably, yes; but he will be given a distinct id for both
 - given a certain number of participants, does it matter how many
   rounds will be in a given tournament?
+  - there's no immediate need to know how many rounds to expect in a
+    tournament with a given number of participants
+
 **** original code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_registerPlayer(dbname, table_name, player_name, tournament_name):
@@ -341,7 +435,20 @@ def new_registerPlayer(dbname, table_name, player_name, tournament_name):
              "VALUES (%s, %s);")
     new_dbExecuteWrapper(query, dbname, (player_name, tournament_name))
 #+END_SRC
-*** create participants (and a match) for a given round of a given tournament--registerMatchParticipants
+**** my test
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def myTestRegister():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Chandra Nalaar", "polo")
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 1:
+        raise ValueError(
+            "After one player registers, countPlayers() should be 1.")
+    print "4. After registering a player, countPlayers() returns 1."
+
+#+END_SRC
+*** 5. create participants (and a match) for a given round of a given tournament--registerMatchParticipants
 **** potential issues
 - you have to know the player id rather than the player name?
   - solution: print out names and matching ids for a given tournament
@@ -359,7 +466,72 @@ def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, p
     new_dbExecuteWrapper(query1, dbname, (sport, round_no))
 #+END_SRC
 **** relies on an SQL trigger
-*** register a score for a given match--registerScores
+**** my test--new_countPlayers
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def testRegisterCountDelete():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Markov Chaney", "polo")
+    registerPlayer("tourney_practice", "playerz", "Joe Malik", "polo")
+    registerPlayer("tourney_practice", "playerz", "Mao Tsu-hsi", "polo")
+    registerPlayer("tourney_practice", "playerz", "Atlanta Hope", "polo")
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 4:
+        raise ValueError(
+            "After registering four players, countPlayers should be 4.")
+    deletePlayers()
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 0:
+        raise ValueError("After deleting, countPlayers should return zero.")
+    print "5. Players can be registered and deleted."
+
+#+END_SRC
+*** 6. testStandingsBeforeMatches():
+**** problems
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
+        raise ValueError("Each playerStandings row should have four columns.")
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", "Melpomene Murray", "polo")
+new_registerPlayer("tourney_practice", "playerz", "Randy Schwartz", "polo")
+standings = new_playerStandings_alt("tourney_practice", "player_tables", "polo")
+len(standings[0])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> 8
+
+**** my test--new_playersStandings_alt
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def testStandingsBeforeMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Melpomene Murray", "polo")
+    registerPlayer("tourney_practice", "playerz", "Randy Schwartz", "polo")
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "polo")
+    if len(standings) < 2:
+        raise ValueError("Players should appear in playerStandings even before "
+                         "they have played any matches.")
+    elif len(standings) > 2:
+        raise ValueError("Only registered players should appear in standings.")
+    if len(standings[0]) != 4:
+        raise ValueError("Each playerStandings row should have four columns.")
+    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
+    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
+        raise ValueError(
+            "Newly registered players should have no matches or wins.")
+    if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
+        raise ValueError("Registered players' names should appear in standings, "
+                         "even if they have no matches played.")
+    print "6. Newly registered players appear in the standings with no matches."
+
+#+END_SRC
+*** 7. register a score for a given match--registerScores
 **** 
 - you have to know the match_id in order to register the scores?
 - scores are expected to be positive integers, and ties are possible
@@ -372,24 +544,62 @@ def registerScores(dbname, table_name, match_no, home_score, away_score):
     query = (insert_statement + "VALUES (%s, %s, %s);")
     new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
 #+END_SRC
+**** my test--testReportMatches():--new_playerStandings_alt
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def testReportMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Bruno Walton", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Boots O'Neal", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Cathy Burton", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Diane Grant", "knock-hockey")
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    for (i, n, w, m) in standings:
+        if m != 1:
+            raise ValueError("Each player should have one match recorded.")
+        if i in (id1, id3) and w != 1:
+            raise ValueError("Each match winner should have one win recorded.")
+        elif i in (id2, id4) and w != 0:
+            raise ValueError("Each match loser should have zero wins recorded.")
+    print "7. After a match, players have updated standings."
+
+#+END_SRC
+* 8. tournament(s!) 9. OMW 10. ties
+** development
+*** "Prevent rematches between players."?
+
+"allow ties"
+
+"use Opponent Match Wins as criteria for breaking ties in ranking"
+
+"Support more than one tournament in the database"
 *** log the data from the results of a given round--log_round_results
-**** 
+**** spec
 - you have to know what round of which tournament has been completed?
-- a lot happens here, primarily the determining of a Points value for
+
+  - you need to compute the results of only matches that have just
+    happened, not those that have already been logged
+
+- a lot happens in the SQL here, primarily the determining of a Points value for
   each participant depending on a victory or a tie?
-**** original code
+**** original code--log_round_results uses log_records SQL function
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def log_round_results(dbname, tournament_name, round_of_tournament):
     query = "SELECT * FROM log_records(%s, %s)"
     new_dbExecuteWrapper(query, dbname, (round_of_tournament, tournament_name))
 #+END_SRC
 *** create an Opponents Match Win value for each player--set_all_OMW
-**** 
+**** spec
 - you have to compute the OMW for each player in the db?
 - is not really OM Wins but OM points
 **** original code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
-
+# note 
 def set_all_OMW(dbname):
     data = how_many_players(dbname)
     playaz = [n[0] for n in data]
@@ -397,7 +607,7 @@ def set_all_OMW(dbname):
     print("done")
 
 #+END_SRC
-**** relies on
+**** relies on--how_many_players and set_OMW (refactor to calculate only for a given tournament?)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 
 def how_many_players(dbname):
@@ -411,7 +621,7 @@ def set_OMW(dbname, player_id):
 
 #+END_SRC
 *** create the pairings for the next round and register them as matches--naive_swissPairings
-**** 
+**** issues
 - the implementation of swiss pairings does a lot, and depends on a
   view of the player records for a given tournament?
 - why does the function need to know what round you are calculating for?
@@ -446,6 +656,41 @@ def naive_pairings(tournament_name):
     [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
     pairings = [(id1, id2), (id3, id4), (id5, id6), (id7, id8)]
     return pairings
+
+#+END_SRC
+**** my test--registerPlayer; new_playerStandings_alt; registerMatchParticipants; registerScores
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def testPairings():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Twilight Sparkle", "polo")
+    registerPlayer("tourney_practice", "playerz", "Fluttershy", "polo")
+    registerPlayer("tourney_practice", "playerz", "Applejack", "polo")
+    registerPlayer("tourney_practice", "playerz", "Pinkie Pie", "polo")
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "polo")
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    registerMatchParticipants(
+    registerScores(
+    registerScores(
+    log_round_results("tourney_practice", "tennis", 1)
+    set_all_OMW('tourney_practice')
+    
+    pairings = swissPairings()
+
+    naive_swissPairings(2, "tennis")
+    if len(pairings) != 2:
+        raise ValueError(
+            "For four players, swissPairings should return two pairs.")
+    [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+    correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+    actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+    if correct_pairs != actual_pairs:
+        raise ValueError(
+            "After one match, players with one win should be paired.")
+    print "8. After one match, players with one win are paired."
 
 #+END_SRC
 *** delete Matches
@@ -508,4 +753,557 @@ def testReportMatches():
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def testPairings():
 #+END_SRC
+** allow ties--test stub
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+# def deletePlayers():
+#    new_deleteTable("tourney_practice", "playerz")
+
+
+# def deleteMatches():
+#     new_deleteTable("tourney_practice", "matchez")
+
+def allowsTies_test():
+# register four teams/players for a soccer tournament
+new_registerPlayer("tourney_practice", "playerz", 'a', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'b', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'c', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'd', "soccer");
+
+# create two matches for these four participants
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 3, 4)
+
+# register scores for the given matches, with one being a tie
+registerScores("tourney_practice", "score_results", 1, 1, 1)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+
+ 
+print "9. Allows ties"
+#+END_SRC
+** more than one tournament
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+print "10. Supports more than one tournament in database"
+
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
+
+
+# must register the participants of the first match.
+# after that, the pairings of players will be determined by 
+# running naive_swissPairings, the results of which will
+# be used when reporting the next match results between those players
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+
+# scores are reported for a match number and for the notion of
+# home vs. away players
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+
+# calculate the stats for the given tournament
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+
+# determine the pairings for the next round of the given tournament,
+# both of which (the round number and the tournament name) are given
+# as arguments
+naive_swissPairings(2, "tennis")
+
+new_registerPlayer("tourney_practice", "playerz", 'allen', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'beverly', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'cleanth', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'devon', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'eldridge', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer");
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+# setup the first round with predetermined matches
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+
+registerScores("tourney_practice", "score_results", 13, 1, 0)
+registerScores("tourney_practice", "score_results", 14, 0, 1)
+registerScores("tourney_practice", "score_results", 15, 1, 0)
+registerScores("tourney_practice", "score_results", 16, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "soccer")
+#+END_SRC
+** Use OMW for breaking ties in ranking
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+print "11. Uses Opponent Match Points as criteria for breaking ties in ranking"
+#+END_SRC
+* sql code base
+** in one block
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+-- a player registers with a name and the name of a tournament
+-- an id number is assigned
+CREATE TABLE playerz (
+       player_id serial PRIMARY KEY,
+       player_name text not null,
+       tournament_name text );
+
+-- participants for a given match are (arbitrarily) assigned to home and away
+-- that given pairing is assigned a match id
+CREATE TABLE match_participants (
+       match_id serial PRIMARY KEY,
+       home int REFERENCES playerz (player_id),
+       away int REFERENCES playerz (player_id));
+
+-- every match has an id number, a tournament it was a part of, and a round
+-- in that tournament that it took place in
+CREATE TABLE matchez(
+       match_id int REFERENCES match_participants (match_id),
+       tournament_name text DEFAULT 'none',
+       round int); 
+
+-- every match also has a final score for the home and the away team
+-- scores can be equal, in which case the outcome was a tie
+CREATE TABLE score_results (
+       match_id int REFERENCES match_participants (match_id),
+       home_score int,
+       away_score int);
+
+-- every player is associated with five stats
+-- CAN tournament_name BE SAFELY OMITTED??
+CREATE TABLE player_recordz (
+       player_id int REFERENCES playerz (player_id),
+-- tournament name can be safely omitted because it is in the playerz table
+-- and is accessed thus in the tournament matches view
+--     tournament_name text,
+       wins int DEFAULT 0,
+       losses int DEFAULT 0,
+       draws int DEFAULT 0,
+       points int DEFAULT 0,
+       OMW int DEFAULT 0);
+
+-- the crucial table used for logging results of matches for players
+CREATE VIEW tournament_matches AS
+select a.match_id, a.tournament_name, a.round, b.home, b.away, c.home_score, c.away_score
+from matchez as a, match_participants as b, score_results as c
+where a.match_id = b.match_id
+AND b.match_id = c.match_id;
+
+-- crucial table used for calculating OMW?
+CREATE VIEW player_tables AS
+select a.player_id, a.player_name, a.tournament_name, b.wins, b.losses, b.draws, b.points, b.OMW
+from playerz as a, player_recordz as b
+where a.player_id = b.player_id;
+
+-- trigger function used to auto-increment player id in player_recordz
+-- after a player is registered
+CREATE OR REPLACE FUNCTION initialize_player_rec() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO player_recordz (player_id) VALUES (NEW.player_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+-- trigger used after inserting a player
+CREATE TRIGGER initialize_player_rec
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+
+-- trigger function used for auto-incrementing the match_id of
+-- a match in matchez when match_participants are registered
+CREATE OR REPLACE FUNCTION initialize_matchez() RETURNS TRIGGER AS $$
+       BEGIN
+	INSERT INTO matchez (match_id) VALUES (NEW.match_id);
+	RETURN NEW;
+       END;
+$$ LANGUAGE plpgsql;
+
+-- trigger used for inserting a match after inserting match participants
+CREATE TRIGGER initialize_match_participants
+       AFTER INSERT ON match_participants FOR EACH row EXECUTE PROCEDURE
+       initialize_matchez();
+-- first in a series of functions that record data about a player's
+-- performance after each round of a tournament
+CREATE OR REPLACE FUNCTION log_draws(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET draws = draws + 1
+       from tournament_matches as a 
+       WHERE a.home_score = a.away_score
+       AND (a.home = player_id OR a.away = player_id)
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.away = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_away_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.away = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_wins(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET wins = wins + 1
+       from tournament_matches as a 
+       WHERE a.home_score > a.away_score
+       AND a.home = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION log_home_losses(round_no integer, tournament_name text) RETURNS VOID AS $$
+       UPDATE player_recordz SET losses = losses + 1
+       from tournament_matches as a 
+       WHERE a.home_score < a.away_score
+       AND a.home = player_id
+       AND a.round = $1 AND a.tournament_name = $2
+$$ LANGUAGE SQL;
+
+-- following a system (such as that used in soccer) where wins are worth three points
+-- ties are worth one
+CREATE OR REPLACE FUNCTION update_points() RETURNS VOID AS $$
+       UPDATE player_recordz 
+       SET points = (wins * 3) + draws;
+$$ LANGUAGE SQL;
+
+-- crunch everybody's numbers at once after each round
+CREATE OR REPLACE FUNCTION log_records(round_no integer, tournament_name text) RETURNS VOID as $$
+       SELECT log_home_losses($1, $2);
+       SELECT log_home_wins($1, $2);
+       SELECT log_away_losses($1, $2);
+       SELECT log_away_wins($1, $2);
+       SELECT log_draws($1, $2);
+       SELECT update_points();
+$$ LANGUAGE SQL;
+
+-- use a CASE clause to determine whether a player was "home or "away"
+CREATE OR REPLACE FUNCTION players_matches (integer) RETURNS TABLE (opposing_player int) AS $$
+       select 
+       	      CASE WHEN a.away = $1 THEN a.home
+	      	   WHEN a.home = $1 THEN a.away
+		   ELSE NULL
+		END as opposing_player
+FROM match_participants as a;
+$$ LANGUAGE SQL;
+
+-- to find the OMW for a given player, you need to know the number of points
+-- possessed by each opponent faced
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+       select opposing_player, a.points FROM players_matches($1) JOIN player_tables as a
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+
+-- set a player's OMW 
+CREATE OR REPLACE FUNCTION set_omw (integer) RETURNS VOID AS $$
+       UPDATE player_recordz SET omw = (select sum(opponent_OMW) FROM player_omw($1))
+       WHERE player_id = $1;
+$$ LANGUAGE SQL;
+
+
+#+END_SRC
+** demonstrate all tables, views and functions
+*** select * from playerz;
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz;
+#+END_SRC
+
+#+RESULTS:
+| player_id | player_name | tournament_name |
+|-----------+-------------+-----------------|
+|         1 | a           | tennis          |
+|         2 | b           | tennis          |
+|         3 | c           | tennis          |
+|         4 | d           | tennis          |
+|         5 | e           | tennis          |
+|         6 | f           | tennis          |
+|         7 | g           | tennis          |
+|         8 | h           | tennis          |
+|         9 | allen       | soccer          |
+|        10 | beverly     | soccer          |
+|        11 | cleanth     | soccer          |
+|        12 | devon       | soccer          |
+|        13 | eldridge    | soccer          |
+|        14 | fatool      | soccer          |
+|        15 | g-money     | soccer          |
+|        16 | harold      | soccer          |
+*** select * from match_participants
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from match_participants
+#+END_SRC
+
+#+RESULTS:
+| match_id | home | away |
+|----------+------+------|
+|        1 |    1 |    2 |
+|        2 |    3 |    4 |
+|        3 |    5 |    6 |
+|        4 |    7 |    8 |
+|        5 |    1 |    5 |
+|        6 |    4 |    8 |
+|        7 |    2 |    7 |
+|        8 |    3 |    6 |
+|        9 |    1 |    8 |
+|       10 |    5 |    4 |
+|       11 |    2 |    6 |
+|       12 |    7 |    3 |
+|       13 |    9 |   10 |
+|       14 |   11 |   12 |
+|       15 |   13 |   14 |
+|       16 |   15 |   16 |
+|       17 |    9 |   13 |
+|       18 |   12 |   16 |
+|       19 |   10 |   15 |
+|       20 |   11 |   14 |
+|       21 |   16 |    9 |
+|       22 |   13 |   12 |
+|       23 |   14 |   10 |
+|       24 |   15 |   11 |
+*** select * from matchez
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from matchez
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | round |
+|----------+-----------------+-------|
+|        1 | tennis          |     1 |
+|        2 | tennis          |     1 |
+|        3 | tennis          |     1 |
+|        4 | tennis          |     1 |
+|        5 | tennis          |     2 |
+|        6 | tennis          |     2 |
+|        7 | tennis          |     2 |
+|        8 | tennis          |     2 |
+|        9 | tennis          |     3 |
+|       10 | tennis          |     3 |
+|       11 | tennis          |     3 |
+|       12 | tennis          |     3 |
+|       13 | soccer          |     1 |
+|       14 | soccer          |     1 |
+|       15 | soccer          |     1 |
+|       16 | soccer          |     1 |
+|       17 | soccer          |     2 |
+|       18 | soccer          |     2 |
+|       19 | soccer          |     2 |
+|       20 | soccer          |     2 |
+|       21 | soccer          |     3 |
+|       22 | soccer          |     3 |
+|       23 | soccer          |     3 |
+|       24 | soccer          |     3 | 
+*** select * from score_results
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from score_results
+#+END_SRC
+
+#+RESULTS:
+| match_id | home_score | away_score |
+|----------+------------+------------|
+|        1 |          1 |          0 |
+|        2 |          0 |          1 |
+|        3 |          1 |          0 |
+|        4 |          0 |          1 |
+|        5 |          1 |          0 |
+|        6 |          0 |          1 |
+|        7 |          1 |          0 |
+|        8 |          0 |          1 |
+|        9 |          1 |          0 |
+|       10 |          0 |          1 |
+|       11 |          1 |          0 |
+|       12 |          0 |          1 |
+|       13 |          1 |          0 |
+|       14 |          0 |          1 |
+|       15 |          1 |          0 |
+|       16 |          0 |          1 |
+|       17 |          1 |          1 |
+|       18 |          0 |          1 |
+|       19 |          1 |          0 |
+|       20 |          0 |          1 |
+|       21 |          1 |          0 |
+|       22 |          0 |          1 |
+|       23 |          1 |          0 |
+|       24 |          0 |          1 |
+*** select * from player_recordz
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_recordz
+#+END_SRC
+
+#+RESULTS:
+| player_id | tournament_name | wins | losses | draws | points | omw |
+|-----------+-----------------+------+--------+-------+--------+-----|
+|        15 |                 |    0 |      3 |     0 |      0 |  15 |
+|        13 |                 |    1 |      1 |     1 |      4 |  16 |
+|        14 |                 |    2 |      1 |     0 |      6 |  10 |
+|        16 |                 |    3 |      0 |     0 |      9 |  10 |
+|        10 |                 |    1 |      2 |     0 |      3 |  10 |
+|         9 |                 |    1 |      1 |     1 |      4 |  16 |
+|        11 |                 |    1 |      2 |     0 |      3 |  12 |
+|        12 |                 |    2 |      1 |     0 |      6 |  16 |
+|         3 |                 |    1 |      4 |     0 |      3 |   9 |
+|         4 |                 |    3 |      2 |     0 |      9 |  12 |
+|         1 |                 |    5 |      0 |     0 |     15 |  15 |
+|         2 |                 |    3 |      2 |     0 |      9 |  12 |
+|         7 |                 |    0 |      5 |     0 |      0 |  15 |
+|         5 |                 |    2 |      3 |     0 |      6 |  18 |
+|         6 |                 |    2 |      3 |     0 |      6 |  12 |
+|         8 |                 |    4 |      1 |     0 |     12 |  15 |
+*** select * from tournament_matches
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from tournament_matches
+#+END_SRC
+
+#+RESULTS:
+| match_id | tournament_name | round | home | away | home_score | away_score |
+|----------+-----------------+-------+------+------+------------+------------|
+|        1 | tennis          |     1 |    1 |    2 |          1 |          0 |
+|        2 | tennis          |     1 |    3 |    4 |          0 |          1 |
+|        3 | tennis          |     1 |    5 |    6 |          1 |          0 |
+|        4 | tennis          |     1 |    7 |    8 |          0 |          1 |
+|        5 | tennis          |     2 |    1 |    5 |          1 |          0 |
+|        6 | tennis          |     2 |    4 |    8 |          0 |          1 |
+|        7 | tennis          |     2 |    2 |    7 |          1 |          0 |
+|        8 | tennis          |     2 |    3 |    6 |          0 |          1 |
+|        9 | tennis          |     3 |    1 |    8 |          1 |          0 |
+|       10 | tennis          |     3 |    5 |    4 |          0 |          1 |
+|       11 | tennis          |     3 |    2 |    6 |          1 |          0 |
+|       12 | tennis          |     3 |    7 |    3 |          0 |          1 |
+|       13 | soccer          |     1 |    9 |   10 |          1 |          0 |
+|       14 | soccer          |     1 |   11 |   12 |          0 |          1 |
+|       15 | soccer          |     1 |   13 |   14 |          1 |          0 |
+|       16 | soccer          |     1 |   15 |   16 |          0 |          1 |
+|       17 | soccer          |     2 |    9 |   13 |          1 |          1 |
+|       18 | soccer          |     2 |   12 |   16 |          0 |          1 |
+|       19 | soccer          |     2 |   10 |   15 |          1 |          0 |
+|       20 | soccer          |     2 |   11 |   14 |          0 |          1 |
+|       21 | soccer          |     3 |   16 |    9 |          1 |          0 |
+|       22 | soccer          |     3 |   13 |   12 |          0 |          1 |
+|       23 | soccer          |     3 |   14 |   10 |          1 |          0 |
+|       24 | soccer          |     3 |   15 |   11 |          0 |          1 |
+*** select * from matchez
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_tables
+#+END_SRC
+
+#+RESULTS:
+| player_id | player_name | tournament_name | wins | losses | draws | points | omw |
+|-----------+-------------+-----------------+------+--------+-------+--------+-----|
+|         1 | a           | tennis          |    5 |      0 |     0 |     15 |  15 |
+|         2 | b           | tennis          |    3 |      2 |     0 |      9 |  12 |
+|         3 | c           | tennis          |    1 |      4 |     0 |      3 |   9 |
+|         4 | d           | tennis          |    3 |      2 |     0 |      9 |  12 |
+|         5 | e           | tennis          |    2 |      3 |     0 |      6 |  18 |
+|         6 | f           | tennis          |    2 |      3 |     0 |      6 |  12 |
+|         7 | g           | tennis          |    0 |      5 |     0 |      0 |  15 |
+|         8 | h           | tennis          |    4 |      1 |     0 |     12 |  15 |
+|         9 | allen       | soccer          |    1 |      1 |     1 |      4 |  16 |
+|        10 | beverly     | soccer          |    1 |      2 |     0 |      3 |  10 |
+|        11 | cleanth     | soccer          |    1 |      2 |     0 |      3 |  12 |
+|        12 | devon       | soccer          |    2 |      1 |     0 |      6 |  16 |
+|        13 | eldridge    | soccer          |    1 |      1 |     1 |      4 |  16 |
+|        14 | fatool      | soccer          |    2 |      1 |     0 |      6 |  10 |
+|        15 | g-money     | soccer          |    0 |      3 |     0 |      0 |  15 |
+|        16 | harold      | soccer          |    3 |      0 |     0 |      9 |  10 |
+*** problems demonstrating triggers and functions
+**** INSERT INTO player_recordz (player_id) VALUES (NEW.player_id); (initialize_player_rec)
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+---
+       AFTER INSERT ON playerz FOR EACH row EXECUTE PROCEDURE
+       initialize_player_rec();
+ #+END_SRC
+
+ #+BEGIN_SRC python :session *Python* :results output :tangle yes
+new_registerPlayer("tourney_practice", "playerz", 'aaaa', "foosball")
+ #+END_SRC
+**** INSERT INTO matchez (match_id) VALUES (NEW.match_id); (initialize_match_participants)
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+       AFTER INSERT ON match_participants FOR EACH row EXECUTE PROCEDURE
+       initialize_matchez();
+
+
+ #+END_SRC
+**** calling log_records will update player_recordz each time (returns VOID)
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from log_records(2, 'tennis')
+ #+END_SRC
+
+ #+RESULTS:
+ | log_records |
+ |-------------|
+ |             |
+*** functions behaving weirdly?
+**** select * from players_matches(1) 
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from players_matches(12)
+ #+END_SRC
+
+ #+RESULTS:
+ | opposing_player |
+ |-----------------|
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |                 |
+ |              11 |
+ |                 |
+ |                 |
+ |                 |
+ |              16 |
+ |                 |
+ |                 |
+ |                 |
+ |              13 |
+ |                 |
+ |                 |
+**** select * from player_OMW(1)
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from player_OMW(1)
+ #+END_SRC
+
+ #+RESULTS:
+ | opponent | opponent_omw |
+ |----------+--------------|
+ |        1 |           15 |
+ |        7 |            0 |
+ |        6 |            6 |
+**** select * from set_omw(1) (UPDATES player_recordz; returns VOID)
+ #+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from set_omw(1)
+
+
+ #+END_SRC
+
+ #+RESULTS:
+ | set_omw |
+ |---------|
+ |         |
 

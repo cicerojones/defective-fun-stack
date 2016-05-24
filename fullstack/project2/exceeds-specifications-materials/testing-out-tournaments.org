@@ -1,5 +1,8 @@
 #+STARTUP: indent
 * prepare to pass tests
+:PROPERTIES:
+:ID:       391AFF00-9A9D-4F33-A04A-364A5BF1BE81
+:END:
 ** original pass-test statements plus
 print "1. Old matches can be deleted."
 
@@ -101,6 +104,9 @@ correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
 actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
 #+END_SRC
 * all-in-one (broken up) three rounds plus one round second tournament
+:PROPERTIES:
+:ID:       0F5A2AA2-E91D-4EE8-9E9D-A05773A6D4FD
+:END:
 ** all this works when called in sequence
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 
@@ -143,7 +149,7 @@ naive_swissPairings(2, "tennis")
 
 #+RESULTS:
 : 
-: ... >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
+: ... >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... ... ... >>> >>> >>> ... ... >>> >>> >>> >>> >>> ... >>> done
 
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -162,7 +168,7 @@ naive_swissPairings(3, "tennis")
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> done
+: ... >>> done
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 # enter results for round three
@@ -177,7 +183,7 @@ set_all_OMW('tourney_practice')
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> done
+: >>> >>> >>> >>> >>> >>> done
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 # register players for a new tournament but using the same database
@@ -211,6 +217,10 @@ set_all_OMW('tourney_practice')
 
 #+END_SRC
 
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
+
 ** will subsequent round in the soccer tournament work as well
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 naive_swissPairings(2, "soccer")
@@ -226,7 +236,7 @@ set_all_OMW('tourney_practice')
 #+END_SRC
 #+RESULTS:
 : 
-: >>> ... >>> >>> done
+: >>> ... >>> >>> >>> done
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 naive_swissPairings(3, "soccer")
@@ -344,61 +354,9 @@ set_all_OMW('tourney_practice')
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
 
-... >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> done
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 3, in naive_swissPairings
-  File "<stdin>", line 5, in naive_pairings
-ValueError: too many values to unpack
->>> >>> >>> >>> >>> done
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 3, in naive_swissPairings
-  File "<stdin>", line 5, in naive_pairings
-ValueError: too many values to unpack
->>> >>> >>> >>> done
-... >>> >>>   File "<stdin>", line 1
-    new_registerPlayer("tourney_practice"new_registerPlayer("tourney_pra;
-                                                          ^
-SyntaxError: invalid syntax
-File "<stdin>", line 1
-    new_registerPlayer("tourney_practice", "playerz", 'eldridge', "new_registnew_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
-                                                                                                                ^
-SyntaxError: invalid syntax
->>>   File "<stdin>", line 1
-    new_registerPlayer("tourney_pranew_registerPlayer("tourney_pranew_regis
-                                                                          ^
-SyntaxError: invalid syntax
-File "<stdin>", line 1
-    registerMatchParticipants("tourney_practiceregisterMatchParticipants("tourr",registerMatregisterMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
-                                                                              ^
-SyntaxError: invalid syntax
->>>   File "<stdin>", line 1
-    registerMatchParticipants("tourney_practice", "match_particregisterMatchParticipants("tou
-                                                                                            ^
-SyntaxError: invalid syntax
-... ...   File "<stdin>", line 3
-    registerScores("tourney_practice", "score_results", 15, 1, 0)
-                 ^
-SyntaxError: invalid syntax
->>> >>> >>> done
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 3, in naive_swissPairings
-  File "<stdin>", line 5, in naive_pairings
-ValueError: too many values to unpack
-... >>> >>> >>> >>> >>> >>> done
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 3, in naive_swissPairings
-  File "<stdin>", line 5, in naive_pairings
-ValueError: too many values to unpack
-done
-#+end_example
 
-* in two pieces (will work as one Python module, tho)
+* [#A] in two pieces (will work as one Python module, tho)
 ** Players, Matches, Scores, for 3 rounds; new Players
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")
@@ -507,7 +465,10 @@ set_all_OMW('tourney_practice')
 : >>> >>> >>> ... >>> done
 : done
 
-* run the sql
+* run the sql setup (drop and create tables and functions)
+:PROPERTIES:
+:ID:       7C9D73E5-FD02-45DD-8801-1C34C5627211
+:END:
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
 DROP TABLE playerz CASCADE; 
@@ -762,6 +723,9 @@ $$ LANGUAGE SQL;
 | CREATE FUNCTION |
 
 * view the tables
+:PROPERTIES:
+:ID:       1A0883C1-05E6-4122-BA21-66DA3D3AA31D
+:END:
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from matchez;
 select * from playerz;
@@ -831,14 +795,14 @@ select * from player_tables ORDER BY tournament_name, points DESC, omw DESC;
 |        14 | 11              |              12 |      |        |       |        |     |
 |        15 | 13              |              14 |      |        |       |        |     |
 |        16 | 15              |              16 |      |        |       |        |     |
-|        17 | 9               |              13 |      |        |       |        |     |
-|        18 | 12              |              16 |      |        |       |        |     |
-|        19 | 10              |              15 |      |        |       |        |     |
+|        17 | 16              |              12 |      |        |       |        |     |
+|        18 | 13              |               9 |      |        |       |        |     |
+|        19 | 15              |              10 |      |        |       |        |     |
 |        20 | 11              |              14 |      |        |       |        |     |
-|        21 | 16              |               9 |      |        |       |        |     |
-|        22 | 13              |              12 |      |        |       |        |     |
-|        23 | 14              |              10 |      |        |       |        |     |
-|        24 | 15              |              11 |      |        |       |        |     |
+|        21 | 9               |              16 |      |        |       |        |     |
+|        22 | 12              |              13 |      |        |       |        |     |
+|        23 | 15              |              14 |      |        |       |        |     |
+|        24 | 10              |              11 |      |        |       |        |     |
 |  match_id | home_score      |      away_score |      |        |       |        |     |
 |         1 | 1               |               0 |      |        |       |        |     |
 |         2 | 0               |               1 |      |        |       |        |     |
@@ -865,14 +829,14 @@ select * from player_tables ORDER BY tournament_name, points DESC, omw DESC;
 |        23 | 1               |               0 |      |        |       |        |     |
 |        24 | 0               |               1 |      |        |       |        |     |
 | player_id | player_name     | tournament_name | wins | losses | draws | points | omw |
-|        16 | harold          |          soccer |    3 |      0 |     0 |      9 |  10 |
-|        12 | devon           |          soccer |    2 |      1 |     0 |      6 |  16 |
-|        14 | fatool          |          soccer |    2 |      1 |     0 |      6 |  10 |
-|         9 | allen           |          soccer |    1 |      1 |     1 |      4 |  16 |
-|        13 | eldridge        |          soccer |    1 |      1 |     1 |      4 |  16 |
-|        11 | cleanth         |          soccer |    1 |      2 |     0 |      3 |  12 |
-|        10 | beverly         |          soccer |    1 |      2 |     0 |      3 |  10 |
-|        15 | g-money         |          soccer |    0 |      3 |     0 |      0 |  15 |
+|         9 | allen           |          soccer |    3 |      0 |     0 |      9 |  10 |
+|        13 | eldridge        |          soccer |    2 |      1 |     0 |      6 |  16 |
+|        15 | g-money         |          soccer |    2 |      1 |     0 |      6 |   7 |
+|        16 | harold          |          soccer |    1 |      1 |     1 |      4 |  19 |
+|        12 | devon           |          soccer |    1 |      1 |     1 |      4 |  13 |
+|        14 | fatool          |          soccer |    1 |      2 |     0 |      3 |  15 |
+|        11 | cleanth         |          soccer |    1 |      2 |     0 |      3 |   7 |
+|        10 | beverly         |          soccer |    0 |      3 |     0 |      0 |  18 |
 |         1 | a               |          tennis |    3 |      0 |     0 |      9 |  15 |
 |         8 | h               |          tennis |    2 |      1 |     0 |      6 |  15 |
 |         2 | b               |          tennis |    2 |      1 |     0 |      6 |  12 |

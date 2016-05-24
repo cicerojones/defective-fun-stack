@@ -396,7 +396,7 @@ CREATE OR REPLACE FUNCTION log_some_records(round integer, tournament_name text)
 | CREATE FUNCTION |
 |-----------------|
 
-**** full code sequence 
+**** a full SQL code sequence in blocks
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 INSERT INTO playerz (player_name) VALUES ('a');
 INSERT INTO playerz (player_name) VALUES ('b');
