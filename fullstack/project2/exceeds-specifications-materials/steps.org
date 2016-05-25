@@ -14,3 +14,9 @@
 [[file:~/Documents/working-directory/udacity-courses/fullstack/project2/project_tests/tournament_test.py::#!/usr/bin/env%20python]]
 3. understand the overview of old tests and new tests
 [[id:391AFF00-9A9D-4F33-A04A-364A5BF1BE81][prepare to pass tests]]
+4. main issue as of [2016-05-25 Wed 08:53]
+- need to know player_ids automatically!
+#+BEGIN_SRC python
+def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
+#+END_SRC
+

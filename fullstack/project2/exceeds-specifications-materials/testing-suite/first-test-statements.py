@@ -1,4 +1,4 @@
-
+import tournament-code
 
 new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")
 new_registerPlayer("tourney_practice", "playerz", 'b', "tennis")
@@ -9,10 +9,14 @@ new_registerPlayer("tourney_practice", "playerz", 'f', "tennis")
 new_registerPlayer("tourney_practice", "playerz", 'g', "tennis")
 new_registerPlayer("tourney_practice", "playerz", 'h', "tennis")
 
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
-registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "tennis", 1, 7, 8)
 
 registerScores("tourney_practice", "score_results", 1, 1, 0)
 registerScores("tourney_practice", "score_results", 2, 0, 1)
@@ -53,17 +57,25 @@ new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer")
 new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer")
 new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer")
 
-1 + 1
-# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
-# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
-# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
-# registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+# 1 + 1
+# registerMatchParticipants(
+#     "tourney_practice", "match_participants", "soccer", 1, 9, 10)
+# registerMatchParticipants(
+#     "tourney_practice", "match_participants", "soccer", 1, 11, 12)
+# registerMatchParticipants(
+#     "tourney_practice", "match_participants", "soccer", 1, 13, 14)
+# registerMatchParticipants(
+#     "tourney_practice", "match_participants", "soccer", 1, 15, 16)
 
 
-registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
-registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
-registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
-registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants(
+    "tourney_practice", "match_participants", "soccer", 1, 15, 16)
 
 registerScores("tourney_practice", "score_results", 13, 1, 0)
 registerScores("tourney_practice", "score_results", 14, 0, 1)
@@ -76,7 +88,7 @@ set_all_OMW('tourney_practice')
 naive_swissPairings(2, "soccer")
 
 
-## 
+#
 registerScores("tourney_practice", "score_results", 17, 1, 1)
 registerScores("tourney_practice", "score_results", 18, 0, 1)
 registerScores("tourney_practice", "score_results", 19, 1, 0)

@@ -131,6 +131,7 @@ def set_OMW(dbname, player_id):
     new_dbExecuteWrapper(query, dbname, (player_id,))
 
 
+# inefficient to set the OMW for ALL players in ALL tournaments
 def set_all_OMW(dbname):
     data = how_many_players(dbname)
     playaz = [n[0] for n in data]

@@ -646,6 +646,7 @@ $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION set_all_OMW() RETURNS VOID AS $$
 -- problematic to do this
+-- gets done in Python instead
        select * from set_OMW(1);
        select * from set_OMW(2);
        select * from set_OMW(3);
