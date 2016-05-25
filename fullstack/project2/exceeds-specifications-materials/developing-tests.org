@@ -267,14 +267,30 @@ select * from matchez
 #+RESULTS:
 | match_id | tournament_name | round |
 |----------+-----------------+-------|
-|          | tennis          |     1 |
-|          | tennis          |     1 |
-|          | tennis          |     1 |
-|          | tennis          |     1 |
 |        1 | tennis          |     1 |
 |        2 | tennis          |     1 |
 |        3 | tennis          |     1 |
 |        4 | tennis          |     1 |
+|        5 | tennis          |     2 |
+|        6 | tennis          |     2 |
+|        7 | tennis          |     2 |
+|        8 | tennis          |     2 |
+|        9 | tennis          |     3 |
+|       10 | tennis          |     3 |
+|       11 | tennis          |     3 |
+|       12 | tennis          |     3 |
+|       13 | soccer          |     1 |
+|       14 | soccer          |     1 |
+|       15 | soccer          |     1 |
+|       16 | soccer          |     1 |
+|       17 | soccer          |     2 |
+|       18 | soccer          |     2 |
+|       19 | soccer          |     2 |
+|       20 | soccer          |     2 |
+|       21 | soccer          |     3 |
+|       22 | soccer          |     3 |
+|       23 | soccer          |     3 |
+|       24 | soccer          |     3 |
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 UPDATE matchez
@@ -576,6 +592,77 @@ select * from tournament_playerz
 |       14 | soccer          |   11 |      0 |
 |       15 | soccer          |   13 |      3 |
 |       16 | soccer          |   15 |      0 |
+
+**** develop function for retrieving a players id given player_name
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from playerz
+#+END_SRC
+
+#+RESULTS:
+| player_id | player_name | tournament_name |
+|-----------+-------------+-----------------|
+|         1 | a           | tennis          |
+|         2 | b           | tennis          |
+|         3 | c           | tennis          |
+|         4 | d           | tennis          |
+|         5 | e           | tennis          |
+|         6 | f           | tennis          |
+|         7 | g           | tennis          |
+|         8 | h           | tennis          |
+|         9 | allen       | soccer          |
+|        10 | beverly     | soccer          |
+|        11 | cleanth     | soccer          |
+|        12 | devon       | soccer          |
+|        13 | eldridge    | soccer          |
+|        14 | fatool      | soccer          |
+|        15 | g-money     | soccer          |
+|        16 | harold      | soccer          |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select player_id from playerz where player_name = 'a'
+#+END_SRC
+
+#+RESULTS:
+| player_id |
+|-----------|
+|         1 |
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION player_OMW (integer) RETURNS TABLE (opponent int, opponent_OMW int) AS $$
+       select opposing_player, a.points FROM players_matches($1) JOIN player_tables as A
+       ON opposing_player = player_id
+       WHERE opposing_player IS NOT NULL;
+$$ LANGUAGE SQL;
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+DROP FUNCTION get_player_id(text)
+#+END_SRC
+
+#+RESULTS:
+| DROP FUNCTION |
+|---------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+CREATE OR REPLACE FUNCTION get_player_id (player_name text) RETURNS TABLE (player_id int, player_name text, tournament_name text) AS $$
+       select player_id, player_name, tournament_name FROM playerz WHERE player_name = $1
+$$ LANGUAGE SQL;
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE FUNCTION |
+|-----------------|
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select * from get_player_id('a')
+#+END_SRC
+
+#+RESULTS:
+| player_id | player_name | tournament_name |
+|-----------+-------------+-----------------|
+|         1 | a           | tennis          |
 
 *** exceeds Python code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
