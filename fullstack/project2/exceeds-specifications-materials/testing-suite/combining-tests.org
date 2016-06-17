@@ -1,4 +1,7 @@
 * testing the original code base
+  :PROPERTIES:
+  :ID:       0BA17349-EE3B-436F-B793-2F7B201B3CE2
+  :END:
 ** [#A] original (Udacity) tests in one block (replicate print messages)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 #!/usr/bin/env python

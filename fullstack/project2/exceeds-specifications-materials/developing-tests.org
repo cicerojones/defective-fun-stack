@@ -594,30 +594,68 @@ select * from tournament_playerz
 |       16 | soccer          |   15 |      0 |
 
 **** develop function for retrieving a players id given player_name
+***** all "player" tables
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-select * from playerz
+select * from playerz;
+select * from player_tables;
+select * from player_recordz
 #+END_SRC
 
 #+RESULTS:
-| player_id | player_name | tournament_name |
-|-----------+-------------+-----------------|
-|         1 | a           | tennis          |
-|         2 | b           | tennis          |
-|         3 | c           | tennis          |
-|         4 | d           | tennis          |
-|         5 | e           | tennis          |
-|         6 | f           | tennis          |
-|         7 | g           | tennis          |
-|         8 | h           | tennis          |
-|         9 | allen       | soccer          |
-|        10 | beverly     | soccer          |
-|        11 | cleanth     | soccer          |
-|        12 | devon       | soccer          |
-|        13 | eldridge    | soccer          |
-|        14 | fatool      | soccer          |
-|        15 | g-money     | soccer          |
-|        16 | harold      | soccer          |
+| player_id | player_name     | tournament_name |        |        |        |        |     |
+|-----------+-----------------+-----------------+--------+--------+--------+--------+-----|
+|         1 | a               | tennis          |        |        |        |        |     |
+|         2 | b               | tennis          |        |        |        |        |     |
+|         3 | c               | tennis          |        |        |        |        |     |
+|         4 | d               | tennis          |        |        |        |        |     |
+|         5 | e               | tennis          |        |        |        |        |     |
+|         6 | f               | tennis          |        |        |        |        |     |
+|         7 | g               | tennis          |        |        |        |        |     |
+|         8 | h               | tennis          |        |        |        |        |     |
+|         9 | allen           | soccer          |        |        |        |        |     |
+|        10 | beverly         | soccer          |        |        |        |        |     |
+|        11 | cleanth         | soccer          |        |        |        |        |     |
+|        12 | devon           | soccer          |        |        |        |        |     |
+|        13 | eldridge        | soccer          |        |        |        |        |     |
+|        14 | fatool          | soccer          |        |        |        |        |     |
+|        15 | g-money         | soccer          |        |        |        |        |     |
+|        16 | harold          | soccer          |        |        |        |        |     |
+| player_id | player_name     | tournament_name |   wins | losses |  draws | points | omw |
+|         1 | a               | tennis          |      3 |      0 |      0 |      9 |  15 |
+|         2 | b               | tennis          |      2 |      1 |      0 |      6 |  12 |
+|         3 | c               | tennis          |      1 |      2 |      0 |      3 |   9 |
+|         4 | d               | tennis          |      2 |      1 |      0 |      6 |  12 |
+|         5 | e               | tennis          |      1 |      2 |      0 |      3 |  18 |
+|         6 | f               | tennis          |      1 |      2 |      0 |      3 |  12 |
+|         7 | g               | tennis          |      0 |      3 |      0 |      0 |  15 |
+|         8 | h               | tennis          |      2 |      1 |      0 |      6 |  15 |
+|         9 | allen           | soccer          |      3 |      0 |      0 |      9 |  10 |
+|        10 | beverly         | soccer          |      0 |      3 |      0 |      0 |  18 |
+|        11 | cleanth         | soccer          |      1 |      2 |      0 |      3 |   7 |
+|        12 | devon           | soccer          |      1 |      1 |      1 |      4 |  13 |
+|        13 | eldridge        | soccer          |      2 |      1 |      0 |      6 |  16 |
+|        14 | fatool          | soccer          |      1 |      2 |      0 |      3 |  15 |
+|        15 | g-money         | soccer          |      2 |      1 |      0 |      6 |   7 |
+|        16 | harold          | soccer          |      1 |      1 |      1 |      4 |  19 |
+| player_id | tournament_name | wins            | losses |  draws | points |    omw |     |
+|         7 |                 | 0               |      3 |      0 |      0 |     15 |     |
+|         5 |                 | 1               |      2 |      0 |      3 |     18 |     |
+|         1 |                 | 3               |      0 |      0 |      9 |     15 |     |
+|         2 |                 | 2               |      1 |      0 |      6 |     12 |     |
+|         6 |                 | 1               |      2 |      0 |      3 |     12 |     |
+|         8 |                 | 2               |      1 |      0 |      6 |     15 |     |
+|         3 |                 | 1               |      2 |      0 |      3 |      9 |     |
+|         4 |                 | 2               |      1 |      0 |      6 |     12 |     |
+|        10 |                 | 0               |      3 |      0 |      0 |     18 |     |
+|        12 |                 | 1               |      1 |      1 |      4 |     13 |     |
+|        15 |                 | 2               |      1 |      0 |      6 |      7 |     |
+|         9 |                 | 3               |      0 |      0 |      9 |     10 |     |
+|        14 |                 | 1               |      2 |      0 |      3 |     15 |     |
+|        16 |                 | 1               |      1 |      1 |      4 |     19 |     |
+|        11 |                 | 1               |      2 |      0 |      3 |      7 |     |
+|        13 |                 | 2               |      1 |      0 |      6 |     16 |     |
 
+***** develop function
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select player_id from playerz where player_name = 'a'
 #+END_SRC
@@ -644,6 +682,7 @@ DROP FUNCTION get_player_id(text)
 | DROP FUNCTION |
 |---------------|
 
+***** define and call function
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 CREATE OR REPLACE FUNCTION get_player_id (player_name text) RETURNS TABLE (player_id int, player_name text, tournament_name text) AS $$
        select player_id, player_name, tournament_name FROM playerz WHERE player_name = $1
