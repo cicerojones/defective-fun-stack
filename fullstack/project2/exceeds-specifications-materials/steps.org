@@ -1,6 +1,9 @@
 * see a complete sequence of the program at work
-1. run SQL setup code again
+1.a run SQL setup code again
 [[id:7C9D73E5-FD02-45DD-8801-1C34C5627211][run the sql setup (drop and create tables and functions)]]
+
+1.b define Python functions (see [[file:~/Dropbox/Projects2016/Udacity/Project2/][file:~/Dropbox/Projects2016/Udacity/Project2/]])
+
 2. work through round by round python code blocks
 [[id:0F5A2AA2-E91D-4EE8-9E9D-A05773A6D4FD][all-in-one (broken up) three rounds plus one round second tournament]]
 
@@ -20,3 +23,300 @@
 def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
 #+END_SRC
 
+* understand how the program works
+1. register players for a given tournament (with their name)
+2. register a pair of players for a match (using their pid--which you
+   have to know--and the round of the named tournament--also have to
+   know and keep track of)
+3. register a pair of scores for a given match number--which you have
+   to know, as well as who the participants for the given match are
+4. log the results for a given round of a given tournament (automatic,
+   given a round number and a tournament name)
+5. set OMW across the whole database (!) (automatic)
+6. create pairings for the "next" round number and a given tournament
+   (have to be keeping track of what round you are in)
+7. continue registering pairs of scores for new match numbers--have to
+   keep track of who's paired for what match, as they have already
+   been paired autmatically for the new round in the previous step
+8. log results, set OMW (across database) and create next pairings
+   based on second round results
+9. repeat step 8 (really, 3-6) until there is "a winner" (based on the
+   number of rounds required for a given number of original participants
+* plain language description of how to use the application (with checklist)
+** register players for a given tournament (with their name)
+- [ ] matches and players can be deleted if/when necessary
+- [ ] registering a given number of players means that the correct
+  number of players registered can be retrieved
+** register a pair of players for a match 
+   (using their pid, and the round of the named tournament)
+- [ ] simply deposits a pair of players in a row in a table
+** register a pair of scores for a given match number
+- [ ] registering scores will eventually produce standings
+** log the results for a given round of a given tournament
+- [ ] each player should have a match recorded, and a win, loss or tie
+** set OMW across the whole database (!)
+- [ ] will eventually be used to help order the returned rows in the
+  next step
+** create pairings for a given round number and a given tournament
+- [ ] the results of swissPairings() should be a certain set of new
+  pairings and registered match participants, ready for scores to be
+  reported for the auto-generated match numbers
+** continue registering a pair of scores for new match numbers
+   players have already been paired for the new round in the
+   previous step!
+** log results, set OMW (across database) and create next pairings
+** repeat step 8 (really, 3-6) until there is "a winner" 
+   (based on the number of rounds required for a given number of original participants
+** start a new tournament
+- [ ] registering a given number of players for a given tournament
+  means that the correct number of players registered can be retrieved
+  for a given tournament name
+** repeat above steps for new tournament, but register some matches as ties
+* new project test stubs
+[[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py]]
+** original test "success" PRINT statements
+"1. Old matches can be deleted."
+
+"2. Player records can be deleted."
+
+"3. After deleting, countPlayers() returns zero."
+
+"4. After registering a player, countPlayers() returns 1."
+
+"5. Players can be registered and deleted."
+
+"6. Newly registered players appear in the standings with no matches."
+
+"7. After a match, players have updated standings."
+
+"8. After one match, players with one win are paired."
+
+** new test success print statements and code to be run
+"1. Players can be registered for a specific tournament."
+
+#+BEGIN_SRC python
+def testTournamentRegistration():
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
+#+END_SRC
+
+"2. All players in a tournament are assigned to an initial match"
+
+#+BEGIN_SRC python
+def testRegisterInitialMatches():
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+#+END_SRC
+
+"3. Every match result is recorded with a score for the two opponents,
+and each match has a dedicated reference ID."
+
+#+BEGIN_SRC python
+def testRecordMatchScores():
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+#+END_SRC
+
+"4. After a round of match results are recorded, players' records are
+updated."
+
+#+BEGIN_SRC python
+def testLogRoundResults():
+log_round_results("tourney_practice", "tennis", 1)
+#+END_SRC
+
+"5. After player records are updated, all players are ranked first by
+points accumulated, with 'Opponent Match Wins' (the sum of the points
+accumulated by each team's opponent at that point in the tournament).
+
+#+BEGIN_SRC python
+def testRankAllPlayers():
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+"6. After all statistics are calculated for a given round, the next round of
+matches are automatically generated according to the ranking. Thus,
+the team ranked first will play the team ranked second, 3rd place will
+play 4th place, etc."
+
+#+BEGIN_SRC python
+def testSwissPairings():
+naive_swissPairings(2, "tennis")
+#+END_SRC
+
+"7. A winner of an 8-player tournament will be decided
+based on total points after three "Swiss-style" rounds of play"
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def testDetermineTournamentWinner():
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
+
+
+
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+
+
+
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+
+
+
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "tennis")
+
+
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 0, 1)
+registerScores("tourney_practice", "score_results", 7, 1, 0)
+registerScores("tourney_practice", "score_results", 8, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "tennis")
+
+registerScores("tourney_practice", "score_results", 9, 1, 0)
+registerScores("tourney_practice", "score_results", 10, 0, 1)
+registerScores("tourney_practice", "score_results", 11, 1, 0)
+registerScores("tourney_practice", "score_results", 12, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 3)
+set_all_OMW('tourney_practice')
+
+#+END_SRC
+
+"8. After one tournament is completed, another one can commence using
+the same database."
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+# registering a player also inserts a row for that player's record
+new_registerPlayer("tourney_practice", "playerz", 'a', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'b', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'c', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'd', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'e', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
+new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
+
+
+
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 3, 4)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 5, 6)
+registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
+
+
+
+registerScores("tourney_practice", "score_results", 1, 1, 0)
+registerScores("tourney_practice", "score_results", 2, 0, 1)
+registerScores("tourney_practice", "score_results", 3, 1, 0)
+registerScores("tourney_practice", "score_results", 4, 0, 1)
+
+
+
+log_round_results("tourney_practice", "tennis", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "tennis")
+
+
+registerScores("tourney_practice", "score_results", 5, 1, 0)
+registerScores("tourney_practice", "score_results", 6, 0, 1)
+registerScores("tourney_practice", "score_results", 7, 1, 0)
+registerScores("tourney_practice", "score_results", 8, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "tennis")
+
+registerScores("tourney_practice", "score_results", 9, 1, 0)
+registerScores("tourney_practice", "score_results", 10, 0, 1)
+registerScores("tourney_practice", "score_results", 11, 1, 0)
+registerScores("tourney_practice", "score_results", 12, 0, 1)
+
+log_round_results("tourney_practice", "tennis", 3)
+set_all_OMW('tourney_practice')
+
+### register players for soccer tournament
+new_registerPlayer("tourney_practice", "playerz", 'allen', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'beverly', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'cleanth', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'devon', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'eldridge', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'fatool', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'g-money', "soccer");
+new_registerPlayer("tourney_practice", "playerz", 'harold', "soccer");
+
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 9, 10)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 11, 12)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 13, 14)
+registerMatchParticipants("tourney_practice", "match_participants", "soccer", 1, 15, 16)
+
+## watch out for ties in the first round
+registerScores("tourney_practice", "score_results", 13, 1, 0)
+registerScores("tourney_practice", "score_results", 14, 0, 1)
+registerScores("tourney_practice", "score_results", 15, 1, 0)
+registerScores("tourney_practice", "score_results", 16, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 1)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(2, "soccer")
+
+## 
+registerScores("tourney_practice", "score_results", 17, 1, 1)
+registerScores("tourney_practice", "score_results", 18, 0, 1)
+registerScores("tourney_practice", "score_results", 19, 1, 0)
+registerScores("tourney_practice", "score_results", 20, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 2)
+set_all_OMW('tourney_practice')
+
+naive_swissPairings(3, "soccer")
+
+registerScores("tourney_practice", "score_results", 21, 1, 0)
+registerScores("tourney_practice", "score_results", 22, 0, 1)
+registerScores("tourney_practice", "score_results", 23, 1, 0)
+registerScores("tourney_practice", "score_results", 24, 0, 1)
+
+log_round_results("tourney_practice", "soccer", 3)
+set_all_OMW('tourney_practice')
+#+END_SRC
+
+"9. In sports in which a tie can result at the end of match, an equal
+number of points for both players in a match will result in the two
+teams being tied."
+
+"10. After the first round, a ranking for players who have the same number of points
+will be determined based on their respective OMWs."

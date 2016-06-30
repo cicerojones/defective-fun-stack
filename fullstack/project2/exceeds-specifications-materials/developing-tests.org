@@ -1,6 +1,7 @@
 * new
 ** developing exceeds specifications
-*** SQL schema (with opening DROPS)
+*** SQL schema 
+**** drop
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
 DROP TABLE playerz CASCADE; 
@@ -17,7 +18,7 @@ DROP TABLE player_recordz CASCADE;
 | DROP TABLE |
 | DROP TABLE |
 | DROP TABLE |
-
+**** create tables, views, functions, triggers
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- matches have id number, a tournament name and a round number
 -- players have an id number and a name; 
@@ -267,30 +268,6 @@ select * from matchez
 #+RESULTS:
 | match_id | tournament_name | round |
 |----------+-----------------+-------|
-|        1 | tennis          |     1 |
-|        2 | tennis          |     1 |
-|        3 | tennis          |     1 |
-|        4 | tennis          |     1 |
-|        5 | tennis          |     2 |
-|        6 | tennis          |     2 |
-|        7 | tennis          |     2 |
-|        8 | tennis          |     2 |
-|        9 | tennis          |     3 |
-|       10 | tennis          |     3 |
-|       11 | tennis          |     3 |
-|       12 | tennis          |     3 |
-|       13 | soccer          |     1 |
-|       14 | soccer          |     1 |
-|       15 | soccer          |     1 |
-|       16 | soccer          |     1 |
-|       17 | soccer          |     2 |
-|       18 | soccer          |     2 |
-|       19 | soccer          |     2 |
-|       20 | soccer          |     2 |
-|       21 | soccer          |     3 |
-|       22 | soccer          |     3 |
-|       23 | soccer          |     3 |
-|       24 | soccer          |     3 |
 
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 UPDATE matchez
