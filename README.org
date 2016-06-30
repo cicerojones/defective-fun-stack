@@ -2,7 +2,7 @@
   :PROPERTIES:
   :ID:       8F635103-1900-4119-946F-90DD9B1C68CF
   :END:
-** understanding SQL exceeds specifications code
+** understanding SQL exceeds specifications code (four org files as below)
 *** developing-tests.org
 *** steps.org
 *** testing-out-tournaments.org
