@@ -659,16 +659,10 @@ CREATE TABLE matches(winner integer, loser integer);
 **** drop
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- only used for restarting with clean player ids
-DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants; DROP TABLE score_results; DROP TABLE player_recordz;
+DROP TABLE playerz CASCADE; DROP TABLE matchez CASCADE; DROP TABLE match_participants CASCADE; DROP TABLE score_results; DROP TABLE player_recordz;
 #+END_SRC
 
 #+RESULTS:
-| DROP TABLE |
-|------------|
-| DROP TABLE |
-| DROP TABLE |
-| DROP TABLE |
-| DROP TABLE |
 **** create 5 tables and views
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- matches have id number, a tournament name and a 'round' number
@@ -730,11 +724,6 @@ where a.player_id = b.player_id;
 | CREATE TABLE |
 |--------------|
 | CREATE TABLE |
-| CREATE TABLE |
-| CREATE TABLE |
-| CREATE TABLE |
-| CREATE VIEW  |
-| CREATE VIEW  |
 **** create functions
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- to be able to reflect the results of matches in player stats, 

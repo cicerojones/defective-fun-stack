@@ -1,3 +1,6 @@
+# the main currently existing set of python code
+# for the tournament
+
 import psycopg2
 
 

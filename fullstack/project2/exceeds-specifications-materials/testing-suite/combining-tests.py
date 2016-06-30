@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
 # Test cases for tournament.py
+# Old satisfies requirements mixed with exceeds
+# result of messy tangling
 
 from final_project import *
 

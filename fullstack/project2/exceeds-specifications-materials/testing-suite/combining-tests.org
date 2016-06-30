@@ -413,7 +413,7 @@ def new_countPlayers(dbname, table_name):
     DB.close()
     return int(row_item[0])
 #+END_SRC
-** tests 1-7 plus specs for new functionality
+** [#B] tests 1-7 plus specs for new functionality
    :PROPERTIES:
    :ID:       71CADD6E-CE8C-4033-BDE3-CE50A1B38549
    :END:
@@ -430,7 +430,7 @@ deleteMatches, deletePlayers, and countPlayers after deletePlayers
   - there's no immediate need to know how many rounds to expect in a
     tournament with a given number of participants
 
-**** original code
+**** register function--takes a db and table name, player and tournament name
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def new_registerPlayer(dbname, table_name, player_name, tournament_name):
     insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
@@ -438,7 +438,7 @@ def new_registerPlayer(dbname, table_name, player_name, tournament_name):
              "VALUES (%s, %s);")
     new_dbExecuteWrapper(query, dbname, (player_name, tournament_name))
 #+END_SRC
-**** my test
+**** my test--
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def myTestRegister():
     deleteMatches()
@@ -457,7 +457,7 @@ def myTestRegister():
   - solution: print out names and matching ids for a given tournament
 - you have to know what round this match will be in of what tournament?
   - solution: gather data on what round(s) the given player has been in
-**** original code
+**** function--takes db and table name; "sport" i.e. tournament-name; round of tournament; 2 player ids
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
     participant_insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
@@ -491,6 +491,8 @@ def testRegisterCountDelete():
 #+END_SRC
 *** 6. testStandingsBeforeMatches():
 **** problems
+- relies on the hack of ordering rows by points and omw descending
+- in the test, you have to extract column names from the standing table
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
     [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
         raise ValueError("Each playerStandings row should have four columns.")
@@ -507,7 +509,19 @@ len(standings[0])
 #+RESULTS:
 : 
 : >>> >>> 8
-
+**** function--takes db and table name; tournament name;
+#+BEGIN_SRC python :session *Python* :results output
+def new_playerStandings_alt(dbname, table_name, tournament_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT * " + from_statement + "WHERE tournament_name = (%s) ORDER BY points DESC, omw DESC;"
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query, (tournament_name,))
+    rows = c.fetchall()
+    DB.close()
+    return rows
+#    return new_dbExecuteRetrievalWrapper_allrows(dbname, query, tournament_name)
+#+END_SRC
 **** my test--new_playersStandings_alt
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 
@@ -522,6 +536,8 @@ def testStandingsBeforeMatches():
                          "they have played any matches.")
     elif len(standings) > 2:
         raise ValueError("Only registered players should appear in standings.")
+	# number of columns must be adjusted for new database 
+	# how many and what columns need to be accessed?
     if len(standings[0]) != 4:
         raise ValueError("Each playerStandings row should have four columns.")
     [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
@@ -535,10 +551,10 @@ def testStandingsBeforeMatches():
 
 #+END_SRC
 *** 7. register a score for a given match--registerScores
-**** 
+**** issues
 - you have to know the match_id in order to register the scores?
 - scores are expected to be positive integers, and ties are possible
-  (except in the first round)?
+  (except in the first round, because it would result in repeated pairings)???
 - relies on a notion of an arbitrary home and away team
 **** original code
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
@@ -558,10 +574,13 @@ def testReportMatches():
     registerPlayer("tourney_practice", "playerz", "Cathy Burton", "knock-hockey")
     registerPlayer("tourney_practice", "playerz", "Diane Grant", "knock-hockey")
     standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    # N.B. first column for each row in standings must be player id
     [id1, id2, id3, id4] = [row[0] for row in standings]
     reportMatch(id1, id2)
     reportMatch(id3, id4)
     standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    # rows expected in standings are id, name?, wins, and matches
+    # should be???
     for (i, n, w, m) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
@@ -572,9 +591,10 @@ def testReportMatches():
     print "7. After a match, players have updated standings."
 
 #+END_SRC
-* 8. tournament(s!) 9. OMW 10. ties
+* [#A] 8. tournament(s!) 9. OMW 10. ties
 ** development
-*** "Prevent rematches between players."?
+*** rematches--ties--OMW--multiple tournaments
+"Prevent rematches between players."?
 
 "allow ties"
 
@@ -858,7 +878,10 @@ naive_swissPairings(2, "soccer")
 print "11. Uses Opponent Match Points as criteria for breaking ties in ranking"
 #+END_SRC
 * sql code base
-** in one block
+  :PROPERTIES:
+  :ID:       206D3B89-3F44-4E4E-83E6-21BF81231F22
+  :END:
+** create all in one block
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 -- a player registers with a name and the name of a tournament
 -- an id number is assigned
@@ -1026,6 +1049,9 @@ $$ LANGUAGE SQL;
 
 
 #+END_SRC
+
+#+RESULTS:
+
 ** demonstrate all tables, views and functions
 *** select * from playerz;
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
@@ -1033,24 +1059,8 @@ select * from playerz;
 #+END_SRC
 
 #+RESULTS:
-| player_id | player_name | tournament_name |
-|-----------+-------------+-----------------|
-|         1 | a           | tennis          |
-|         2 | b           | tennis          |
-|         3 | c           | tennis          |
-|         4 | d           | tennis          |
-|         5 | e           | tennis          |
-|         6 | f           | tennis          |
-|         7 | g           | tennis          |
-|         8 | h           | tennis          |
-|         9 | allen       | soccer          |
-|        10 | beverly     | soccer          |
-|        11 | cleanth     | soccer          |
-|        12 | devon       | soccer          |
-|        13 | eldridge    | soccer          |
-|        14 | fatool      | soccer          |
-|        15 | g-money     | soccer          |
-|        16 | harold      | soccer          |
+| player_id | player_name |
+|-----------+-------------|
 *** select * from match_participants
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from match_participants
@@ -1059,30 +1069,6 @@ select * from match_participants
 #+RESULTS:
 | match_id | home | away |
 |----------+------+------|
-|        1 |    1 |    2 |
-|        2 |    3 |    4 |
-|        3 |    5 |    6 |
-|        4 |    7 |    8 |
-|        5 |    1 |    5 |
-|        6 |    4 |    8 |
-|        7 |    2 |    7 |
-|        8 |    3 |    6 |
-|        9 |    1 |    8 |
-|       10 |    5 |    4 |
-|       11 |    2 |    6 |
-|       12 |    7 |    3 |
-|       13 |    9 |   10 |
-|       14 |   11 |   12 |
-|       15 |   13 |   14 |
-|       16 |   15 |   16 |
-|       17 |    9 |   13 |
-|       18 |   12 |   16 |
-|       19 |   10 |   15 |
-|       20 |   11 |   14 |
-|       21 |   16 |    9 |
-|       22 |   13 |   12 |
-|       23 |   14 |   10 |
-|       24 |   15 |   11 |
 *** select * from matchez
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from matchez
@@ -1091,30 +1077,6 @@ select * from matchez
 #+RESULTS:
 | match_id | tournament_name | round |
 |----------+-----------------+-------|
-|        1 | tennis          |     1 |
-|        2 | tennis          |     1 |
-|        3 | tennis          |     1 |
-|        4 | tennis          |     1 |
-|        5 | tennis          |     2 |
-|        6 | tennis          |     2 |
-|        7 | tennis          |     2 |
-|        8 | tennis          |     2 |
-|        9 | tennis          |     3 |
-|       10 | tennis          |     3 |
-|       11 | tennis          |     3 |
-|       12 | tennis          |     3 |
-|       13 | soccer          |     1 |
-|       14 | soccer          |     1 |
-|       15 | soccer          |     1 |
-|       16 | soccer          |     1 |
-|       17 | soccer          |     2 |
-|       18 | soccer          |     2 |
-|       19 | soccer          |     2 |
-|       20 | soccer          |     2 |
-|       21 | soccer          |     3 |
-|       22 | soccer          |     3 |
-|       23 | soccer          |     3 |
-|       24 | soccer          |     3 | 
 *** select * from score_results
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from score_results
@@ -1123,110 +1085,26 @@ select * from score_results
 #+RESULTS:
 | match_id | home_score | away_score |
 |----------+------------+------------|
-|        1 |          1 |          0 |
-|        2 |          0 |          1 |
-|        3 |          1 |          0 |
-|        4 |          0 |          1 |
-|        5 |          1 |          0 |
-|        6 |          0 |          1 |
-|        7 |          1 |          0 |
-|        8 |          0 |          1 |
-|        9 |          1 |          0 |
-|       10 |          0 |          1 |
-|       11 |          1 |          0 |
-|       12 |          0 |          1 |
-|       13 |          1 |          0 |
-|       14 |          0 |          1 |
-|       15 |          1 |          0 |
-|       16 |          0 |          1 |
-|       17 |          1 |          1 |
-|       18 |          0 |          1 |
-|       19 |          1 |          0 |
-|       20 |          0 |          1 |
-|       21 |          1 |          0 |
-|       22 |          0 |          1 |
-|       23 |          1 |          0 |
-|       24 |          0 |          1 |
 *** select * from player_recordz
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from player_recordz
 #+END_SRC
 
 #+RESULTS:
-| player_id | tournament_name | wins | losses | draws | points | omw |
-|-----------+-----------------+------+--------+-------+--------+-----|
-|        15 |                 |    0 |      3 |     0 |      0 |  15 |
-|        13 |                 |    1 |      1 |     1 |      4 |  16 |
-|        14 |                 |    2 |      1 |     0 |      6 |  10 |
-|        16 |                 |    3 |      0 |     0 |      9 |  10 |
-|        10 |                 |    1 |      2 |     0 |      3 |  10 |
-|         9 |                 |    1 |      1 |     1 |      4 |  16 |
-|        11 |                 |    1 |      2 |     0 |      3 |  12 |
-|        12 |                 |    2 |      1 |     0 |      6 |  16 |
-|         3 |                 |    1 |      4 |     0 |      3 |   9 |
-|         4 |                 |    3 |      2 |     0 |      9 |  12 |
-|         1 |                 |    5 |      0 |     0 |     15 |  15 |
-|         2 |                 |    3 |      2 |     0 |      9 |  12 |
-|         7 |                 |    0 |      5 |     0 |      0 |  15 |
-|         5 |                 |    2 |      3 |     0 |      6 |  18 |
-|         6 |                 |    2 |      3 |     0 |      6 |  12 |
-|         8 |                 |    4 |      1 |     0 |     12 |  15 |
+| player_id | wins | losses | draws | points | omw |
+|-----------+------+--------+-------+--------+-----|
 *** select * from tournament_matches
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from tournament_matches
 #+END_SRC
 
 #+RESULTS:
-| match_id | tournament_name | round | home | away | home_score | away_score |
-|----------+-----------------+-------+------+------+------------+------------|
-|        1 | tennis          |     1 |    1 |    2 |          1 |          0 |
-|        2 | tennis          |     1 |    3 |    4 |          0 |          1 |
-|        3 | tennis          |     1 |    5 |    6 |          1 |          0 |
-|        4 | tennis          |     1 |    7 |    8 |          0 |          1 |
-|        5 | tennis          |     2 |    1 |    5 |          1 |          0 |
-|        6 | tennis          |     2 |    4 |    8 |          0 |          1 |
-|        7 | tennis          |     2 |    2 |    7 |          1 |          0 |
-|        8 | tennis          |     2 |    3 |    6 |          0 |          1 |
-|        9 | tennis          |     3 |    1 |    8 |          1 |          0 |
-|       10 | tennis          |     3 |    5 |    4 |          0 |          1 |
-|       11 | tennis          |     3 |    2 |    6 |          1 |          0 |
-|       12 | tennis          |     3 |    7 |    3 |          0 |          1 |
-|       13 | soccer          |     1 |    9 |   10 |          1 |          0 |
-|       14 | soccer          |     1 |   11 |   12 |          0 |          1 |
-|       15 | soccer          |     1 |   13 |   14 |          1 |          0 |
-|       16 | soccer          |     1 |   15 |   16 |          0 |          1 |
-|       17 | soccer          |     2 |    9 |   13 |          1 |          1 |
-|       18 | soccer          |     2 |   12 |   16 |          0 |          1 |
-|       19 | soccer          |     2 |   10 |   15 |          1 |          0 |
-|       20 | soccer          |     2 |   11 |   14 |          0 |          1 |
-|       21 | soccer          |     3 |   16 |    9 |          1 |          0 |
-|       22 | soccer          |     3 |   13 |   12 |          0 |          1 |
-|       23 | soccer          |     3 |   14 |   10 |          1 |          0 |
-|       24 | soccer          |     3 |   15 |   11 |          0 |          1 |
 *** select * from matchez
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from player_tables
 #+END_SRC
 
 #+RESULTS:
-| player_id | player_name | tournament_name | wins | losses | draws | points | omw |
-|-----------+-------------+-----------------+------+--------+-------+--------+-----|
-|         1 | a           | tennis          |    5 |      0 |     0 |     15 |  15 |
-|         2 | b           | tennis          |    3 |      2 |     0 |      9 |  12 |
-|         3 | c           | tennis          |    1 |      4 |     0 |      3 |   9 |
-|         4 | d           | tennis          |    3 |      2 |     0 |      9 |  12 |
-|         5 | e           | tennis          |    2 |      3 |     0 |      6 |  18 |
-|         6 | f           | tennis          |    2 |      3 |     0 |      6 |  12 |
-|         7 | g           | tennis          |    0 |      5 |     0 |      0 |  15 |
-|         8 | h           | tennis          |    4 |      1 |     0 |     12 |  15 |
-|         9 | allen       | soccer          |    1 |      1 |     1 |      4 |  16 |
-|        10 | beverly     | soccer          |    1 |      2 |     0 |      3 |  10 |
-|        11 | cleanth     | soccer          |    1 |      2 |     0 |      3 |  12 |
-|        12 | devon       | soccer          |    2 |      1 |     0 |      6 |  16 |
-|        13 | eldridge    | soccer          |    1 |      1 |     1 |      4 |  16 |
-|        14 | fatool      | soccer          |    2 |      1 |     0 |      6 |  10 |
-|        15 | g-money     | soccer          |    0 |      3 |     0 |      0 |  15 |
-|        16 | harold      | soccer          |    3 |      0 |     0 |      9 |  10 |
 *** problems demonstrating triggers and functions
 **** INSERT INTO player_recordz (player_id) VALUES (NEW.player_id); (initialize_player_rec)
  #+BEGIN_SRC sql :engine postgresql :database tourney_practice
@@ -1309,4 +1187,5 @@ select * from set_omw(1)
  | set_omw |
  |---------|
  |         |
+
 
