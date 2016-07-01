@@ -5,6 +5,7 @@
 ** understanding SQL exceeds specifications code (four org files as below)
 *** developing-tests.org
 *** steps.org
+lay out the common procedures to follow when returning to code base
 *** testing-out-tournaments.org
 *** combining-tests.org
 [[id:0BA17349-EE3B-436F-B793-2F7B201B3CE2][testing the original code base]]
