@@ -1,8 +1,9 @@
 * see a complete sequence of the program at work
-1.a run SQL setup code again
+1.a run SQL setup code again (or view the tables first)
 [[id:7C9D73E5-FD02-45DD-8801-1C34C5627211][run the sql setup (drop and create tables and functions)]]
 
-1.b define Python functions (see [[file:~/Dropbox/Projects2016/Udacity/Project2/][file:~/Dropbox/Projects2016/Udacity/Project2/]])
+1.b define Python functions (see
+[[file:~/Dropbox/Projects2016/Udacity/Project2/][file:~/Dropbox/Projects2016/Udacity/Project2/]], esp. exceeds-spec final_project.py)
 
 2. work through round by round python code blocks
 [[id:0F5A2AA2-E91D-4EE8-9E9D-A05773A6D4FD][all-in-one (broken up) three rounds plus one round second tournament]]
@@ -24,23 +25,24 @@ def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, p
 #+END_SRC
 
 * understand how the program works
-1. register players for a given tournament (with their name)
+1. register players for a given tournament (with their name) ~new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")~
 2. register a pair of players for a match (using their pid--which you
    have to know--and the round of the named tournament--also have to
-   know and keep track of)
+   know and keep track of) ~registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)~
 3. register a pair of scores for a given match number--which you have
-   to know, as well as who the participants for the given match are
+   to know, as well as who the participants for the given match are ~registerScores("tourney_practice", "score_results", 1, 1, 0)~
 4. log the results for a given round of a given tournament (automatic,
-   given a round number and a tournament name)
-5. set OMW across the whole database (!) (automatic)
+   given a round number and a tournament name) ~log_round_results("tourney_practice", "tennis", 1)~
+5. set OMW across the whole database (!) ~set_all_OMW('tourney_practice')~
 6. create pairings for the "next" round number and a given tournament
-   (have to be keeping track of what round you are in)
-7. continue registering pairs of scores for new match numbers--have to
-   keep track of who's paired for what match, as they have already
-   been paired autmatically for the new round in the previous step
-8. log results, set OMW (across database) and create next pairings
-   based on second round results
-9. repeat step 8 (really, 3-6) until there is "a winner" (based on the
+   (have to be keeping track of what round you are in) ~naive_swissPairings(2, "tennis")~
+7. REPEAT: continue registering pairs of scores for new match numbers
+   (manually keep track of who's paired for what match, as they have
+   already been paired autmatically for the new round in the previous
+   step) ~registerScores("tourney_practice", "score_results", 5, 1, 0)~
+8. REPEAT: log results, set OMW (across database) and create next pairings
+   based on second round results ~log_round_results~ ~set_all_OMW~ ~naive_swissPairings~
+9. REPEAT step 8 (really, 3-6) until there is "a winner" (based on the
    number of rounds required for a given number of original participants
 * plain language description of how to use the application (with checklist)
 ** register players for a given tournament (with their name)
@@ -93,6 +95,7 @@ def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, p
 
 ** new test success print statements and code to be run
 "1. Players can be registered for a specific tournament."
+~testTournamentRegistration()~
 
 #+BEGIN_SRC python
 def testTournamentRegistration():
@@ -107,6 +110,7 @@ new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
 #+END_SRC
 
 "2. All players in a tournament are assigned to an initial match"
+~testRegisterInitialMatches():~
 
 #+BEGIN_SRC python
 def testRegisterInitialMatches():
@@ -118,6 +122,7 @@ registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1,
 
 "3. Every match result is recorded with a score for the two opponents,
 and each match has a dedicated reference ID."
+~testRecordMatchScores():~
 
 #+BEGIN_SRC python
 def testRecordMatchScores():
@@ -129,6 +134,7 @@ registerScores("tourney_practice", "score_results", 4, 0, 1)
 
 "4. After a round of match results are recorded, players' records are
 updated."
+~testLogRoundResults():~
 
 #+BEGIN_SRC python
 def testLogRoundResults():
@@ -138,16 +144,18 @@ log_round_results("tourney_practice", "tennis", 1)
 "5. After player records are updated, all players are ranked first by
 points accumulated, with 'Opponent Match Wins' (the sum of the points
 accumulated by each team's opponent at that point in the tournament).
+~testRankAllPlayers():~
 
 #+BEGIN_SRC python
 def testRankAllPlayers():
 set_all_OMW('tourney_practice')
 #+END_SRC
 
-"6. After all statistics are calculated for a given round, the next round of
-matches are automatically generated according to the ranking. Thus,
-the team ranked first will play the team ranked second, 3rd place will
-play 4th place, etc."
+"6. After all statistics are calculated for a given round, the next
+round of matches are automatically generated according to the
+ranking. Thus, the team ranked first will play the team ranked second,
+3rd place will play 4th place, etc."
+~testSwissPairings()~
 
 #+BEGIN_SRC python
 def testSwissPairings():
@@ -156,8 +164,7 @@ naive_swissPairings(2, "tennis")
 
 "7. A winner of an 8-player tournament will be decided
 based on total points after three "Swiss-style" rounds of play"
-
-#+END_SRC
+~testDetermineTournamentWinner()~
 
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def testDetermineTournamentWinner():
