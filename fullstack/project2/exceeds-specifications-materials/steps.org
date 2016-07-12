@@ -93,7 +93,7 @@ def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, p
 
 "8. After one match, players with one win are paired."
 
-** new test success print statements and code to be run
+** new test success print statements and code to be run (for 1-5)
 "1. Players can be registered for a specific tournament."
 ~testTournamentRegistration()~
 
@@ -143,7 +143,8 @@ log_round_results("tourney_practice", "tennis", 1)
 
 "5. After player records are updated, all players are ranked first by
 points accumulated, with 'Opponent Match Wins' (the sum of the points
-accumulated by each team's opponent at that point in the tournament).
+accumulated by each team's opponent at that point in the tournament)
+used to break any ties.
 ~testRankAllPlayers():~
 
 #+BEGIN_SRC python
@@ -151,6 +152,7 @@ def testRankAllPlayers():
 set_all_OMW('tourney_practice')
 #+END_SRC
 
+** [#A] swissPairings test must check the proper pairings are made
 "6. After all statistics are calculated for a given round, the next
 round of matches are automatically generated according to the
 ranking. Thus, the team ranked first will play the team ranked second,
@@ -162,6 +164,7 @@ def testSwissPairings():
 naive_swissPairings(2, "tennis")
 #+END_SRC
 
+** [#A] run a whole tournament and make sure you have the correct winner
 "7. A winner of an 8-player tournament will be decided
 based on total points after three "Swiss-style" rounds of play"
 ~testDetermineTournamentWinner()~
@@ -220,6 +223,7 @@ set_all_OMW('tourney_practice')
 
 #+END_SRC
 
+** follow one tournament with another--ensure the proper winner
 "8. After one tournament is completed, another one can commence using
 the same database."
 
@@ -321,9 +325,11 @@ log_round_results("tourney_practice", "soccer", 3)
 set_all_OMW('tourney_practice')
 #+END_SRC
 
+** [#B] create a tournament which features a tie
 "9. In sports in which a tie can result at the end of match, an equal
 number of points for both players in a match will result in the two
 teams being tied."
 
-"10. After the first round, a ranking for players who have the same number of points
+** [#B] show how OMW is used to break ties
+"10. After the second round, a ranking for players who have the same number of points
 will be determined based on their respective OMWs."
