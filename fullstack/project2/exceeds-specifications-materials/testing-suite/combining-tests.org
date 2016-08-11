@@ -1,4 +1,4 @@
-* testing the original code base
+* testing the original (meets specifications) code base
   :PROPERTIES:
   :ID:       0BA17349-EE3B-436F-B793-2F7B201B3CE2
   :END:
@@ -374,14 +374,14 @@ def new_deleteTable(dbname, table_name):
 
 #+END_SRC
 *** SQL syntax helpers--update_statement_string; keyword_statement_string
-**** 
+**** update statements (?)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 def update_statement_string(table_name):
     tb_name = table_name
     sql_keywords = """UPDATE """
     update_statement = sql_keywords + tb_name
 #+END_SRC
-**** 
+**** keyword statements (??)
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 # used in registerMatchParticipants
 def keyword_statement_string(table_name, sql_keyword):
@@ -805,6 +805,7 @@ registerScores("tourney_practice", "score_results", 2, 0, 1)
 print "9. Allows ties"
 #+END_SRC
 ** more than one tournament
+*** run rounds of a tennis tournament and then a soccer tournament
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 print "10. Supports more than one tournament in database"
 

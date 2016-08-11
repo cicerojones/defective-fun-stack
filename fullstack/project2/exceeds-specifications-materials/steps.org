@@ -1,4 +1,8 @@
 * see a complete sequence of the program at work
+  :PROPERTIES:
+  :ID:       FFF67F3E-0B47-40D3-8B08-63AC262F9214
+  :END:
+
 1.a run SQL setup code again (or view the tables first)
 [[id:7C9D73E5-FD02-45DD-8801-1C34C5627211][run the sql setup (drop and create tables and functions)]]
 
@@ -12,10 +16,41 @@
 [[id:1A0883C1-05E6-4122-BA21-66DA3D3AA31D][view the tables]]
 
 * understand current status of testing
+** plain language explanations
+The current understanding [2016-07-23 Sat 16:37] is that:
+I have a version of this project that /meets/ specifications. I have
+that code here:
+
+[[file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/final_project.py][file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/final_project.py]]
+
+I also have code that /exceeds/ specifications, here:
+[[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py]]
+
+However, I need to write tests after the model of:
+
+[[file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/tournament_test.py][file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/tournament_test.py]]
+
+that shows that my new final project code passes new (and old) tests.
+
+As of right now, there is no code in this file:
+
+[[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/tournament_test.py][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/tournament_test.py]]
+
+There are test stubs, though. Sort of:
+
+[[id:64993DD5-3A57-46FB-AA1F-CB8195AC3EF2][new test success print statements with code to be run (for 1-5)]]
+
+Really, there are just blocks of code copied from above, with
+putative "success" statements before, but with no code that really
+looks into the database and shows everything "worked."
+** 'testing' steps
+*** 1. original tests 1-7
 1. see test stubs in test-development file
 [[id:71CADD6E-CE8C-4033-BDE3-CE50A1B38549][old test stubs plus specs for new functionality]]
+*** 2. see original .py testing code written by Udacity
 2. see original Udacity-written testing code
-[[file:~/Documents/working-directory/udacity-courses/fullstack/project2/project_tests/tournament_test.py::#!/usr/bin/env%20python]]
+[[file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/tournament_test.py][file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/tournament_test.py]]
+
 3. understand the overview of old tests and new tests
 [[id:391AFF00-9A9D-4F33-A04A-364A5BF1BE81][prepare to pass tests]]
 4. main issue as of [2016-05-25 Wed 08:53]
@@ -24,58 +59,7 @@
 def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
 #+END_SRC
 
-* understand how the program works
-1. register players for a given tournament (with their name) ~new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")~
-2. register a pair of players for a match (using their pid--which you
-   have to know--and the round of the named tournament--also have to
-   know and keep track of) ~registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)~
-3. register a pair of scores for a given match number--which you have
-   to know, as well as who the participants for the given match are ~registerScores("tourney_practice", "score_results", 1, 1, 0)~
-4. log the results for a given round of a given tournament (automatic,
-   given a round number and a tournament name) ~log_round_results("tourney_practice", "tennis", 1)~
-5. set OMW across the whole database (!) ~set_all_OMW('tourney_practice')~
-6. create pairings for the "next" round number and a given tournament
-   (have to be keeping track of what round you are in) ~naive_swissPairings(2, "tennis")~
-7. REPEAT: continue registering pairs of scores for new match numbers
-   (manually keep track of who's paired for what match, as they have
-   already been paired autmatically for the new round in the previous
-   step) ~registerScores("tourney_practice", "score_results", 5, 1, 0)~
-8. REPEAT: log results, set OMW (across database) and create next pairings
-   based on second round results ~log_round_results~ ~set_all_OMW~ ~naive_swissPairings~
-9. REPEAT step 8 (really, 3-6) until there is "a winner" (based on the
-   number of rounds required for a given number of original participants
-* plain language description of how to use the application (with checklist)
-** register players for a given tournament (with their name)
-- [ ] matches and players can be deleted if/when necessary
-- [ ] registering a given number of players means that the correct
-  number of players registered can be retrieved
-** register a pair of players for a match 
-   (using their pid, and the round of the named tournament)
-- [ ] simply deposits a pair of players in a row in a table
-** register a pair of scores for a given match number
-- [ ] registering scores will eventually produce standings
-** log the results for a given round of a given tournament
-- [ ] each player should have a match recorded, and a win, loss or tie
-** set OMW across the whole database (!)
-- [ ] will eventually be used to help order the returned rows in the
-  next step
-** create pairings for a given round number and a given tournament
-- [ ] the results of swissPairings() should be a certain set of new
-  pairings and registered match participants, ready for scores to be
-  reported for the auto-generated match numbers
-** continue registering a pair of scores for new match numbers
-   players have already been paired for the new round in the
-   previous step!
-** log results, set OMW (across database) and create next pairings
-** repeat step 8 (really, 3-6) until there is "a winner" 
-   (based on the number of rounds required for a given number of original participants
-** start a new tournament
-- [ ] registering a given number of players for a given tournament
-  means that the correct number of players registered can be retrieved
-  for a given tournament name
-** repeat above steps for new tournament, but register some matches as ties
-* new project test stubs
-[[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/final_project.py]]
+* TODO new project test stubs
 ** original test "success" PRINT statements
 "1. Old matches can be deleted."
 
@@ -93,7 +77,12 @@ def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, p
 
 "8. After one match, players with one win are paired."
 
-** new test success print statements and code to be run (for 1-5)
+** new test success print statements with code to be run (for 1-5)
+   :PROPERTIES:
+   :ID:       64993DD5-3A57-46FB-AA1F-CB8195AC3EF2
+   :END:
+*** 1
+**** example usage
 "1. Players can be registered for a specific tournament."
 ~testTournamentRegistration()~
 
@@ -108,7 +97,23 @@ new_registerPlayer("tourney_practice", "playerz", 'f', "tennis");
 new_registerPlayer("tourney_practice", "playerz", 'g', "tennis");
 new_registerPlayer("tourney_practice", "playerz", 'h', "tennis");
 #+END_SRC
+**** test code
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def myTestRegister():
+    deleteMatches()
+    deletePlayers()
+    new_registerPlayer("tourney_practice", "playerz", "Chandra Nalaar", "polo")
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 1:
+        raise ValueError(
+            "After one player registers, countPlayers() should be 1.")
+    print "(formerly) 4. After registering a player, countPlayers() returns 1."
 
+#+END_SRC
+
+*** 2
+
+**** example usage
 "2. All players in a tournament are assigned to an initial match"
 ~testRegisterInitialMatches():~
 
@@ -120,9 +125,32 @@ registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1,
 registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 7, 8)
 #+END_SRC
 
+**** test code
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+def testRegisterCountDelete():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Markov Chaney", "polo")
+    registerPlayer("tourney_practice", "playerz", "Joe Malik", "polo")
+    registerPlayer("tourney_practice", "playerz", "Mao Tsu-hsi", "polo")
+    registerPlayer("tourney_practice", "playerz", "Atlanta Hope", "polo")
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 4:
+        raise ValueError(
+            "After registering four players, countPlayers should be 4.")
+    deletePlayers()
+    c = new_countPlayers("tourney_practice", "playerz")
+    if c != 0:
+        raise ValueError("After deleting, countPlayers should return zero.")
+    print "5. Players can be registered and deleted."
+
+#+END_SRC
+*** 3 (diverge from old 3, which testStandings before matches?)
+**** what happens after a score is registered?
 "3. Every match result is recorded with a score for the two opponents,
 and each match has a dedicated reference ID."
 ~testRecordMatchScores():~
+
 
 #+BEGIN_SRC python
 def testRecordMatchScores():
@@ -131,7 +159,38 @@ registerScores("tourney_practice", "score_results", 2, 0, 1)
 registerScores("tourney_practice", "score_results", 3, 1, 0)
 registerScores("tourney_practice", "score_results", 4, 0, 1)
 #+END_SRC
+**** test standings before matches code
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
 
+def testStandingsBeforeMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Melpomene Murray", "polo")
+    registerPlayer("tourney_practice", "playerz", "Randy Schwartz", "polo")
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "polo")
+    if len(standings) < 2:
+        raise ValueError("Players should appear in playerStandings even before "
+                         "they have played any matches.")
+    elif len(standings) > 2:
+        raise ValueError("Only registered players should appear in standings.")
+	# number of columns must be adjusted for new database 
+	# how many and what columns need to be accessed?
+    if len(standings[0]) != 4:
+        raise ValueError("Each playerStandings row should have four columns.")
+    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
+    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
+        raise ValueError(
+            "Newly registered players should have no matches or wins.")
+    if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
+        raise ValueError("Registered players' names should appear in standings, "
+                         "even if they have no matches played.")
+    print "6. Newly registered players appear in the standings with no matches."
+
+#+END_SRC
+
+*** 4 (similar to 7 register scores and get standings
+
+**** example usage
 "4. After a round of match results are recorded, players' records are
 updated."
 ~testLogRoundResults():~
@@ -141,6 +200,35 @@ def testLogRoundResults():
 log_round_results("tourney_practice", "tennis", 1)
 #+END_SRC
 
+**** original test of who's who in the standings
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+def testReportMatches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("tourney_practice", "playerz", "Bruno Walton", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Boots O'Neal", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Cathy Burton", "knock-hockey")
+    registerPlayer("tourney_practice", "playerz", "Diane Grant", "knock-hockey")
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    # N.B. first column for each row in standings must be player id
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    standings = new_playerStandings_alt("tourney_practice", "player_tables", "knock-hockey")
+    # rows expected in standings are id, name?, wins, and matches
+    # should be???
+    for (i, n, w, m) in standings:
+        if m != 1:
+            raise ValueError("Each player should have one match recorded.")
+        if i in (id1, id3) and w != 1:
+            raise ValueError("Each match winner should have one win recorded.")
+        elif i in (id2, id4) and w != 0:
+            raise ValueError("Each match loser should have zero wins recorded.")
+    print "7. After a match, players have updated standings."
+
+#+END_SRC
+*** 5
 "5. After player records are updated, all players are ranked first by
 points accumulated, with 'Opponent Match Wins' (the sum of the points
 accumulated by each team's opponent at that point in the tournament)
@@ -152,7 +240,7 @@ def testRankAllPlayers():
 set_all_OMW('tourney_practice')
 #+END_SRC
 
-** [#A] swissPairings test must check the proper pairings are made
+** TODO [#A] 6! (swissPairings test must check the proper pairings are made)
 "6. After all statistics are calculated for a given round, the next
 round of matches are automatically generated according to the
 ranking. Thus, the team ranked first will play the team ranked second,
@@ -164,7 +252,21 @@ def testSwissPairings():
 naive_swissPairings(2, "tennis")
 #+END_SRC
 
-** [#A] run a whole tournament and make sure you have the correct winner
+*** NEXT Query the Database!
+ #+BEGIN_SRC python
+     pairings = swissPairings()
+     if len(pairings) != 2:
+         raise ValueError(
+             "For four players, swissPairings should return two pairs.")
+     [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
+     correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+     actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
+     if correct_pairs != actual_pairs:
+         raise ValueError(
+             "After one match, players with one win should be paired.")
+     print "8. After one match, players with one win are paired."
+ #+END_SRC
+** TODO [#A] 7. (run a whole tournament and make sure you have the correct winner)
 "7. A winner of an 8-player tournament will be decided
 based on total points after three "Swiss-style" rounds of play"
 ~testDetermineTournamentWinner()~
@@ -222,8 +324,21 @@ log_round_results("tourney_practice", "tennis", 3)
 set_all_OMW('tourney_practice')
 
 #+END_SRC
+*** NEXT Check the Winner
+#+BEGIN_SRC python
+  standings = playerStandings()
+  actual_winner = standings[0]
+  correct_winner = id1
 
-** follow one tournament with another--ensure the proper winner
+  # frozenset usage?
+  # correct_winner = set([frozenset([id1])])
+
+  if correct_winner != actual_winner:
+    raise ValueError("After three rounds of an 8-player tournament, the correct winner should have the most points")
+
+  print "8. After three rounds of an 8-player tournament, the correct winner has the most points"
+#+END_SRC
+** 8. (follow one tournament with another--ensure the proper winner)
 "8. After one tournament is completed, another one can commence using
 the same database."
 
@@ -325,11 +440,71 @@ log_round_results("tourney_practice", "soccer", 3)
 set_all_OMW('tourney_practice')
 #+END_SRC
 
-** [#B] create a tournament which features a tie
+** [#B] 9. (create a tournament which features a tie)
 "9. In sports in which a tie can result at the end of match, an equal
 number of points for both players in a match will result in the two
 teams being tied."
 
-** [#B] show how OMW is used to break ties
+** [#B] 10. (show how OMW is used to break ties)
 "10. After the second round, a ranking for players who have the same number of points
 will be determined based on their respective OMWs."
+
+* save these headers to a register
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+#+END_SRC
+* crafting a README explaining what I did
+** understand how the program works
+1. register players for a given tournament (with their name) ~new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")~
+2. register a pair of players for a match (using their pid--which you
+   have to know--and the round of the named tournament--also have to
+   know and keep track of) ~registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)~
+3. register a pair of scores for a given match number--which you have
+   to know, as well as who the participants for the given match are ~registerScores("tourney_practice", "score_results", 1, 1, 0)~
+4. log the results for a given round of a given tournament (automatic,
+   given a round number and a tournament name) ~log_round_results("tourney_practice", "tennis", 1)~
+5. set OMW across the whole database (!) ~set_all_OMW('tourney_practice')~
+6. create pairings for the "next" round number and a given tournament
+   (have to be keeping track of what round you are in) ~naive_swissPairings(2, "tennis")~
+7. REPEAT: continue registering pairs of scores for new match numbers
+   (manually keep track of who's paired for what match, as they have
+   already been paired autmatically for the new round in the previous
+   step) ~registerScores("tourney_practice", "score_results", 5, 1, 0)~
+8. REPEAT: log results, set OMW (across database) and create next pairings
+   based on second round results ~log_round_results~ ~set_all_OMW~ ~naive_swissPairings~
+9. REPEAT step 8 (really, 3-6) until there is "a winner" (based on the
+   number of rounds required for a given number of original
+   participants
+** plain language description of how to use the application (with checklist)
+*** register players for a given tournament (with their name)
+ - [ ] matches and players can be deleted if/when necessary
+ - [ ] registering a given number of players means that the correct
+   number of players registered can be retrieved
+*** register a pair of players for a match 
+    (using their pid, and the round of the named tournament)
+ - [ ] simply deposits a pair of players in a row in a table
+*** register a pair of scores for a given match number (and do so for the whole round)
+ - [ ] registering scores will eventually produce standings
+*** log the results for a given round of a given tournament
+ - [ ] each player should have a match recorded, and a win, loss or tie
+*** set OMW across the whole database (!)
+ - [ ] will eventually be used to help order the returned rows in the
+   next step
+*** create pairings for the next round number of a given tournament
+ - [ ] the results of swissPairings() should be a certain set of new
+   pairings and registered match participants, ready for scores to be
+   reported for the auto-generated match numbers
+*** continue registering a pair of scores for new match numbers
+    players have already been paired for the new round in the previous
+    step, so there is no need to do the first two steps again
+*** log results, set OMW (across database) and create next pairings
+*** repeat step 8 (really, 3-6) until there is "a winner" 
+    (based on the number of rounds required for a given number of original participants
+*** start a new tournament
+ - [ ] registering a given number of players for a given tournament
+   means that the correct number of players registered can be retrieved
+   for a given tournament name
+*** repeat above steps for new tournament, but register some matches as ties
