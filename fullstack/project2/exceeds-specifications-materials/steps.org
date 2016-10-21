@@ -1,16 +1,30 @@
+* Two Directories!
+** Documents-new-home
+[[file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2/][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2/]]
+** Projects2016 
+   :PROPERTIES:
+   :ID:       910CA3BC-14E2-4BA7-8F3A-D172CFBDC2BB
+   :END:
+[[file:~/Dropbox/Projects2016/Udacity/Project2/][file:~/Dropbox/Projects2016/Udacity/Project2/]]
+
 * see a complete sequence of the program at work
   :PROPERTIES:
   :ID:       FFF67F3E-0B47-40D3-8B08-63AC262F9214
   :END:
 
-1.a run SQL setup code again (or view the tables first)
-[[id:7C9D73E5-FD02-45DD-8801-1C34C5627211][run the sql setup (drop and create tables and functions)]]
+1.a run SQL setup code again (or view the tables first--step 4)
+
+file that contains the link has been moved to:
+[[file:][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2/exceeds-specifications-materials/]]
+
+the link:
+[[id:E646931C-37B1-496F-B545-8CE95CF75E02][run the sql setup (drop and create tables and functions)]]
 
 1.b define Python functions (see
 [[file:~/Dropbox/Projects2016/Udacity/Project2/][file:~/Dropbox/Projects2016/Udacity/Project2/]], esp. exceeds-spec final_project.py)
 
 2. work through round by round python code blocks
-[[id:0F5A2AA2-E91D-4EE8-9E9D-A05773A6D4FD][all-in-one (broken up) three rounds plus one round second tournament]]
+[[id:83580BFC-C987-43C7-B636-49264D564F66][(broken up) three rounds plus one round second tournament]]
 
 4. always see the results in the tables
 [[id:1A0883C1-05E6-4122-BA21-66DA3D3AA31D][view the tables]]
