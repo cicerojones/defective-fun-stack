@@ -1,0 +1,67 @@
+* understanding your code 
+** understand how the program works
+1. register players for a given tournament (with their name) ~new_registerPlayer("tourney_practice", "playerz", 'a', "tennis")~
+2. register a pair of players for a match (using their pid--which you
+   have to know--and the round of the named tournament--also have to
+   know and keep track of) ~registerMatchParticipants("tourney_practice", "match_participants", "tennis", 1, 1, 2)~
+3. register a pair of scores for a given match number--which you have
+   to know, as well as who the participants for the given match are ~registerScores("tourney_practice", "score_results", 1, 1, 0)~
+4. log the results for a given round of a given tournament (automatic,
+   given a round number and a tournament name) ~log_round_results("tourney_practice", "tennis", 1)~
+5. set OMW across the whole database (!) ~set_all_OMW('tourney_practice')~
+6. create pairings for the "next" round number and a given tournament
+   (have to be keeping track of what round you are in) ~naive_swissPairings(2, "tennis")~
+7. REPEAT: continue registering pairs of scores for new match numbers
+   (manually keep track of who's paired for what match, as they have
+   already been paired autmatically for the new round in the previous
+   step) ~registerScores("tourney_practice", "score_results", 5, 1, 0)~
+8. REPEAT: log results, set OMW (across database) and create next pairings
+   based on second round results ~log_round_results~ ~set_all_OMW~ ~naive_swissPairings~
+9. REPEAT step 8 (really, 3-6) until there is "a winner" (based on the
+   number of rounds required for a given number of original
+   participants
+** plain language description of how to use the application (with checklist)
+*** register players for a given tournament (with their name)
+ - [ ] matches and players can be deleted if/when necessary
+ - [ ] registering a given number of players means that the correct
+   number of players registered can be retrieved
+*** register a pair of players for a match 
+    (using their pid, and the round of the named tournament)
+ - [ ] simply deposits a pair of players in a row in a table
+*** register a pair of scores for a given match number (and do so for the whole round)
+ - [ ] registering scores will eventually produce standings
+*** log the results for a given round of a given tournament
+ - [ ] each player should have a match recorded, and a win, loss or tie
+*** set OMW across the whole database (!)
+ - [ ] will eventually be used to help order the returned rows in the
+   next step
+*** create pairings for the next round number of a given tournament
+ - [ ] the results of swissPairings() should be a certain set of new
+   pairings and registered match participants, ready for scores to be
+   reported for the auto-generated match numbers
+*** continue registering a pair of scores for new match numbers
+    players have already been paired for the new round in the previous
+    step, so there is no need to do the first two steps again
+*** log results, set OMW (across database) and create next pairings
+*** repeat step 8 (really, 3-6) until there is "a winner" 
+    (based on the number of rounds required for a given number of original participants
+*** start a new tournament
+ - [ ] registering a given number of players for a given tournament
+   means that the correct number of players registered can be retrieved
+   for a given tournament name
+*** repeat above steps for new tournament, but register some matches as ties
+
+* Udacity says to submit project2 with:
+  :PROPERTIES:
+  :ID:       11230A5A-A466-4A06-92D3-DCF848373069
+  :END:
+
+** three files
+- tournament.sql
+- tournament_test.py
+- final_project.py
+-
+** meets-spec version
+[[file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/][file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/]]
+** exceeds-spec version in development (!)
+[[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/]]
