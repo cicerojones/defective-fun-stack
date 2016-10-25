@@ -1060,8 +1060,8 @@ select * from playerz;
 #+END_SRC
 
 #+RESULTS:
-| player_id | player_name |
-|-----------+-------------|
+| player_id | player_name | tournament_name |
+|-----------+-------------+-----------------|
 *** select * from match_participants
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
 select * from match_participants
@@ -1188,5 +1188,7 @@ select * from set_omw(1)
  | set_omw |
  |---------|
  |         |
-
-
+** basic psql interaction please
+#+BEGIN_SRC sql :engine postgresql
+\
+#+END_SRC

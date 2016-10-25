@@ -288,7 +288,10 @@ set_all_OMW('tourney_practice')
 #+BEGIN_SRC python :session *Python* :results output
 
 #+END_SRC
-** blocks
+** 12 individual blocks that work as two tournaments
+   :PROPERTIES:
+   :ID:       9055D4F6-669D-4341-AF67-E79FAD5E692E
+   :END:
 *** register players for 'tennis;' register 1st round matches
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 
@@ -340,6 +343,7 @@ naive_swissPairings(2, "tennis")
 #+BEGIN_SRC python :session *Python* :results output
 
 registerScores("tourney_practice", "score_results", 5, 1, 0)
+# registerScores("tourney_practice", "score_results", 5, 0, 1)
 registerScores("tourney_practice", "score_results", 6, 0, 1)
 registerScores("tourney_practice", "score_results", 7, 1, 0)
 registerScores("tourney_practice", "score_results", 8, 0, 1)
@@ -369,6 +373,15 @@ set_all_OMW('tourney_practice')
 #+END_SRC
 
 #+RESULTS:
+*** state winner explicitly!!!
+#+BEGIN_SRC python :session *Python* :results value
+determine_winner("tourney_practice", "player_tables", "tennis")
+#+END_SRC
+
+#+RESULTS:
+| 1 | a |
+
+#+END_SRC
 
 *** register players for 'soccer'
 #+BEGIN_SRC python :session *Python* :results output
@@ -434,6 +447,14 @@ registerScores("tourney_practice", "score_results", 24, 0, 1)
 log_round_results("tourney_practice", "soccer", 3)
 set_all_OMW('tourney_practice')
 #+END_SRC
+** determine winner of 'tennis'--note, uses org-babel "VALUE" 
+#+BEGIN_SRC python :session *Python* :results value
+determine_winner("tourney_practice", "player_tables", "tennis")
+#+END_SRC
+
+#+RESULTS:
+| 1 | a |
+
 * all-in-one block--three rounds plus one round second tournament
 #+BEGIN_SRC python :session *Python* :results output :tangle yes
 
@@ -535,7 +556,7 @@ set_all_OMW('tourney_practice')
 
 #+RESULTS:
 
-* [#A] run tournaments (in two babel pieces--will work as one Python module, tho)
+* [#A] run tournaments (in two babel pieces--will work as one .py module)
 ** Players, Matches, Scores, for 3 rounds; new Players (big chunk won't work UNLESS!)
 will take a long time?
 - register players
@@ -657,7 +678,6 @@ registerScores("tourney_practice", "score_results", 24, 0, 1)
 log_round_results("tourney_practice", "soccer", 3)
 set_all_OMW('tourney_practice')
 #+END_SRC
-
 
 * [#B] run the sql setup (drop and create tables and functions)
   :PROPERTIES:
@@ -926,16 +946,49 @@ $$ LANGUAGE SQL;
 :ID:       1A0883C1-05E6-4122-BA21-66DA3D3AA31D
 :END:
 #+BEGIN_SRC sql :engine postgresql :database tourney_practice
-  select * from matchez;
   select * from playerz;
+  select * from matchez;
   select * from match_participants;
   select * from score_results;
   select * from player_tables ORDER BY tournament_name, points DESC, omw DESC;
 #+END_SRC
 
 #+RESULTS:
-|  match_id | tournament_name |           round |      |        |       |        |     |
+| player_id | player_name     | tournament_name |      |        |       |        |     |
 |-----------+-----------------+-----------------+------+--------+-------+--------+-----|
+|         1 | albert          |          tennis |      |        |       |        |     |
+|         2 | beverly         |          tennis |      |        |       |        |     |
+|         3 | cleanth         |          tennis |      |        |       |        |     |
+|         4 | devon           |          tennis |      |        |       |        |     |
+|         5 | eldridge        |          tennis |      |        |       |        |     |
+|         6 | fatool          |          tennis |      |        |       |        |     |
+|         7 | g-money         |          tennis |      |        |       |        |     |
+|         8 | harold          |          tennis |      |        |       |        |     |
+|         9 | azetcs          |          soccer |      |        |       |        |     |
+|        10 | beards          |          soccer |      |        |       |        |     |
+|        11 | choirs          |          soccer |      |        |       |        |     |
+|        12 | devils          |          soccer |      |        |       |        |     |
+|        13 | ejects          |          soccer |      |        |       |        |     |
+|        14 | freaks          |          soccer |      |        |       |        |     |
+|        15 | gomers          |          soccer |      |        |       |        |     |
+|        16 | homers          |          soccer |      |        |       |        |     |
+|        17 | aleph           |         mahjong |      |        |       |        |     |
+|        18 | betel           |         mahjong |      |        |       |        |     |
+|        19 | colon           |         mahjong |      |        |       |        |     |
+|        20 | dippy           |         mahjong |      |        |       |        |     |
+|        21 | eeker           |         mahjong |      |        |       |        |     |
+|        22 | fubar           |         mahjong |      |        |       |        |     |
+|        23 | gonad           |         mahjong |      |        |       |        |     |
+|        24 | hilly           |         mahjong |      |        |       |        |     |
+|        25 | isomr           |         mahjong |      |        |       |        |     |
+|        26 | joker           |         mahjong |      |        |       |        |     |
+|        27 | lossy           |         mahjong |      |        |       |        |     |
+|        28 | mamie           |         mahjong |      |        |       |        |     |
+|        29 | nadir           |         mahjong |      |        |       |        |     |
+|        30 | oopsy           |         mahjong |      |        |       |        |     |
+|        31 | pappi           |         mahjong |      |        |       |        |     |
+|        32 | quail           |         mahjong |      |        |       |        |     |
+|  match_id | tournament_name |           round |      |        |       |        |     |
 |         1 | tennis          |               1 |      |        |       |        |     |
 |         2 | tennis          |               1 |      |        |       |        |     |
 |         3 | tennis          |               1 |      |        |       |        |     |
@@ -952,23 +1005,22 @@ $$ LANGUAGE SQL;
 |        14 | soccer          |               1 |      |        |       |        |     |
 |        15 | soccer          |               1 |      |        |       |        |     |
 |        16 | soccer          |               1 |      |        |       |        |     |
-| player_id | player_name     | tournament_name |      |        |       |        |     |
-|         1 | a               |          tennis |      |        |       |        |     |
-|         2 | b               |          tennis |      |        |       |        |     |
-|         3 | c               |          tennis |      |        |       |        |     |
-|         4 | d               |          tennis |      |        |       |        |     |
-|         5 | e               |          tennis |      |        |       |        |     |
-|         6 | f               |          tennis |      |        |       |        |     |
-|         7 | g               |          tennis |      |        |       |        |     |
-|         8 | h               |          tennis |      |        |       |        |     |
-|         9 | allen           |          soccer |      |        |       |        |     |
-|        10 | beverly         |          soccer |      |        |       |        |     |
-|        11 | cleanth         |          soccer |      |        |       |        |     |
-|        12 | devon           |          soccer |      |        |       |        |     |
-|        13 | eldridge        |          soccer |      |        |       |        |     |
-|        14 | fatool          |          soccer |      |        |       |        |     |
-|        15 | g-money         |          soccer |      |        |       |        |     |
-|        16 | harold          |          soccer |      |        |       |        |     |
+|        17 | soccer          |               2 |      |        |       |        |     |
+|        18 | soccer          |               2 |      |        |       |        |     |
+|        19 | soccer          |               2 |      |        |       |        |     |
+|        20 | soccer          |               2 |      |        |       |        |     |
+|        21 | soccer          |               3 |      |        |       |        |     |
+|        22 | soccer          |               3 |      |        |       |        |     |
+|        23 | soccer          |               3 |      |        |       |        |     |
+|        24 | soccer          |               3 |      |        |       |        |     |
+|        25 | mahjong         |               1 |      |        |       |        |     |
+|        26 | mahjong         |               1 |      |        |       |        |     |
+|        27 | mahjong         |               1 |      |        |       |        |     |
+|        28 | mahjong         |               1 |      |        |       |        |     |
+|        29 | mahjong         |               1 |      |        |       |        |     |
+|        30 | mahjong         |               1 |      |        |       |        |     |
+|        31 | mahjong         |               1 |      |        |       |        |     |
+|        32 | mahjong         |               1 |      |        |       |        |     |
 |  match_id | home            |            away |      |        |       |        |     |
 |         1 | 1               |               2 |      |        |       |        |     |
 |         2 | 3               |               4 |      |        |       |        |     |
@@ -986,6 +1038,22 @@ $$ LANGUAGE SQL;
 |        14 | 11              |              12 |      |        |       |        |     |
 |        15 | 13              |              14 |      |        |       |        |     |
 |        16 | 15              |              16 |      |        |       |        |     |
+|        17 | 16              |              12 |      |        |       |        |     |
+|        18 | 13              |               9 |      |        |       |        |     |
+|        19 | 15              |              10 |      |        |       |        |     |
+|        20 | 11              |              14 |      |        |       |        |     |
+|        21 | 16              |               9 |      |        |       |        |     |
+|        22 | 13              |              12 |      |        |       |        |     |
+|        23 | 15              |              14 |      |        |       |        |     |
+|        24 | 10              |              11 |      |        |       |        |     |
+|        25 | 17              |              18 |      |        |       |        |     |
+|        26 | 19              |              20 |      |        |       |        |     |
+|        27 | 21              |              22 |      |        |       |        |     |
+|        28 | 23              |              24 |      |        |       |        |     |
+|        29 | 25              |              26 |      |        |       |        |     |
+|        30 | 27              |              28 |      |        |       |        |     |
+|        31 | 29              |              30 |      |        |       |        |     |
+|        32 | 31              |              32 |      |        |       |        |     |
 |  match_id | home_score      |      away_score |      |        |       |        |     |
 |         1 | 1               |               0 |      |        |       |        |     |
 |         2 | 0               |               1 |      |        |       |        |     |
@@ -1003,24 +1071,117 @@ $$ LANGUAGE SQL;
 |        14 | 0               |               1 |      |        |       |        |     |
 |        15 | 1               |               0 |      |        |       |        |     |
 |        16 | 0               |               1 |      |        |       |        |     |
+|        17 | 1               |               0 |      |        |       |        |     |
+|        18 | 0               |               1 |      |        |       |        |     |
+|        19 | 1               |               0 |      |        |       |        |     |
+|        20 | 0               |               1 |      |        |       |        |     |
+|        21 | 1               |               1 |      |        |       |        |     |
+|        22 | 0               |               1 |      |        |       |        |     |
+|        23 | 1               |               0 |      |        |       |        |     |
+|        24 | 0               |               1 |      |        |       |        |     |
+|        17 | 1               |               0 |      |        |       |        |     |
+|        18 | 0               |               1 |      |        |       |        |     |
+|        19 | 1               |               0 |      |        |       |        |     |
+|        20 | 0               |               1 |      |        |       |        |     |
+|        21 | 1               |               0 |      |        |       |        |     |
+|        22 | 0               |               1 |      |        |       |        |     |
+|        23 | 1               |               0 |      |        |       |        |     |
+|        24 | 0               |               1 |      |        |       |        |     |
 | player_id | player_name     | tournament_name | wins | losses | draws | points | omw |
-|        16 | harold          |          soccer |    1 |      0 |     0 |      3 |   0 |
-|         9 | allen           |          soccer |    1 |      0 |     0 |      3 |   0 |
-|        12 | devon           |          soccer |    1 |      0 |     0 |      3 |   0 |
-|        13 | eldridge        |          soccer |    1 |      0 |     0 |      3 |   0 |
-|        11 | cleanth         |          soccer |    0 |      1 |     0 |      0 |   3 |
-|        15 | g-money         |          soccer |    0 |      1 |     0 |      0 |   3 |
-|        14 | fatool          |          soccer |    0 |      1 |     0 |      0 |   3 |
-|        10 | beverly         |          soccer |    0 |      1 |     0 |      0 |   3 |
-|         1 | a               |          tennis |    3 |      0 |     0 |      9 |  15 |
-|         8 | h               |          tennis |    2 |      1 |     0 |      6 |  15 |
-|         4 | d               |          tennis |    2 |      1 |     0 |      6 |  12 |
-|         2 | b               |          tennis |    2 |      1 |     0 |      6 |  12 |
-|         5 | e               |          tennis |    1 |      2 |     0 |      3 |  18 |
-|         6 | f               |          tennis |    1 |      2 |     0 |      3 |  12 |
-|         3 | c               |          tennis |    1 |      2 |     0 |      3 |   9 |
-|         7 | g               |          tennis |    0 |      3 |     0 |      0 |  15 |
+|        32 | quail           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        17 | aleph           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        18 | betel           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        19 | colon           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        20 | dippy           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        21 | eeker           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        22 | fubar           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        23 | gonad           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        24 | hilly           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        25 | isomr           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        26 | joker           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        27 | lossy           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        28 | mamie           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        29 | nadir           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        30 | oopsy           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        31 | pappi           |         mahjong |    0 |      0 |     0 |      0 |   0 |
+|        16 | homers          |          soccer |    2 |      0 |     1 |      7 |  19 |
+|         9 | azetcs          |          soccer |    2 |      0 |     1 |      7 |  10 |
+|        12 | devils          |          soccer |    2 |      1 |     0 |      6 |  13 |
+|        15 | gomers          |          soccer |    2 |      1 |     0 |      6 |  10 |
+|        13 | ejects          |          soccer |    1 |      2 |     0 |      3 |  16 |
+|        14 | freaks          |          soccer |    1 |      2 |     0 |      3 |  12 |
+|        11 | choirs          |          soccer |    1 |      2 |     0 |      3 |   9 |
+|        10 | beards          |          soccer |    0 |      3 |     0 |      0 |  16 |
+|         1 | albert          |          tennis |    3 |      0 |     0 |      9 |  15 |
+|         8 | harold          |          tennis |    2 |      1 |     0 |      6 |  15 |
+|         2 | beverly         |          tennis |    2 |      1 |     0 |      6 |  12 |
+|         4 | devon           |          tennis |    2 |      1 |     0 |      6 |  12 |
+|         5 | eldridge        |          tennis |    1 |      2 |     0 |      3 |  18 |
+|         6 | fatool          |          tennis |    1 |      2 |     0 |      3 |  12 |
+|         3 | cleanth         |          tennis |    1 |      2 |     0 |      3 |   9 |
+|         7 | g-money         |          tennis |    0 |      3 |     0 |      0 |  15 |
 
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+
+select player_id from player_tables ORDER BY tournament_name, points DESC, omw DESC limit 1;
+#+END_SRC
+
+#+RESULTS:
+| player_id |
+|-----------|
+|         1 |
+
+
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select player_id from player_tables WHERE tournament_name = 'tennis' ORDER BY tournament_name, points DESC, omw DESC limit 1
+#+END_SRC
+
+#+RESULTS:
+| player_id |
+|-----------|
+|         1 |
+
+* determine winner of given tournament from python
+** sql statement for 'tennis'
+#+BEGIN_SRC sql :engine postgresql :database tourney_practice
+select player_id from player_tables WHERE tournament_name = 'tennis' ORDER BY tournament_name, points DESC, omw DESC limit 1
+#+END_SRC
+
+#+RESULTS:
+| player_id |
+|-----------|
+|         1 |
+
+#+BEGIN_SRC python :session *Python* :results output
+  def determine_winner(dbname, table_name, tournament_name):
+      from_statement = keyword_statement_string(table_name, """FROM""")
+      query = ("SELECT player_id, player_name " +
+               from_statement + "WHERE tournament_name = (%s) ORDER BY tournament_name, points DESC, omw DESC limit 1;")
+      DB = new_connect(dbname)
+      c = DB.cursor()
+      c.execute(query, (tournament_name,))
+      rows = c.fetchall()
+      DB.close()
+      return rows
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python
+def new_playerStandings_alt(dbname, table_name, tournament_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT * " + from_statement + "WHERE tournament_name = (%s) ORDER BY points DESC, omw DESC;"
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query, (tournament_name,))
+    rows = c.fetchall()
+    DB.close()
+    return rows
+#   why does the following not fly?
+#   return new_dbExecuteRetrievalWrapper_allrows(dbname, query, tournament_name)
+
+#+END_SRC
 * define python functions for exceeds specifications
 #+BEGIN_SRC python
 import psycopg2

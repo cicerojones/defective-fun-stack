@@ -65,3 +65,10 @@
 [[file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/][file:~/Dropbox/Projects2016/Udacity/Project2/meets-spec/]]
 ** exceeds-spec version in development (!)
 [[file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/][file:~/Dropbox/Projects2016/Udacity/Project2/exceeds-spec/]]
+* testing outside of org-mode
+  :PROPERTIES:
+  :ID:       C42434EF-501F-45CA-B8A4-BE1A6E5470D7
+  :END:
+- how to run a python module!
+- how to get the proper sql database schema loaded!
+- see how to run .sql scripts from the command line

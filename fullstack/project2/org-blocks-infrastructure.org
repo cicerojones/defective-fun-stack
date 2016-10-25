@@ -1,0 +1,10 @@
+* Project 2 (Tournament Database)
+** basic code blocks
+
+#+BEGIN_SRC python
+
+#+END_SRC
+
+#+BEGIN_SRC python :session *Python* :results output :tangle yes
+
+#+END_SRC

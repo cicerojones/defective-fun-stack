@@ -18,9 +18,11 @@ def doDB():
 def wtf():
     my_dir = os.getcwd()
     print my_dir
-    DB = psycopg2.connect("dbname=tourney_practice")
+    # DB = psycopg2.connect("dbname=tourney_practice")
+    DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
-    query = "select * from players1;"
+    # query = "select * from players1;"
+    query = "select * from players;"
     c.execute(query)
     rows = c.fetchall()
     for row in rows:
