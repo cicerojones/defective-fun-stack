@@ -1,0 +1,186 @@
+* 
+** 
+*** import package
+#+BEGIN_SRC python :session *Python* :results output
+# the main currently existing set of python code
+# for the tournament
+
+import psycopg2
+
+#+END_SRC
+*** connect
+#+BEGIN_SRC python :session *Python* :results output
+
+# db interaction plumbing
+
+
+def new_connect(dbname):
+    dbname_string = "dbname={}".format(dbname)
+    return psycopg2.connect(dbname_string)
+#+END_SRC
+*** execute
+#+BEGIN_SRC python :session *Python* :results output
+
+def new_dbExecuteWrapper(query_string, dbname, extra=None):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string, extra)
+    DB.commit()
+    DB.close()
+#+END_SRC
+*** execute retrieval
+#+BEGIN_SRC python :session *Python* :results output
+
+
+def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query_string)
+    rows = c.fetchall()
+    DB.close()
+    return rows
+#+END_SRC
+*** keyword statements
+#+BEGIN_SRC python :session *Python* :results output
+def keyword_statement_string(table_name, sql_keyword):
+    tb_name = table_name
+    sql_keywords = sql_keyword + """ """
+    update_statement = sql_keywords + tb_name + """ """
+    return update_statement
+
+#+END_SRC
+*** delete table (unnecessary)
+#+BEGIN_SRC python :session *Python* :results output
+# deletion
+def new_deleteTable(dbname, table_name):
+    tb_name = table_name
+    sql_keywords = """DELETE FROM """
+    query = sql_keywords + tb_name
+    table_nm = (table_name,)
+    new_dbExecuteWrapper(query, dbname)
+
+#+END_SRC
+*** delete players (unnecessary)
+#+BEGIN_SRC python :session *Python* :results output
+def deletePlayers():
+    new_deleteTable("tourney_practice", "playerz")
+
+#+END_SRC
+*** delete matches (unnecessary)
+#+BEGIN_SRC python :session *Python* :results output
+def deleteMatches():
+    new_deleteTable("tourney_practice", "matchez")
+#+END_SRC
+*** register players
+#+BEGIN_SRC python :session *Python* :results output
+def new_registerPlayer(dbname, table_name, player_name, tournament_name):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(player_name, tournament_name)" +
+             "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query, dbname, (player_name, tournament_name))
+#+END_SRC
+*** retrieve player standings1
+#+BEGIN_SRC python :session *Python* :results output
+## retrieval wrappers always make assumptions about columns
+# orders only by points, returns only id and points for players
+def new_playerStandings(dbname, table_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = ("SELECT player_id, points " +
+             from_statement + "ORDER BY points DESC;")
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+#+END_SRC
+*** register matches
+#+BEGIN_SRC python :session *Python* :results output
+def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "(tournament_name, round)" +
+             "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query, dbname, (tournament_name, round_of_tournament))
+
+#+END_SRC
+*** register match participants
+#+BEGIN_SRC python :session *Python* :results output
+# use update_statement_string(table_name)???
+def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
+    participant_insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query2 = (participant_insert_statement + "(home, away)" + "VALUES (%s, %s);")
+    new_dbExecuteWrapper(query2, dbname, (player_id1, player_id2))
+    match_update_statement = keyword_statement_string("""matchez""", """UPDATE""")
+    query1 = (match_update_statement +
+              "SET tournament_name= (%s), round = (%s) WHERE tournament_name= 'none';")
+    new_dbExecuteWrapper(query1, dbname, (sport, round_no))
+
+#+END_SRC
+*** register scores
+#+BEGIN_SRC python :session *Python* :results output
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+    insert_statement = keyword_statement_string(table_name, """INSERT INTO""")
+    query = (insert_statement + "VALUES (%s, %s, %s);")
+    new_dbExecuteWrapper(query, dbname, (match_no, home_score, away_score))
+
+#+END_SRC
+*** log round results
+#+BEGIN_SRC python :session *Python* :results output
+def log_round_results(dbname, tournament_name, round_of_tournament):
+    query = "SELECT * FROM log_records(%s, %s)"
+    new_dbExecuteWrapper(query, dbname, (round_of_tournament, tournament_name))
+#+END_SRC
+*** [#C] count players 
+#+BEGIN_SRC python :session *Python* :results output
+def how_many_players(dbname):
+    query = "select * from player_recordz;"
+    return new_dbExecuteRetrievalWrapper_allrows(dbname, query)
+
+#+END_SRC
+*** set player's OMW
+#+BEGIN_SRC python :session *Python* :results output
+def set_OMW(dbname, player_id):
+    query = "SELECT * FROM set_omw(%s);"
+    new_dbExecuteWrapper(query, dbname, (player_id,))
+
+#+END_SRC
+*** [#C] set all OMW
+#+BEGIN_SRC python :session *Python* :results output
+# inefficient to set the OMW for ALL players in ALL tournaments
+def set_all_OMW(dbname):
+    data = how_many_players(dbname)
+    playaz = [n[0] for n in data]
+    [set_OMW(dbname, n) for n in playaz]
+    print("done")
+
+#+END_SRC
+*** retrieve player standings2
+#+BEGIN_SRC python :session *Python* :results output
+## why does this go outside wrapper usage?
+## because of the need to pass in explicit tournament_name as arg?
+# returns all columns and orders by TWO columns
+def new_playerStandings_alt(dbname, table_name, tournament_name):
+    from_statement = keyword_statement_string(table_name, """FROM""")
+    query = "SELECT * " + from_statement + "WHERE tournament_name = (%s) ORDER BY points DESC, omw DESC;"
+    DB = new_connect(dbname)
+    c = DB.cursor()
+    c.execute(query, (tournament_name,))
+    rows = c.fetchall()
+    DB.close()
+    return rows
+#    return new_dbExecuteRetrievalWrapper_allrows(dbname, query, tournament_name)
+#+END_SRC
+*** [#C] naive pairings
+#+BEGIN_SRC python :session *Python* :results output
+def naive_pairings(tournament_name):
+    pairings = []
+    tables = new_playerStandings_alt("tourney_practice", "player_tables", tournament_name)
+    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in tables]
+    pairings = [(id1, id2), (id3, id4), (id5, id6), (id7, id8)]
+    return pairings
+#+END_SRC
+*** [#C] swiss pairings
+#+BEGIN_SRC python :session *Python* :results output
+def naive_swissPairings(round_no, tournament_name):
+    next_round = naive_pairings(tournament_name)
+    for pair in next_round:
+        registerMatchParticipants("tourney_practice", "match_participants", tournament_name, round_no, pair[0], pair[1])
+
+#+END_SRC
+** 

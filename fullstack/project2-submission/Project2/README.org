@@ -1,0 +1,33 @@
+* Project 2 (Tournament Results) Overview
+** Project repository description
+There are two code bases here, one concerned with simply meeting the
+requirements of the specifications provided by Udacity. This is
+contained within the ~meets specs~ directory, and is documented by a
+README therein.
+
+The second collection is a comparatively rough draft of an extension
+to the basic functionality provided by the ~meets specs~ code. That
+is, there are several features (originally mentioned in the design
+specs as "exceeding" specifications, though this mention was
+ultimately removed from the specs) that would significantly extend the
+relatively limited functionality provided by the ~meets spec~
+codebase.
+
+These features, provided by both Python and psql code, are fully
+documented in the README in the ~exceeds spec~ directory
+
+* Problems with ~exceeds spec~ code base
+While the tests for ~meets spec~ code are relatively straightfoward,
+and in fact did not have to be written by this developer but were in
+fact already given, the tests, such as they are, for the ~exceeds
+spec~ proved extremely problematic. 
+
+In fact, trying to come up with a viable test suite for them largely
+caused me to postpone submitting all the other code till now, even
+though it was all written months ago.
+
+Nonetheless, I submit all the code related to the "exceeds
+specifications" features with documentation that should show that it
+in fact works for basic use cases. Writing a full-fledged test suite,
+however, would needlessly delay my progress even further.
+

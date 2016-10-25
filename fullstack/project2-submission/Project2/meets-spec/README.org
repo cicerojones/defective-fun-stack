@@ -1,0 +1,64 @@
+* Tournament Results project (Meets Specifications version)
+This README provides a description of the following files:
+
+- final_project.py
+- tournament.sql
+- tournament_test.py
+
+** final_project.py
+
+~final_project.py~ provides several Python functions that allow the
+user to interact with a PostgreSQL database from Python.
+
+Specifically, the user can 
+
+- /register players/ for a tournament by adding them to an SQL database
+- /delete players/ from the database
+- /log matches/ between players, registering a winner and a loser
+- /delete matches/ from the database
+- /create statistics/ from the database, such as "number of players"
+  and "player standings"
+- /determine match pairings/ for additional rounds of a tournament,
+  based on the player standings
+
+This functionality is provided by the following functions:
+- =deleteMatches()=
+- =deletePlayers()=
+- =countPlayers()=
+- =registerPlayer()=
+- =playerStandings()=
+- =reportMatch()=
+- =swissPairings()=
+
+In addition to these core functions, there are three functions
+intended to abstract out some of the details of commonly occuring
+database interactions:
+
+- /provide a database connection/ to the main postgres db used in this
+  module
+- /modify a table/ in the database
+- /retrieve some data/ from the database
+
+This functionality, which was not called for by the design
+specifications but seemed helpful nonetheless, is provided by the
+following functions:
+
+- =connect()=
+- =dbExecuteWrapper()=
+- =dbExecuteRetrievalWrapper_allrows()=
+
+** tournament.sql
+
+~tournament.sql~ is used to set up the necessary structure to the SQL
+database:
+
+- /create the database/
+- /create a players table/ to store data concerning the players
+- /create a matches table/ to store data concerning the matches that
+  the players play
+
+** tournament_test.py
+
+Lastly, ~tournament_test.py~ is used to run a basic test of the
+final_project.py code. All the code contained herein was provided by
+Udacity ahead of time.
