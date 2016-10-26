@@ -25,8 +25,8 @@ documented in the README in the ~exceeds spec~ directory
 For the code in ~exceeds spec~, there are not "tests," per se.
 
 While the tests for the ~meets spec~ code are relatively
-straightfoward--and in fact did not have to be written by this
-developer but were already given--devising tests for the ~exceeds
+straightfoward (and in fact did not have to be written by this
+developer but were already given), devising tests for the ~exceeds
 spec~ proved extremely problematic.
 
 Indeed, trying to come up with a viable test suite for them largely
@@ -34,8 +34,8 @@ caused me to postpone submitting all the other code till now, even
 though it was all written months ago.
 
 Nonetheless, I submit all the code related to the "exceeds
-specifications" features with documentation and a kind of "test file"
-([[file:exceeds-spec/core/tournament_demonstration.py][tournament_demonstration.py]]) that should show that it in fact works
-for basic use cases. Writing a full-fledged test suite, however, would
-needlessly delay my progress even further.
+specifications" features with some documentation and a kind of "test
+file" ([[file:exceeds-spec/core/tournament_demonstration.py][tournament_demonstration.py]]) that should show that it in fact
+works for basic use cases. Writing a full-fledged test suite, however,
+would needlessly delay my progress even further.
 
