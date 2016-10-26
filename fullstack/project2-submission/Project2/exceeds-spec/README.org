@@ -41,8 +41,16 @@ database schema.
    :PROPERTIES:
    :ID:       D724F6B4-6303-41BF-A591-57DD97CFD8ED
    :END:
-code stubs in exceeds version of 'final_project.py'
-*** shared in concept with 'meets' code
+Below, I provide an organization of the code stubs for the functions
+in the exceeds version of 'final_project.py'
+
+While this adds somewhat to the documentation provided by the
+commenting in
+[[file:core/final_project.py][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/core/final_project.py]],
+it all could admittedly be made more clear. I simply have dragged my
+feet too long to not submit it now in a somewhat rough state, as the
+code in tournament_demonstration.py runs.
+*** functions shared with 'meets' code (in concept, if not in exact implementation)
 **** delete tables
 #+BEGIN_SRC python
 def new_deleteTable(dbname, table_name):
@@ -77,7 +85,6 @@ def update_statement_string(table_name):
 def keyword_statement_string(table_name, sql_keyword):
 #+END_SRC
 *** entirely new functions for 'exceeds specs'
-
 **** register Match Participants
 #+BEGIN_SRC python
 def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
@@ -125,11 +132,11 @@ def naive_swissPairings(round_no, tournament_name):
 
 ** SQL schema
 A heavily commented version of the SQL schema can be found here: [[file:additional-documentation/verbose_tournament.sql]]
-** Tournament_test.py
+** Tournament Demonstration
 
-Lastly, ~tournament_test.py~ is used to run a basic test of the
-final_project.py code. All the code contained herein was provided by
-Udacity ahead of time.
+Lastly,
+[[file:core/tournament_demonstration.py][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/core/tournament_demonstration.py]]
+is used show a use of the final_project.py code.
 
 In the case of the 'exceeds specs,' there just was too much to write
 explicit and thorough tests for; I began the process and was so
