@@ -45,11 +45,10 @@ Below, I provide an organization of the code stubs for the functions
 in the exceeds version of 'final_project.py'
 
 While this adds somewhat to the documentation provided by the
-commenting in
-[[file:core/final_project.py][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/core/final_project.py]],
-it all could admittedly be made more clear. I simply have dragged my
-feet too long to not submit it now in a somewhat rough state, as the
-code in tournament_demonstration.py runs.
+commenting in [[file:core/final_project.py][final_project.py]] it all could admittedly be made more
+clear. I simply have dragged my feet too long to not submit it now in
+a somewhat rough state, as the code in tournament_demonstration.py
+runs.
 *** functions shared with 'meets' code (in concept, if not in exact implementation)
 **** delete tables
 #+BEGIN_SRC python
@@ -132,12 +131,23 @@ def naive_swissPairings(round_no, tournament_name):
 
 ** SQL schema
 A heavily commented version of the SQL schema can be found here: [[file:additional-documentation/verbose_tournament.sql]]
-** Tournament Demonstration
+** 'Tournament Demonstration' file
+*** What is Tournament_demonstration?
+Lastly, [[file:core/tournament_demonstration.py][tournament_demonstration.py]] is used show a demonstration of
+the final_project.py code.
 
-Lastly,
-[[file:core/tournament_demonstration.py][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/core/tournament_demonstration.py]]
-is used show a use of the final_project.py code.
+It shows:
 
+- one, eight-person "tennis" tournament being run using 'swiss pairings'
+- one, eight-person "soccer" tournament being run using the same
+  database,
+  - additionally, ties are allowed, and a final winner is determined
+    by use of Opponent Match Wins as a tie-breaker.
+- one, sixteen-person "mahjong" tournament failing--the code is
+  designed to handle only eight-person tournaments
+
+
+*** Why no real test, my friend?
 In the case of the 'exceeds specs,' there just was too much to write
 explicit and thorough tests for; I began the process and was so
 stymied that I dragged my feet for months. Ultimately, I provide a
@@ -145,18 +155,21 @@ basic "code journey" through one particular run of the "exceeds
 specifications" version, showing that the extended code can handle
 ties, multiple tournaments, and OMW ranking.
 ** Refactoring Considerations
-There are a few places where hard-coding has meant that certain
-assumptions are being made about the kinds of tournaments being used.
+The main problem is that the all important SQL function that sets
+player OMW is hard-coded to work for tournaments up to eight
+players! This is a major shortcoming :(
 
-Specifically, column names are assumed by many if not most of the
-functions here, though I took pains to make sure that different
-database and table names could be used. That is, most functions use
-various wrapper and abstraction helper functions that take database
-and table names as arguments, thus allowing the user to more readily
-expand the code base to work for his or her own databases (of course,
-column names have not been similarly abstracted, due to time
-constraints). 
-
+Additionally, there are a few places where hard-coding has meant that
+certain assumptions are being made about the kinds of tournaments
+being used (such as the number of players expected). In many cases,
+column names are assumed the functions here, though I took pains to
+make sure that different database and table names could be used. That
+is, most functions use various wrapper and abstraction helper
+functions that take database and table names as arguments, thus
+allowing the user to more readily expand the code base to work for his
+or her own databases (of course, column names have not been similarly
+abstracted, due to time constraints).
+** Conclusion
 In some ways, what I attempted was the beginning of a library for
 tournament-making, SQL-based code (this can be seen most clearly in
 the use of helper functions like =keyword_statement_string= which take
@@ -164,12 +177,4 @@ different table names and SQL keywords such as "FROM" and "INSERT
 INTO"). This clearly was beyond the scope of the assignment, but was
 illuminating nonetheless, especially in that it forced me to delve
 into the more obscure and powerful corner of Postgres.
-
-
-
-# The main problem is that the all important SQL function that sets
-# player OMW is hard-coded to work for tournaments up to eight
-# players.
-
-Actually, do this in the python code. See set_all_OMW
 
