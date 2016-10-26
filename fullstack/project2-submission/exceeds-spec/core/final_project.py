@@ -1,6 +1,3 @@
-# the main currently existing set of python code
-# for the tournament
-
 import psycopg2
 
 
@@ -29,6 +26,9 @@ def new_dbExecuteRetrievalWrapper_allrows(dbname, query_string):
     return rows
 
 
+# SQL helper function
+
+
 def keyword_statement_string(table_name, sql_keyword):
     tb_name = table_name
     sql_keywords = sql_keyword + """ """
@@ -39,6 +39,8 @@ def keyword_statement_string(table_name, sql_keyword):
 # deletion functions
 # technically these are unneeded in this version,
 # which is intended to not require deleting anything
+
+
 def new_deleteTable(dbname, table_name):
     tb_name = table_name
     sql_keywords = """DELETE FROM """
@@ -52,6 +54,7 @@ def deletePlayers():
 
 def deleteMatches():
     new_deleteTable("tourney_practice", "matchez")
+
 
 # refactor to allow substituting column names?
 
@@ -82,7 +85,6 @@ def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
     new_dbExecuteWrapper(query, dbname, (tournament_name, round_of_tournament))
 
 
-# use update_statement_string(table_name)???
 def registerMatchParticipants(dbname, table_name, sport, round_no,
                               player_id1, player_id2):
     participant_insert_statement = keyword_statement_string(table_name,
@@ -120,7 +122,7 @@ def set_OMW(dbname, player_id):
     new_dbExecuteWrapper(query, dbname, (player_id,))
 
 
-# inefficient to set the OMW for ALL players in ALL tournaments
+# inefficient to set the OMW for ALL players in ALL tournaments!!!
 def set_all_OMW(dbname):
     data = how_many_players(dbname)
     playaz = [n[0] for n in data]
@@ -142,7 +144,7 @@ def new_playerStandings_alt(dbname, table_name, tournament_name):
 
 # MAJOR PROBLEM! Expects 8-player tournaments!
 
-# conatins hard-coded db and table (the wrong table originally!)
+# conatins hard-coded db and table
 
 
 def eight_player_pairings(tournament_name):
@@ -163,6 +165,7 @@ def naive_swissPairings(round_no, tournament_name):
         print "Next round opponents: " + str(pair)
 
 
+# Following functions are used in the 'tournament_demonstration' only
 def determine_winner(dbname, table_name, tournament_name):
     from_statement = keyword_statement_string(table_name, """FROM""")
     query = ("SELECT player_id, player_name " +
@@ -188,7 +191,4 @@ def determine_top_two(dbname, table_name, tournament_name):
     DB.close()
     print "Top Two: "
     for row in rows:
-        # print(row)
         print row
-
-tuple([1, 2])

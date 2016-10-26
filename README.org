@@ -1,13 +1,3 @@
-* steps for completing project2 Udacity FUllstack web development course
-  :PROPERTIES:
-  :ID:       9A7343BA-F624-4A45-97D1-3BABFB414729
-  :END:
-** understanding SQL exceeds specifications code (four org files as below)
-*** developing-tests.org
-[[id:33A15B73-6490-49BA-A10E-F8232454CA14][new]]
-*** steps.org
-lay out the common procedures to follow when returning to code base
-*** testing-out-tournaments.org
-*** combining-tests.org
-[[id:0BA17349-EE3B-436F-B793-2F7B201B3CE2][testing the original code base]]
+* Navigating
 
+Please see fullstack/project2-submission

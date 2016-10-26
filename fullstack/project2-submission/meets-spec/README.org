@@ -5,6 +5,14 @@ This README provides a description of the following files:
 - tournament.sql
 - tournament_test.py
 
+There are three steps needed to run and test the code
+
+1. load the database schema (~tournament.sql~) into a running postgres database
+2. load the ~final_project.py~ script (e.g. from the command line with
+   ~python final_project.py~
+3. finally, run the test, ~tournament_test~, similarly from the
+   command line
+
 ** final_project.py
 
 ~final_project.py~ provides several Python functions that allow the

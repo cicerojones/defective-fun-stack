@@ -5,6 +5,13 @@ This README primarily provides a description of three files:
 - core/tournament.sql
 - core/tournament_demonstration.py
 
+There are three steps needed to run and test the code
+
+1. load the database schema (~tournament.sql~) into a running postgres database
+2. load the ~final_project.py~ script (e.g. from the command line with
+   ~python final_project.py~
+3. finally, run the demonstration script, ~tournament_demostration.py~, similarly from the
+   command line
 
 ** Meeting and Exceeding Specifications
 In the [[file:../meets-spec/README.org][readme]] for "meets specs," I have described a basic outline of
@@ -75,11 +82,7 @@ def new_playerStandings(dbname, table_name):
 def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
 #+END_SRC
 
-*** new helper functions
-#+BEGIN_SRC python 
-def update_statement_string(table_name):
-#+END_SRC
-
+*** new helper function
 #+BEGIN_SRC python
 def keyword_statement_string(table_name, sql_keyword):
 #+END_SRC
