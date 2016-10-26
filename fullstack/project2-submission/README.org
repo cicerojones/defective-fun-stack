@@ -1,4 +1,7 @@
 * Project 2 ("Tournament Results") Overview
+  :PROPERTIES:
+  :ID:       991A608A-3882-4B81-A0F4-C398ECC02C34
+  :END:
 Project 2 of the Udacity Fullstack Web Developer nanodegree course
 involves writing Python code that interacts with a PostgreSQL
 database.
@@ -6,8 +9,9 @@ database.
 I have used two different code bases, contained in the directories
 ~meets-spec~ and ~exceeds-spec~, to meet the requirements laid out in
 the project description. One is concerned with simply /meeting/ these
-requirements and is contained within the ~meets specs~ directory, and
-is documented by a README therein.
+requirements. See [[id:8D697589-2E12-432A-A1D0-F8675736137F][Tournament Results project (Meets Specifications
+version)]], within the ~meets specs~ directory.
+
 
 The second collection is a comparatively rough draft of an extension
 to the basic functionality provided by the ~meets specs~ code. That
@@ -18,7 +22,8 @@ relatively limited functionality provided by the ~meets spec~
 codebase.
 
 These features, provided by both Python and psql code, are fully
-documented in the README in the ~exceeds spec~ directory
+documented in the README in the ~exceeds spec~ directory. Please see
+[[id:44BCAC8C-C972-42B3-9166-E0BA720CABFE][Project 2 ("Tournament Results") EXCEEDS SPECIFICATIONS code overview]]
 
 ** Potential Problems
 

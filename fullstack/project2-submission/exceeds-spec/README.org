@@ -1,4 +1,7 @@
 * Project 2 ("Tournament Results") EXCEEDS SPECIFICATIONS code overview
+  :PROPERTIES:
+  :ID:       44BCAC8C-C972-42B3-9166-E0BA720CABFE
+  :END:
 This README primarily provides a description of three files:
 
 - core/final_project.py

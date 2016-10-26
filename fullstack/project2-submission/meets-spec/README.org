@@ -1,4 +1,7 @@
 * Tournament Results project (Meets Specifications version)
+  :PROPERTIES:
+  :ID:       8D697589-2E12-432A-A1D0-F8675736137F
+  :END:
 This README provides a description of the following files:
 
 - final_project.py
