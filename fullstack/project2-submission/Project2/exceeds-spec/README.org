@@ -1,21 +1,24 @@
-* Project 2 (Tournament Results) Exceed Specifications code overview
-This README provides a description of the following files:
+* Project 2 ("Tournament Results") EXCEEDS SPECIFICATIONS code overview
+This README primarily provides a description of three files:
 
-- final_project.py
-- tournament.sql
-- tournament_test.py
+- core/final_project.py
+- core/tournament.sql
+- core/tournament_demonstration.py
+
+
 ** Meeting and Exceeding Specifications
-In the file link::'Tournament Results project (Meets Specifications
-version)' I have described a basic outline of what this code does in
-order to "meet specifications." Though all of that basic functionality
-is provided by the ~exceed spec~ code in this directory as well, new
-functions were written that extend and supersede that basic
-functionality (of course, code that was not present in the "meets
-specs" code base was needed to provide the "exceeds spec" features).
+In the [[file:../meets-spec/README.org][readme]] for "meets specs," I have described a basic outline of
+what the code there does in order to "meet specifications." Though all
+of that basic functionality is provided by the ~exceed spec~ code in
+this directory as well, new functions were written that extend and
+supersede that basic functionality (of course, code that was not
+present in the "meets specs" code base was needed to provide the
+"exceeds spec" features).
 
-Additionally, I give a description of the postgresql database schema,
-which features extensive use of psql-specific functionality, including
-psql functions, views, triggers etc.
+Additionally, I provide some basic documentation description of the
+postgresql database schema, which features extensive use of
+psql-specific functionality, including psql functions, views, triggers
+etc.
 
 ** Description of extra credit features
 What follows is a description of three features that the "exceeds
@@ -328,15 +331,7 @@ def naive_swissPairings(round_no, tournament_name):
 
 #+END_SRC
 ** SQL schema
-*** original 'tournament.sql' schema of 'meets'
-
-~tournament.sql~ is used to set up the necessary structure to the SQL
-database:
-
-- /create the database/
-- /create a players table/ to store data concerning the players
-- /create a matches table/ to store data concerning the matches that
-  the players play
+[[file:additional-documentation/verbose_tournament.sql][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/additional-documentation/verbose_tournament.sql]]
 *** extended psql 'tournament.sql' schema of 'exceeds'
 **** tables
 #+BEGIN_SRC sql

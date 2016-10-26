@@ -1,4 +1,4 @@
-* Project 2 (Tournament Results) Overview
+* Project 2 ("Tournament Results") Overview
 Project 2 of the Udacity Fullstack Web Developer nanodegree course
 involves writing Python code that interacts with a PostgreSQL
 database.
@@ -35,9 +35,8 @@ caused me to postpone submitting all the other code till now, even
 though it was all written months ago.
 
 Nonetheless, I submit all the code related to the "exceeds
-specifications" features with documentation and a kind of "test file" 
-[[file:exceeds-spec/tournament_demonstration.py][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/tournament_demonstration.py]]
-that should show that it in fact works for basic use cases. Writing a
-full-fledged test suite, however, would needlessly delay my progress
-even further.
+specifications" features with documentation and a kind of "test file"
+([[file:exceeds-spec/tournament_demonstration.py][tournament_demonstration.py)] that should show that it in fact works
+for basic use cases. Writing a full-fledged test suite, however, would
+needlessly delay my progress even further.
 
