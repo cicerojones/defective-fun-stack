@@ -23,7 +23,7 @@ documented in the README in the ~exceeds spec~ directory
 
 ** Problems
 
-*There are not tests as such for the code in ~exceeds spec~*
+*For the code in ~exceeds spec~, there are not "tests," per se*
 
 While the tests for ~meets spec~ code are relatively straightfoward--
 and in fact did not have to be written by this developer but were in
