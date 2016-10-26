@@ -8,12 +8,13 @@ This README primarily provides a description of three files:
 
 ** Meeting and Exceeding Specifications
 In the [[file:../meets-spec/README.org][readme]] for "meets specs," I have described a basic outline of
-what the code there does in order to "meet specifications." Though all
-of that basic functionality is provided by the ~exceed spec~ code in
-this directory as well, new functions were written that extend and
-supersede that basic functionality (of course, code that was not
-present in the "meets specs" code base was needed to provide the
-"exceeds spec" features).
+what the code there does in order to "meet specifications," and this
+description applies here as well. However, new functions were written
+that extend and supersede that basic functionality (of course, code
+that was not present in the "meets specs" code base was needed to
+provide the "exceeds spec" features). A brief explanation of those
+extensions, as well as further documentation of the code used to enact
+them, are found in the [[id:D724F6B4-6303-41BF-A591-57DD97CFD8ED][Code]] section below.
 
 Additionally, I provide some basic documentation description of the
 postgresql database schema, which features extensive use of
@@ -36,35 +37,38 @@ have to be deleted between tournaments. This will require
 distinguishing between “a registered player” and “a player who has
 entered in tournament #123”, so it will require changes to the
 database schema.
-** Code and Specs
-*** code stubs in exceeds version of 'final_project.py'
-**** shared in concept with 'meets' code
-***** delete tables
- #+BEGIN_SRC python
- def new_deleteTable(dbname, table_name):
- #+END_SRC
+** Code
+   :PROPERTIES:
+   :ID:       D724F6B4-6303-41BF-A591-57DD97CFD8ED
+   :END:
+code stubs in exceeds version of 'final_project.py'
+*** shared in concept with 'meets' code
+**** delete tables
+#+BEGIN_SRC python
+def new_deleteTable(dbname, table_name):
+#+END_SRC
 
-***** count Players
- #+BEGIN_SRC python
- def new_countPlayers(dbname, table_name):
- #+END_SRC
+**** count Players
+#+BEGIN_SRC python
+def new_countPlayers(dbname, table_name):
+#+END_SRC
 
-***** register Players
- #+BEGIN_SRC python
- def new_registerPlayer(dbname, table_name, player_name, tournament_name):
- #+END_SRC
+**** register Players
+#+BEGIN_SRC python
+def new_registerPlayer(dbname, table_name, player_name, tournament_name):
+#+END_SRC
 
-***** player Standings
- #+BEGIN_SRC python
- def new_playerStandings(dbname, table_name):
- #+END_SRC
+**** player Standings
+#+BEGIN_SRC python
+def new_playerStandings(dbname, table_name):
+#+END_SRC
 
-***** register Matches
- #+BEGIN_SRC python
- def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
- #+END_SRC
+**** register Matches
+#+BEGIN_SRC python
+def registerMatch(dbname, table_name, tournament_name, round_of_tournament):
+#+END_SRC
 
-**** new helper functions
+*** new helper functions
 #+BEGIN_SRC python 
 def update_statement_string(table_name):
 #+END_SRC
@@ -72,56 +76,56 @@ def update_statement_string(table_name):
 #+BEGIN_SRC python
 def keyword_statement_string(table_name, sql_keyword):
 #+END_SRC
-**** entirely new functions for 'exceeds specs'
+*** entirely new functions for 'exceeds specs'
 
-***** register Match Participants
- #+BEGIN_SRC python
- def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
- #+END_SRC
+**** register Match Participants
+#+BEGIN_SRC python
+def registerMatchParticipants(dbname, table_name, sport, round_no, player_id1, player_id2):
+#+END_SRC
 
-***** register scores
- #+BEGIN_SRC python
- def registerScores(dbname, table_name, match_no, home_score, away_score):
- #+END_SRC
+**** register scores
+#+BEGIN_SRC python
+def registerScores(dbname, table_name, match_no, home_score, away_score):
+#+END_SRC
 
-***** log the results for a given round of a given tournament
- #+BEGIN_SRC python
- def log_round_results(dbname, tournament_name, round_of_tournament):
- #+END_SRC
+**** log the results for a given round of a given tournament
+#+BEGIN_SRC python
+def log_round_results(dbname, tournament_name, round_of_tournament):
+#+END_SRC
 
-***** count the number of players in a database?
- #+BEGIN_SRC python
- def how_many_players(dbname):
- #+END_SRC
+**** count the number of players in a database?
+#+BEGIN_SRC python
+def how_many_players(dbname):
+#+END_SRC
 
-***** set the Opponents Match Win for a player in the database
- #+BEGIN_SRC python
- def set_OMW(dbname, player_id):
- #+END_SRC
+**** set the Opponents Match Win for a player in the database
+#+BEGIN_SRC python
+def set_OMW(dbname, player_id):
+#+END_SRC
 
-***** set the OMW for all the players in the database
- #+BEGIN_SRC python
- def set_all_OMW(dbname):
- #+END_SRC
+**** set the OMW for all the players in the database
+#+BEGIN_SRC python
+def set_all_OMW(dbname):
+#+END_SRC
 
-***** create the player stnadings for a given tournament_name
- #+BEGIN_SRC python
- def new_playerStandings_alt(dbname, table_name, tournament_name):
- #+END_SRC
+**** create the player stnadings for a given tournament_name
+#+BEGIN_SRC python
+def new_playerStandings_alt(dbname, table_name, tournament_name):
+#+END_SRC
 
-***** set up function for creaeting swiss pairings
- #+BEGIN_SRC python
- def naive_pairings(tournament_name):
- #+END_SRC
+**** set up function for creaeting swiss pairings
+#+BEGIN_SRC python
+def naive_pairings(tournament_name):
+#+END_SRC
 
-***** master function for creating swiss Pairings for a given round of a given tournament
- #+BEGIN_SRC python
- def naive_swissPairings(round_no, tournament_name):
- #+END_SRC
+**** master function for creating swiss Pairings for a given round of a given tournament
+#+BEGIN_SRC python
+def naive_swissPairings(round_no, tournament_name):
+#+END_SRC
 
 ** SQL schema
-[[file:additional-documentation/verbose_tournament.sql][file:~/Dropbox/AB-local/Documents-new-home/udacity-courses/fullstack/project2-submission/Project2/exceeds-spec/additional-documentation/verbose_tournament.sql]]
-** tournament_test.py
+A heavily commented version of the SQL schema can be found here: [[file:additional-documentation/verbose_tournament.sql]]
+** Tournament_test.py
 
 Lastly, ~tournament_test.py~ is used to run a basic test of the
 final_project.py code. All the code contained herein was provided by
