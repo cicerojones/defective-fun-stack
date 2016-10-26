@@ -36,7 +36,7 @@ though it was all written months ago.
 
 Nonetheless, I submit all the code related to the "exceeds
 specifications" features with documentation and a kind of "test file"
-([[file:exceeds-spec/tournament_demonstration.py][tournament_demonstration.py)]] that should show that it in fact works
+([[file:exceeds-spec/core/tournament_demonstration.py][tournament_demonstration.py]]) that should show that it in fact works
 for basic use cases. Writing a full-fledged test suite, however, would
 needlessly delay my progress even further.
 
