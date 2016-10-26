@@ -2,6 +2,7 @@
   :PROPERTIES:
   :ID:       991A608A-3882-4B81-A0F4-C398ECC02C34
   :END:
+
 Project 2 of the Udacity Fullstack Web Developer nanodegree course
 involves writing Python code that interacts with a PostgreSQL
 database.

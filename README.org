@@ -2,4 +2,4 @@
 
 Please see fullstack/project2-submission for Project 2 code:
 
-[[id:991A608A-3882-4B81-A0F4-C398ECC02C34][Project 2 ("Tournament Results") Overview]]
+[[file:fullstack/project2-submission/README.org][Project 2 ("Tournament Results") Overview]]
